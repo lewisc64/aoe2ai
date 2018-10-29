@@ -1,1 +1,5 @@
 *.pyc
+*.per
+*.ai
+*.aoe2ai
+*.bat

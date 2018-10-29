@@ -12,12 +12,9 @@ def interpret(content):
         item = line.strip()
         if item == "":
             continue
-            
-        match = False
+        
         for rule in rules:
             if rule.is_match(item):
-                
-                match = True
 
                 p_condition_stack = condition_stack[:]                
                 p_action_stack = action_stack[:]
@@ -36,8 +33,7 @@ def interpret(content):
                     defrules.extend(output)
                 
                 break
-        
-        if not match:
+        else:
             print("WARNING: line {} did not match.".format(i + 1))
     
     return "\n".join([str(x) for x in defrules])

@@ -59,15 +59,32 @@ rules.append(Snippet("set up micro",
 rules.append(Snippet("build houses",
                      ["housing-headroom < 5", "population-headroom != 0", "up-pending-objects c: house == 0", "can-build house"],
                      ["build house"]))
-rules.append(Snippet("build houses",
-                     ["housing-headroom < 5", "population-headroom != 0", "up-pending-objects c: house == 0", "can-build house"],
-                     ["build house"]))
 rules.append(Snippet("build lumber camps",
                      ["dropsite-min-distance wood > 2", "resource-found wood", "up-pending-objects c: lumber-camp == 0", "can-build lumber-camp"],
                      ["build lumber-camp"]))
 rules.append(Snippet("build mills",
                      ["dropsite-min-distance food > 3", "resource-found food", "up-pending-objects c: mill == 0", "can-build mill"],
                      ["build mill"]))
+
+@rule
+class Comment(Rule):
+    def __init__(self):
+        self.name = "comment"
+        self.regex = re.compile("^//(.+)$")
+    
+    def parse(self, line, **kwargs):
+        return None
+
+@rule
+class Cheat(Rule):
+    def __init__(self):
+        self.name = "cheat"
+        self.regex = re.compile("^cheat ([0-9]+) ([^ ]+)$")
+
+    def parse(self, line, **kwargs):
+        amount, resource = self.get_data(line)
+        return Defrule(["true"],
+                       ["cc-add-resource {} {}".format(resource, amount)])
 
 @rule
 class ChatTo(Rule):
@@ -78,7 +95,7 @@ class ChatTo(Rule):
     def parse(self, line, **kwargs):
         recipient, content = self.get_data(line)
         return Defrule(["true"],
-                       ["chat-to-{} \"{}\"".format(recipient, content).replace("to-self", "local-to-self")])
+                       ["chat-to-{} {}".format(recipient, content).replace("to-self", "local-to-self")])
 
 @rule
 class AddCondition(Rule):
@@ -107,6 +124,21 @@ class AddAction(Rule):
             kwargs["action_stack"].append(action)
 
 @rule
+class If(Rule):
+    def __init__(self):
+        self.name = "if"
+        self.regex = re.compile("^(?:#if (.+)|#else|#end if)$")
+    
+    def parse(self, line, **kwargs):
+        condition = self.get_data(line)[0]
+        if condition is None:
+            text = kwargs["condition_stack"].pop(-1)
+            if line.startswith("#else"):
+                kwargs["condition_stack"].append("not ({})".format(text))
+        else:
+            kwargs["condition_stack"].append(condition)
+
+@rule
 class DoOnce(Rule):
     def __init__(self):
         self.name = "do once"
@@ -132,14 +164,13 @@ class Delay(Rule):
             timer_number = len(kwargs["timers"]) + 1
             kwargs["timers"].append(timer_number)
             kwargs["condition_stack"].append("timer-triggered {}".format(timer_number))
-            return [Defrule(["timer-triggered {}".format(timer_number)], ["disable-timer {}".format(timer_number), "disable-self"]),
-                    Defrule(["true"], ["enable-timer {} {}".format(timer_number, amount), "disable-self"])]
+            return Defrule(["true"], ["enable-timer {} {}".format(timer_number, amount), "disable-self"])
 
 @rule
 class Repeat(Rule):
     def __init__(self):
         self.name = "repeat"
-        self.regex = re.compile("^(?:#repeat every ([0-9]+) seconds|#end repeat)$")
+        self.regex = re.compile("^(?:#repeat every ([0-9]+) seconds?|#end repeat)$")
     
     def parse(self, line, **kwargs):
         if "end" in line:
@@ -167,6 +198,18 @@ class Train(Rule):
                            ["train " + data[1]])
 
 @rule
+class Respond(Rule):
+    def __init__(self):
+        self.name = "respond"
+        self.regex = re.compile("^respond to (?:([0-9]+) )?([^ ]+) with ([^ ]+)$")
+
+    def parse(self, line, **kwargs):
+        data = self.get_data(line)
+        return Defrule(["players-unit-type-count any-enemy {} >= {}".format(data[1], 0 if data[0] is None else data[0]),
+                        "can-train {}".format(data[2])],
+                       ["train {}".format(data[2])])
+
+@rule
 class BuildMiningCamps(Rule):
     def __init__(self):
         self.name = "build mining camps"
@@ -184,7 +227,7 @@ class BuildMiningCamps(Rule):
 class EnableWalls(Rule):
     def __init__(self):
         self.name = "enable walls"
-        self.regex = re.compile("^enable walls with perimeter (1|2)$")
+        self.regex = re.compile("^enable walls (?:with|on) perimeter (1|2)$")
 
     def parse(self, line, **kwargs):
         return Defrule(["true"], ["enable-wall-placement " + self.get_data(line)[0], "disable-self"])
@@ -193,7 +236,7 @@ class EnableWalls(Rule):
 class BuildWalls(Rule):
     def __init__(self):
         self.name = "build walls"
-        self.regex = re.compile("^build (stone|palisade) (walls|gates) with perimeter (1|2)$")
+        self.regex = re.compile("^build (stone|palisade) (walls|gates) (?:with|on) perimeter (1|2)$")
         self.materials = {"stone":"stone-wall-line", "palisade":"palisade-wall"}
     
     def parse(self, line, **kwargs):
@@ -247,6 +290,18 @@ class Attack(Rule):
             return Defrule(["true"], ["attack-now"])
         else:
             return Defrule(["military-population >= {}".format(number)], ["attack-now"])
+
+@rule
+class Market(Rule):
+    def __init__(self):
+        self.name = "market"
+        self.regex = re.compile("^(buy|sell) ([^ ]+) when ([^ +]+) ([<>!=]+) ([0-9]+)$")
+
+    def parse(self, line, **kwargs):
+        action, commodity, conditional, comparison, amount = self.get_data(line)
+        return Defrule(["{}-amount {} {}".format(conditional, comparison, amount),
+                        "can-{}-commodity {}".format(action, commodity)],
+                       ["{}-commodity {}".format(action, commodity)])
 
 @rule
 class DistributeVillagers(Rule):
