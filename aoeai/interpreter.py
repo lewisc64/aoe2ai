@@ -30,6 +30,9 @@ def interpret(content):
                     defrules.append(output)
                     
                 elif isinstance(output, list):
+                    for defrule in output:
+                        defrule.conditions.extend(p_condition_stack)
+                        defrule.actions.extend(p_action_stack)
                     defrules.extend(output)
                 
                 break

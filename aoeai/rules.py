@@ -6,7 +6,6 @@ rules = []
 def rule(rule):
     global rules
     rules.append(rule())
-    print("loaded rule '{}'.".format(rules[-1].name))
 
 class Rule:
     def __init__(self):
@@ -55,7 +54,8 @@ rules.append(Snippet("set up micro",
                      ["set-difficulty-parameter ability-to-maintain-distance 0",
                       "set-difficulty-parameter ability-to-dodge-missiles 0",
                       "set-strategic-number sn-attack-intelligence 1",
-                      "set-strategic-number sn-livestock-to-town-center 1"]))
+                      "set-strategic-number sn-livestock-to-town-center 1",
+                      "set-strategic-number sn-enable-patrol-attack 1"]))
 rules.append(Snippet("build houses",
                      ["housing-headroom < 5", "population-headroom != 0", "up-pending-objects c: house == 0", "can-build house"],
                      ["build house"]))
