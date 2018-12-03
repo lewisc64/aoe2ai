@@ -3,13 +3,18 @@ from .defrule import Defrule
 
 def interpret(content):
     timers = []
+    goals = []
     condition_stack = []
     action_stack = []
+    data_stack = []
     defrules = []
+    defconsts = []
+
+    items = [line.strip() for line in content.split("\n")]
     
-    for i, line in enumerate(content.split("\n")):
+    for i, item in enumerate(items):
         
-        item = line.strip()
+        
         if item == "":
             continue
         
@@ -20,17 +25,22 @@ def interpret(content):
                 p_action_stack = action_stack[:]
                 
                 output = rule.parse(item, defrules=defrules,
+                                          defconsts=defconsts,
                                           condition_stack=condition_stack,
                                           action_stack=action_stack,
-                                          timers=timers)
+                                          data_stack=data_stack,
+                                          timers=timers,
+                                          goals=goals,
+                                          items=items,)
                 
                 if isinstance(output, Defrule):
-                    output.conditions.extend(p_condition_stack)
-                    output.actions.extend(p_action_stack)
+                    if not output.ignore_stacks:
+                        output.conditions.extend(p_condition_stack)
+                        output.actions.extend(p_action_stack)
                     defrules.append(output)
                     
                 elif isinstance(output, list):
-                    for defrule in output:
+                    for defrule in [x for x in output if not x.ignore_stacks]:
                         defrule.conditions.extend(p_condition_stack)
                         defrule.actions.extend(p_action_stack)
                     defrules.extend(output)
@@ -38,5 +48,7 @@ def interpret(content):
                 break
         else:
             print("WARNING: line {} did not match.".format(i + 1))
+
+        print(item, condition_stack)
     
-    return "\n".join([str(x) for x in defrules])
+    return "\n".join([str(x) for x in defconsts + defrules])

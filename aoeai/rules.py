@@ -65,6 +65,9 @@ rules.append(Snippet("build lumber camps",
 rules.append(Snippet("build mills",
                      ["dropsite-min-distance food > 3", "resource-found food", "up-pending-objects c: mill == 0", "can-build mill"],
                      ["build mill"]))
+rules.append(Snippet("target walls",
+                     ["true"],
+                     ["set-strategic-number sn-wall-targeting-mode 1"]))
 
 @rule
 class Comment(Rule):
@@ -123,11 +126,62 @@ class AddAction(Rule):
         else:
             kwargs["action_stack"].append(action)
 
+#@rule
+class If(Rule):
+    def __init__(self):
+        self.name = "if"
+        self.regex = re.compile("^(?:#if (.+)|#elseif (.+)|#else|#end if)$")
+    
+    def parse(self, line, **kwargs):
+        condition = self.get_data(line)[0]
+        if condition is None:
+            
+            text = kwargs["condition_stack"].pop()
+            
+            if line == "#else":
+                kwargs["condition_stack"].append("not ({})".format(text))
+                
+            elif line.startswith("#elseif"):
+                condition = self.get_data(line)[1]
+                kwargs["condition_stack"].append("and (not ({})) {}".format(text, condition))
+        else:
+            kwargs["condition_stack"].append(condition)
+
 @rule
 class If(Rule):
     def __init__(self):
         self.name = "if"
-        self.regex = re.compile("^(?:#if (.+)|#else|#end if)$")
+        self.regex = re.compile("^(?:#if (.+)|#else if (.+)|#else|#end if)$")
+    
+    def parse(self, line, **kwargs):
+        if line.startswith("#end"):
+            if not kwargs["condition_stack"][-1].startswith("goal"):
+                kwargs["condition_stack"].pop()
+            kwargs["condition_stack"].pop()
+            kwargs["data_stack"].pop()
+            return
+        
+        condition_if, condition_elseif = self.get_data(line)
+
+        if condition_if is None:
+            old_condition = kwargs["condition_stack"].pop()
+            if condition_elseif is not None:
+                kwargs["condition_stack"].append(condition_elseif)
+            return Defrule([old_condition], ["set-goal {} 0".format(kwargs["data_stack"][-1])], ignore_stacks=True)
+        
+        else:
+            goal = len(kwargs["goals"]) + 1
+            kwargs["goals"].append(goal)
+            kwargs["data_stack"].append(goal)
+            kwargs["condition_stack"].append("goal {} 1".format(goal))
+            kwargs["condition_stack"].append(condition_if)
+            return Defrule(["true"], ["set-goal {} 1".format(goal)])
+
+@rule
+class When(Rule):
+    def __init__(self):
+        self.name = "when"
+        self.regex = re.compile("^(?:#when|#then|#end when)$")
     
     def parse(self, line, **kwargs):
         condition = self.get_data(line)[0]
@@ -213,7 +267,7 @@ class Respond(Rule):
 class BuildMiningCamps(Rule):
     def __init__(self):
         self.name = "build mining camps"
-        self.regex = re.compile("^build ([a-z]+) mining camps$")
+        self.regex = re.compile("^build (gold|stone) mining camps$")
         
     def parse(self, line, **kwargs):
         resource = self.get_data(line)[0]
@@ -315,3 +369,24 @@ class DistributeVillagers(Rule):
                                   "set-strategic-number sn-food-gatherer-percentage {}".format(data[1]),
                                   "set-strategic-number sn-gold-gatherer-percentage {}".format(data[2]),
                                   "set-strategic-number sn-stone-gatherer-percentage {}".format(data[3])])
+
+@rule
+class SetGoal(Rule):
+    def __init__(self):
+        self.name = "set goal"
+        self.regex = re.compile("^([^ ]+) = (.+)$")
+        self.replacements = {"true":1, "false":0}
+
+    def parse(self, line, **kwargs):
+        name, value = self.get_data(line)
+        if value in self.replacements:
+            value = self.replacements[value]
+        for defconst in kwargs["defconsts"]:
+            if defconst.name == name:
+                break
+        else:
+            goal = len(kwargs["goals"]) + 1
+            kwargs["goals"].append(goal)
+            kwargs["defconsts"].append(Defconst(name, goal))
+        return Defrule(["true"], ["set-goal {} {}".format(name, value)])
+        
