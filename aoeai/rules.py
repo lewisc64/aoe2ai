@@ -184,13 +184,19 @@ class When(Rule):
         self.regex = re.compile("^(?:#when|#then|#end when)$")
     
     def parse(self, line, **kwargs):
-        condition = self.get_data(line)[0]
-        if condition is None:
-            text = kwargs["condition_stack"].pop(-1)
-            if line.startswith("#else"):
-                kwargs["condition_stack"].append("not ({})".format(text))
-        else:
-            kwargs["condition_stack"].append(condition)
+        if line.startswith("#when"):
+            goal = len(kwargs["goals"]) + 1
+            kwargs["goals"].append(goal)
+            kwargs["data_stack"].append(goal)
+            kwargs["action_stack"].append("set-goal {} 1".format(goal))
+            return Defrule(["true"], ["set-goal {} 0".format(goal)])
+        elif line.startswith("#then"):
+            goal = kwargs["data_stack"][-1]
+            kwargs["action_stack"].pop()
+            kwargs["condition_stack"].append("goal {} 1".format(goal))
+        elif line.startswith("#end"):
+            kwargs["data_stack"].pop()
+            kwargs["condition_stack"].pop()
 
 @rule
 class DoOnce(Rule):

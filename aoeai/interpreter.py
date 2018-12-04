@@ -47,6 +47,9 @@ def interpret(content):
                 
                 break
         else:
-            print("WARNING: line {} did not match.".format(i + 1))
+            print("WARNING: Line {} did not match.".format(i + 1))
+
+    if condition_stack or action_stack:
+        print("WARNING: Interpretation finished with populated stacks. Remember to end blocks.")
     
     return "\n".join([str(x) for x in defconsts + defrules])
