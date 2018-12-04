@@ -9,7 +9,9 @@ class Defrule:
         statement = "    ({})"
         out = []
         for item in items:
-            out.append(statement.format(item))
+            formatted_item = statement.format(item)
+            if formatted_item not in out:
+                out.append(formatted_item)
         if len(out) > 1:
             if statement.format("true") in out:
                 out.remove(statement.format("true"))

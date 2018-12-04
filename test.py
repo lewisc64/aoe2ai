@@ -2,14 +2,16 @@ import aoeai
 
 print(aoeai.interpret("""
 
-research-archery-tech = 0
+const wobble = 1
+
+goal research-archery-tech = 0
 
 #respond to archer-line
 
-    build 1 archery-range
+    build wobble archery-range
     train skirmisher-line
 
-    research-archery-tech = 1
+    goal research-archery-tech = 1
 
 #end respond
 

@@ -82,7 +82,7 @@ class Comment(Rule):
 class Cheat(Rule):
     def __init__(self):
         self.name = "cheat"
-        self.regex = re.compile("^cheat ([0-9]+) ([^ ]+)$")
+        self.regex = re.compile("^cheat ([^ ]+) ([^ ]+)$")
 
     def parse(self, line, **kwargs):
         amount, resource = self.get_data(line)
@@ -208,7 +208,7 @@ class DoOnce(Rule):
 class Delay(Rule):
     def __init__(self):
         self.name = "delay"
-        self.regex = re.compile("^(?:#delay by ([0-9]+) seconds|#end delay)$")
+        self.regex = re.compile("^(?:#delay by ([^ ]+) seconds|#end delay)$")
     
     def parse(self, line, **kwargs):
         if "end" in line:
@@ -224,7 +224,7 @@ class Delay(Rule):
 class Repeat(Rule):
     def __init__(self):
         self.name = "repeat"
-        self.regex = re.compile("^(?:#repeat every ([0-9]+) seconds?|#end repeat)$")
+        self.regex = re.compile("^(?:#repeat every ([^ ]+) seconds?|#end repeat)$")
     
     def parse(self, line, **kwargs):
         if "end" in line:
@@ -255,7 +255,7 @@ class Train(Rule):
 class Respond(Rule):
     def __init__(self):
         self.name = "respond"
-        self.regex = re.compile("^respond to (?:([0-9]+) )?([^ ]+)(?: (building|unit))? with (?:([0-9]+) )?([^ ]+)(?: (building|unit))?$")
+        self.regex = re.compile("^respond to (?:([^ ]+) )?([^ ]+)(?: (building|unit))? with (?:([^ ]+) )?([^ ]+)(?: (building|unit))?$")
 
     def parse(self, line, **kwargs):
         detect_amount, detect_name, detect_type, create_amount, create_name, create_type = self.get_data(line)
@@ -281,7 +281,7 @@ class Respond(Rule):
 class BlockRespond(Rule):
     def __init__(self):
         self.name = "block respond"
-        self.regex = re.compile("^(?:#respond to (?:([0-9]+) )?([^ ]+)(?: (building|unit))?|#end respon(?:d|se))$")
+        self.regex = re.compile("^(?:#respond to (?:([^ ]+) )?([^ ]+)(?: (building|unit))?|#end respon(?:d|se))$")
     
     def parse(self, line, **kwargs):
         if line.startswith("#end"):
@@ -295,7 +295,6 @@ class BlockRespond(Rule):
                 detect_type = "unit"
             
             kwargs["condition_stack"].append("players-{}-type-count any-enemy {} >= {}".format(detect_type, name, amount))
-        
 
 @rule
 class BuildMiningCamps(Rule):
@@ -343,7 +342,7 @@ class BuildWalls(Rule):
 class Build(Rule):
     def __init__(self):
         self.name = "build"
-        self.regex = re.compile("^build (forward )?(?:([0-9]+) )?([^ ]+)$")
+        self.regex = re.compile("^build (forward )?(?:([^ ]+) )?([^ ]+)$")
 
     def parse(self, line, **kwargs):
         forward, amount, building = self.get_data(line)
@@ -370,7 +369,7 @@ class Research(Rule):
 class Attack(Rule):
     def __init__(self):
         self.name = "attack"
-        self.regex = re.compile("^attack(?: with ([0-9]+) units)?$")
+        self.regex = re.compile("^attack(?: with ([^ ]+) units)?$")
     
     def parse(self, line, **kwargs):
         number = self.get_data(line)[0]
@@ -383,7 +382,7 @@ class Attack(Rule):
 class Market(Rule):
     def __init__(self):
         self.name = "market"
-        self.regex = re.compile("^(buy|sell) ([^ ]+) when ([^ +]+) ([<>!=]+) ([0-9]+)$")
+        self.regex = re.compile("^(buy|sell) ([^ ]+) when ([^ +]+) ([<>!=]+) ([^ ]+)$")
 
     def parse(self, line, **kwargs):
         action, commodity, conditional, comparison, amount = self.get_data(line)
@@ -408,13 +407,10 @@ class DistributeVillagers(Rule):
 class SetGoal(Rule):
     def __init__(self):
         self.name = "set goal"
-        self.regex = re.compile("^([^ ]+) = (.+)$")
-        self.replacements = {"true":1, "false":0}
+        self.regex = re.compile("^goal ([^ ]+) = (.+)$")
 
     def parse(self, line, **kwargs):
         name, value = self.get_data(line)
-        if value in self.replacements:
-            value = self.replacements[value]
         for defconst in kwargs["defconsts"]:
             if defconst.name == name:
                 break
@@ -423,4 +419,17 @@ class SetGoal(Rule):
             kwargs["goals"].append(goal)
             kwargs["defconsts"].append(Defconst(name, goal))
         return Defrule(["true"], ["set-goal {} {}".format(name, value)])
+
+@rule
+class SetConst(Rule):
+    def __init__(self):
+        self.name = "set const"
+        self.regex = re.compile("^const ([^ ]+) = (.+)$")
+
+    def parse(self, line, **kwargs):
+        name, value = self.get_data(line)
+        kwargs["defconsts"].append(Defconst(name, value))
+        if kwargs["condition_stack"] or kwargs["action_stack"]:
+            print("WARNING: Consts can only be set at the top of the script. This is where they will appear.")
+
         
