@@ -48,7 +48,5 @@ def interpret(content):
                 break
         else:
             print("WARNING: line {} did not match.".format(i + 1))
-
-        print(item, condition_stack)
     
     return "\n".join([str(x) for x in defconsts + defrules])

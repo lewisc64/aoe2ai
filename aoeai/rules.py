@@ -255,13 +255,47 @@ class Train(Rule):
 class Respond(Rule):
     def __init__(self):
         self.name = "respond"
-        self.regex = re.compile("^respond to (?:([0-9]+) )?([^ ]+) with ([^ ]+)$")
+        self.regex = re.compile("^respond to (?:([0-9]+) )?([^ ]+)(?: (building|unit))? with (?:([0-9]+) )?([^ ]+)(?: (building|unit))?$")
 
     def parse(self, line, **kwargs):
-        data = self.get_data(line)
-        return Defrule(["players-unit-type-count any-enemy {} >= {}".format(data[1], 0 if data[0] is None else data[0]),
-                        "can-train {}".format(data[2])],
-                       ["train {}".format(data[2])])
+        detect_amount, detect_name, detect_type, create_amount, create_name, create_type = self.get_data(line)
+
+        if detect_amount is None:
+            detect_amount = 1
+        if detect_type is None:
+            detect_type = "unit"
+        if create_type is None:
+            create_type = "unit"
+        action = "train" if create_type == "unit" else "build"
+
+        conditions = []
+
+        conditions.append("players-{}-type-count any-enemy {} >= {}".format(detect_type, detect_name, detect_amount))
+        if create_amount is not None:
+            conditions.append("{}-type-count-total {} < {}".format(create_type, create_name, create_amount))
+        conditions.append("can-{} {}".format(action, create_name))
+        
+        return Defrule(conditions, ["{} {}".format(action, create_name)])
+
+@rule
+class BlockRespond(Rule):
+    def __init__(self):
+        self.name = "block respond"
+        self.regex = re.compile("^(?:#respond to (?:([0-9]+) )?([^ ]+)(?: (building|unit))?|#end respon(?:d|se))$")
+    
+    def parse(self, line, **kwargs):
+        if line.startswith("#end"):
+            kwargs["condition_stack"].pop()
+        else:
+            amount, name, detect_type = self.get_data(line)
+
+            if amount is None:
+                amount = 1
+            if detect_type is None:
+                detect_type = "unit"
+            
+            kwargs["condition_stack"].append("players-{}-type-count any-enemy {} >= {}".format(detect_type, name, amount))
+        
 
 @rule
 class BuildMiningCamps(Rule):
