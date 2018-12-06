@@ -146,7 +146,8 @@ class If(Rule):
             old_condition = kwargs["condition_stack"].pop()
             if condition_elseif is not None:
                 kwargs["condition_stack"].append(condition_elseif)
-            return Defrule([old_condition], ["set-goal {} 0".format(kwargs["data_stack"][-1])], ignore_stacks=True)
+                goal = kwargs["data_stack"][-1]
+            return Defrule(["goal {} 1".format(goal), old_condition], ["set-goal {} 0".format(goal)], ignore_stacks=True)
         
         else:
             goal = len(kwargs["goals"]) + 1
