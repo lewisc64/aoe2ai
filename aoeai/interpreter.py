@@ -49,6 +49,11 @@ def interpret(content):
         else:
             print("WARNING: Line {} did not match.".format(i + 1))
 
+        print(item)
+        print(condition_stack, action_stack, data_stack)
+
+    
+    
     if condition_stack or action_stack or data_stack:
         print("WARNING: Interpretation finished with populated stacks. Remember to end blocks.")
     

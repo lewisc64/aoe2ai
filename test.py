@@ -2,14 +2,28 @@ import aoeai
 
 print(aoeai.interpret("""
 
-#when
+goal militant = 0
+#add condition town-under-attack
+    goal militant = 1
+#remove condition
 
-    build barracks
+#if goal militant 1
 
-#then
+    #when
+        build 1 barracks
+    #then
+        chat to all "I built a barracks. Aren't I cool?"
+    #end when
 
-    chat to all "I built a barracks. Aren't I cool?"
+    train militiaman-line
 
-#end when
+#else if goal militant 0
+
+    build 1 market
+    buy food when food < 100
+
+#end if
+
+chat to all \"I'm a cool bean!\"
 
 """))

@@ -126,27 +126,6 @@ class AddAction(Rule):
         else:
             kwargs["action_stack"].append(action)
 
-#@rule
-class If(Rule):
-    def __init__(self):
-        self.name = "if"
-        self.regex = re.compile("^(?:#if (.+)|#elseif (.+)|#else|#end if)$")
-    
-    def parse(self, line, **kwargs):
-        condition = self.get_data(line)[0]
-        if condition is None:
-            
-            text = kwargs["condition_stack"].pop()
-            
-            if line == "#else":
-                kwargs["condition_stack"].append("not ({})".format(text))
-                
-            elif line.startswith("#elseif"):
-                condition = self.get_data(line)[1]
-                kwargs["condition_stack"].append("and (not ({})) {}".format(text, condition))
-        else:
-            kwargs["condition_stack"].append(condition)
-
 @rule
 class If(Rule):
     def __init__(self):
@@ -155,10 +134,10 @@ class If(Rule):
     
     def parse(self, line, **kwargs):
         if line.startswith("#end"):
-            if not kwargs["condition_stack"][-1].startswith("goal"):
+            goal = kwargs["data_stack"].pop()
+            if kwargs["condition_stack"][-1] != "goal {} 1".format(goal):
                 kwargs["condition_stack"].pop()
             kwargs["condition_stack"].pop()
-            kwargs["data_stack"].pop()
             return
         
         condition_if, condition_elseif = self.get_data(line)
