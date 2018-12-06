@@ -2,12 +2,11 @@ import aoeai
 
 print(aoeai.interpret("""
 
-#if game-time < 50
-    chat to all \"yo\"
-#else if game-time < 100
-    chat to all \"yoyo\"
-#else if game-time < 150
-    chat to all \"yoyoyo\"
+#if current-age > dark-age and current-age < imperial_age
+
+    build 1 barracks
+    train militia
+    
 #end if
 
 """))

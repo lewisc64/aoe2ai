@@ -55,7 +55,8 @@ rules.append(Snippet("set up micro",
                       "set-difficulty-parameter ability-to-dodge-missiles 0",
                       "set-strategic-number sn-attack-intelligence 1",
                       "set-strategic-number sn-livestock-to-town-center 1",
-                      "set-strategic-number sn-enable-patrol-attack 1"]))
+                      "set-strategic-number sn-enable-patrol-attack 1",
+                      "set-strategic-number sn-intelligent-gathering 1"]))
 rules.append(Snippet("build houses",
                      ["housing-headroom < 5", "population-headroom != 0", "up-pending-objects c: house == 0", "can-build house"],
                      ["build house"]))
@@ -146,7 +147,7 @@ class If(Rule):
             old_condition = kwargs["condition_stack"].pop()
             goal = kwargs["data_stack"][-1]
             if condition_elseif is not None:
-                kwargs["condition_stack"].append(condition_elseif)
+                kwargs["condition_stack"].append(parse_condition(condition_elseif))
             return Defrule(["goal {} 1".format(goal), old_condition], ["set-goal {} 0".format(goal)], ignore_stacks=True)
         
         else:
@@ -154,7 +155,7 @@ class If(Rule):
             kwargs["goals"].append(goal)
             kwargs["data_stack"].append(goal)
             kwargs["condition_stack"].append("goal {} 1".format(goal))
-            kwargs["condition_stack"].append(condition_if)
+            kwargs["condition_stack"].append(parse_condition(condition_if))
             return Defrule(["true"], ["set-goal {} 1".format(goal)])
 
 @rule
@@ -397,13 +398,11 @@ class SetGoal(Rule):
 
     def parse(self, line, **kwargs):
         name, value = self.get_data(line)
-        for defconst in kwargs["defconsts"]:
-            if defconst.name == name:
-                break
-        else:
+        if name not in kwargs["constants"]:
             goal = len(kwargs["goals"]) + 1
             kwargs["goals"].append(goal)
-            kwargs["defconsts"].append(Defconst(name, goal))
+            kwargs["definitions"].insert(0, Defconst(name, goal))
+            kwargs["constants"].append(name)
         return Defrule(["true"], ["set-goal {} {}".format(name, value)])
 
 @rule
@@ -414,8 +413,12 @@ class SetConst(Rule):
 
     def parse(self, line, **kwargs):
         name, value = self.get_data(line)
-        kwargs["defconsts"].append(Defconst(name, value))
+        if name in kwargs["constants"]:
+            print("WARNING: Do not declare a constant with the same name more than once. Ignored.")
+            return
+        kwargs["constants"].append(name)
+        kwargs["definitions"].insert(0, Defconst(name, value))
         if kwargs["condition_stack"] or kwargs["action_stack"]:
-            print("WARNING: Consts can only be set at the top of the script. This is where they will appear.")
+            print("WARNING: Consts should only be set at the top of the script. This is where they will appear.")
 
         

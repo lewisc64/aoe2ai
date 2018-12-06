@@ -32,11 +32,20 @@ class Defconst:
     def __str__(self):
         return self.format.format(self.name, self.value)
 
-class Binary:
-    def __init__(self, word, *conditions):
-        self.format = "(" + word + " {} {})"
-        self.conditions = conditions
+def parse_condition(condition):
+    if " or " in condition:
+        sections = condition.split(" or ", 1)
+        operator = "or"
+    elif " and " in condition:
+        sections = condition.split(" and ", 1)
+        operator = "and"
+    else:
+        return condition
+    print(sections)
+    return "{} ({}) ({})".format(operator, parse_condition(sections[0]), parse_condition(sections[1]))
     
-    def __str__(self):
-        return self.format.format(*self.conditions)
     
+    
+
+if __name__ == "__main__":
+    print(parse_condition("(current-age < castle-age and current-age > dark-age)"))
