@@ -11,11 +11,14 @@ def interpret(content):
     definitions = []
 
     items = [line.strip() for line in content.split("\n")]
-    
-    for i, item in enumerate(items):
-        
+
+    i = 0
+    while i < len(items):
+
+        item = items[i]
         
         if item == "":
+            i += 1
             continue
         
         for rule in rules:
@@ -31,7 +34,8 @@ def interpret(content):
                                           timers=timers,
                                           goals=goals,
                                           constants=constants,
-                                          items=items,)
+                                          items=items,
+                                          current_position=i)
                 
                 if isinstance(output, Defrule):
                     if not output.ignore_stacks:
@@ -48,6 +52,8 @@ def interpret(content):
                 break
         else:
             print("WARNING: Line {} did not match.".format(i + 1))
+        
+        i += 1
     
     if condition_stack or action_stack or data_stack:
         print("WARNING: Interpretation finished with populated stacks. Remember to end blocks.")

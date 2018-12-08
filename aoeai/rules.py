@@ -80,6 +80,20 @@ class Comment(Rule):
         return None
 
 @rule
+class Load(Rule):
+    def __init__(self):
+        self.name = "load"
+        self.regex = re.compile("^load \"([^\"]+)\"$")
+    
+    def parse(self, line, **kwargs):
+        path = self.get_data(line)[0]
+        file = open(path, "r")
+        items = [line.strip() for line in file.read().split("\n")]
+        file.close()
+        i = kwargs["current_position"]
+        for item in items[::-1]:
+            kwargs["items"].insert(i+1, item)
+@rule
 class Cheat(Rule):
     def __init__(self):
         self.name = "cheat"
@@ -162,7 +176,7 @@ class If(Rule):
 class When(Rule):
     def __init__(self):
         self.name = "when"
-        self.regex = re.compile("^(?:#when|#then|#end when)$")
+        self.regex = re.compile("^(?:#when( once)?|#then|#end when)$")
     
     def parse(self, line, **kwargs):
         if line.startswith("#when"):
@@ -170,7 +184,10 @@ class When(Rule):
             kwargs["goals"].append(goal)
             kwargs["data_stack"].append(goal)
             kwargs["action_stack"].append("set-goal {} 1".format(goal))
-            return Defrule(["true"], ["set-goal {} 0".format(goal)])
+            actions = ["set-goal {} 0".format(goal)]
+            if self.get_data(line)[0] is not None:
+                actions.append("disable-self")
+            return Defrule(["true"], actions)
         elif line.startswith("#then"):
             goal = kwargs["data_stack"][-1]
             kwargs["action_stack"].pop()
