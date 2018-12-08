@@ -41,7 +41,6 @@ def parse_condition(condition):
         operator = "and"
     else:
         return condition
-    print(sections)
     return "{} ({}) ({})".format(operator, parse_condition(sections[0]), parse_condition(sections[1]))
     
     

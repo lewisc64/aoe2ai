@@ -2,6 +2,12 @@ import aoeai
 
 print(aoeai.interpret("""
 
-load \"test.aoe2ai\"
+#do once
+
+    chat to all "hello there"
+    take boar
+    train skirmisher
+
+#end do
 
 """))

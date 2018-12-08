@@ -1,6 +1,25 @@
 from .rules import rules
 from .defrule import Defrule
 
+def compact_rules(rules):
+    i = 0
+    while i < len(rules) - 1:
+        rule1, rule2 = rules[i:i+2]
+        if isinstance(rule1, Defrule) and isinstance(rule2, Defrule):
+            for condition1, condition2 in zip(sorted(rule1.conditions), sorted(rule2.conditions)):
+                if condition1 != condition2:
+                    i += 1
+                    break
+            else:
+                if "disable-self" not in rule1.actions and "disable-self" not in rule2.actions or "disable-self" in rule1.actions and "disable-self" in rule2.actions:
+                    rules[i].actions.extend(rules[i+1].actions)
+                    rules.pop(i+1)
+                else:
+                    i += 1
+        else:
+            i += 1
+    return rules
+
 def interpret(content):
     timers = []
     goals = []
@@ -58,4 +77,4 @@ def interpret(content):
     if condition_stack or action_stack or data_stack:
         print("WARNING: Interpretation finished with populated stacks. Remember to end blocks.")
     
-    return "\n".join([str(x) for x in definitions])
+    return "\n".join([str(x) for x in compact_rules(definitions)])

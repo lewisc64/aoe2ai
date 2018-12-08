@@ -56,7 +56,8 @@ rules.append(Snippet("set up micro",
                       "set-strategic-number sn-attack-intelligence 1",
                       "set-strategic-number sn-livestock-to-town-center 1",
                       "set-strategic-number sn-enable-patrol-attack 1",
-                      "set-strategic-number sn-intelligent-gathering 1"]))
+                      "set-strategic-number sn-intelligent-gathering 1",
+                      "set-strategic-number sn-task-ungrouped-soldiers 0"]))
 rules.append(Snippet("build houses",
                      ["housing-headroom < 5", "population-headroom != 0", "up-pending-objects c: house == 0", "can-build house"],
                      ["build house"]))
@@ -69,6 +70,12 @@ rules.append(Snippet("build mills",
 rules.append(Snippet("target walls",
                      ["true"],
                      ["set-strategic-number sn-wall-targeting-mode 1"]))
+rules.append(Snippet("retreat",
+                     ["true"],
+                     ["up-retreat-now"]))
+rules.append(Snippet("resign",
+                     ["true"],
+                     ["resign"]))
 
 @rule
 class Comment(Rule):
@@ -126,7 +133,7 @@ class AddCondition(Rule):
         if condition is None:
             kwargs["condition_stack"].pop(-1)
         else:
-            kwargs["condition_stack"].append(condition)
+            kwargs["condition_stack"].append(parse_condition(condition))
 
 @rule
 class AddAction(Rule):
@@ -238,7 +245,7 @@ class Repeat(Rule):
             timer_number = len(kwargs["timers"]) + 1
             kwargs["timers"].append(timer_number)
             kwargs["condition_stack"].append("timer-triggered {}".format(timer_number))
-            return [Defrule(["timer-triggered {}".format(timer_number)], ["disable-timer {}".format(timer_number), "enable-timer {} {}".format(timer_number, amount), "disable-self"]),
+            return [Defrule(["timer-triggered {}".format(timer_number)], ["disable-timer {}".format(timer_number), "enable-timer {} {}".format(timer_number, amount)]),
                     Defrule(["true"], ["enable-timer {} {}".format(timer_number, amount), "disable-self"])]
 
 @rule
@@ -259,7 +266,7 @@ class Train(Rule):
 class Respond(Rule):
     def __init__(self):
         self.name = "respond"
-        self.regex = re.compile("^respond to (?:([^ ]+) )?([^ ]+)(?: (building|unit))? with (?:([^ ]+) )?([^ ]+)(?: (building|unit))?$")
+        self.regex = re.compile("^respond to (?:([^ ]{1,3}) )?([^ ]+)(?: (building|unit))? with (?:([^ ]+) )?([^ ]+)(?: (building|unit))?$")
 
     def parse(self, line, **kwargs):
         detect_amount, detect_name, detect_type, create_amount, create_name, create_type = self.get_data(line)
@@ -285,7 +292,7 @@ class Respond(Rule):
 class BlockRespond(Rule):
     def __init__(self):
         self.name = "block respond"
-        self.regex = re.compile("^(?:#respond to (?:([^ ]+) )?([^ ]+)(?: (building|unit))?|#end respon(?:d|se))$")
+        self.regex = re.compile("^(?:#respond to (?:([^ ]{1,3}) )?([^ ]+)(?: (building|unit))?|#end respon(?:d|se))$")
     
     def parse(self, line, **kwargs):
         if line.startswith("#end"):
@@ -438,4 +445,12 @@ class SetConst(Rule):
         if kwargs["condition_stack"] or kwargs["action_stack"]:
             print("WARNING: Consts should only be set at the top of the script. This is where they will appear.")
 
-        
+@rule
+class SendScout(Rule):
+    def __init__(self):
+        self.name = "scout"
+        self.regex = re.compile("^scout (.+)$")
+
+    def parse(self, line, **kwargs):
+        direction = self.get_data(line)[0]
+        return Defrule(["true"], ["up-send-scout group-type-land-explore scout-{}".format(direction)])
