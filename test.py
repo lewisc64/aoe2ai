@@ -2,12 +2,8 @@ import aoeai
 
 print(aoeai.interpret("""
 
-#do once
-
-    chat to all "hello there"
-    take boar
-    train skirmisher
-
-#end do
+#add condition players-current-age any-enemy > dark-age
+	sn-maximum-hunt-drop-distance = 15
+#remove condition
 
 """))

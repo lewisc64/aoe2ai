@@ -11,8 +11,8 @@ def compact_rules(rules):
                     i += 1
                     break
             else:
-                if "disable-self" not in rule1.actions and "disable-self" not in rule2.actions or "disable-self" in rule1.actions and "disable-self" in rule2.actions:
-                    rules[i].actions.extend(rules[i+1].actions)
+                if len(rule1.actions) + len(rule2.actions) < 32 and ("disable-self" not in rule1.actions and "disable-self" not in rule2.actions or "disable-self" in rule1.actions and "disable-self" in rule2.actions):
+                    rule1.actions.extend(rule2.actions)
                     rules.pop(i+1)
                 else:
                     i += 1
