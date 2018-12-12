@@ -71,6 +71,8 @@ def interpret(content):
                 break
         else:
             print("WARNING: Line {} did not match.".format(i + 1))
+
+        #print(item, condition_stack, action_stack, data_stack)
         
         i += 1
     

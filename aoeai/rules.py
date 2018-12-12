@@ -29,7 +29,7 @@ class Snippet(Rule):
         self.actions = actions
     
     def parse(self, line, **kwargs):
-        return Defrule(self.conditions, self.actions)
+        return Defrule(self.conditions[:], self.actions[:])
 
 rules.append(Snippet("rule",
                      ["true"],
@@ -59,10 +59,8 @@ rules.append(Snippet("set up micro",
                       "set-strategic-number sn-livestock-to-town-center 1",
                       "set-strategic-number sn-enable-patrol-attack 1",
                       "set-strategic-number sn-intelligent-gathering 1",
-                      "set-strategic-number sn-local-targeting-mode 1"]))
-rules.append(Snippet("build houses",
-                     ["housing-headroom < 5", "population-headroom != 0", "up-pending-objects c: house == 0", "can-build house"],
-                     ["build house"]))
+                      "set-strategic-number sn-local-targeting-mode 1",
+                      "set-strategic-number sn-percent-enemy-sighted-response 100"]))
 rules.append(Snippet("build lumber camps",
                      ["dropsite-min-distance wood > 2", "resource-found wood", "up-pending-objects c: lumber-camp == 0", "can-build lumber-camp"],
                      ["build lumber-camp"]))
@@ -186,7 +184,7 @@ class If(Rule):
             kwargs["data_stack"].append(goal)
             kwargs["condition_stack"].append("goal {} 1".format(goal))
             kwargs["condition_stack"].append(parse_condition(condition_if))
-            return Defrule(["true"], ["set-goal {} 1".format(goal)])
+            return Defrule(["true"], ["set-goal {} 1".format(goal)], ignore_stacks=True)
 
 @rule
 class When(Rule):
@@ -248,14 +246,18 @@ class Repeat(Rule):
     
     def parse(self, line, **kwargs):
         if "end" in line:
-            kwargs["condition_stack"].pop(-1)
+            timer_number = kwargs["data_stack"].pop()
+            amount = kwargs["data_stack"].pop()
+            kwargs["condition_stack"].pop()
+            return Defrule(["timer-triggered {}".format(timer_number)], ["disable-timer {}".format(timer_number), "enable-timer {} {}".format(timer_number, amount)])
         else:
             amount = self.get_data(line)[0]
             timer_number = len(kwargs["timers"]) + 1
+            kwargs["data_stack"].append(amount)
+            kwargs["data_stack"].append(timer_number)
             kwargs["timers"].append(timer_number)
             kwargs["condition_stack"].append("timer-triggered {}".format(timer_number))
-            return [Defrule(["timer-triggered {}".format(timer_number)], ["disable-timer {}".format(timer_number), "enable-timer {} {}".format(timer_number, amount)]),
-                    Defrule(["true"], ["enable-timer {} {}".format(timer_number, amount), "disable-self"])]
+            return Defrule(["true"], ["enable-timer {} {}".format(timer_number, amount), "disable-self"])
 
 @rule
 class Train(Rule):
@@ -339,6 +341,25 @@ class BuildMiningCamps(Rule):
                         "up-pending-objects c: mining-camp == 0",
                         "can-build mining-camp"],
                        ["build mining-camp"])
+
+
+@rule
+class BuildHouses(Rule):
+    def __init__(self):
+        self.name = "build houses"
+        self.regex = re.compile("^build houses(?: with ([^ ]+) headroom)?$")
+
+    def parse(self, line, **kwargs):
+        headroom = self.get_data(line)[0]
+        
+        conditions = ["population-headroom != 0", "up-pending-objects c: house == 0", "can-build house"]
+        actions = ["build house"]
+        
+        if headroom is None:
+            headroom = 5
+
+        conditions.append("housing-headroom < {}".format(headroom))
+        return Defrule(conditions, actions)
 
 @rule
 class EnableWalls(Rule):
@@ -477,29 +498,39 @@ class DistributeVillagersTo(Rule):
             actions.append("up-modify-sn sn-{}-gatherer-percentage c:+ {}".format(resource, amount // len(destinations)))
 
         return Defrule(conditions, actions)
-        
 
+@rule
+class AssignBuilders(Rule):
+    def __init__(self):
+        self.name = "assign builders"
+        self.regex = re.compile("^assign ([^ ]+) builders to ([^ ]+)$")
+
+    def parse(self, line, **kwargs):
+        amount, building = self.get_data(line)
+        return Defrule(["true"], ["up-assign-builders c: {} c: {}".format(building, amount)])
 
 @rule
 class SetGoal(Rule):
     def __init__(self):
         self.name = "set goal"
-        self.regex = re.compile("^goal ([^ ]+) = (.+)$")
+        self.regex = re.compile("^goal ([^ ]+) ?(\+|\-|\*|\/)?= ?(.+)$")
 
     def parse(self, line, **kwargs):
-        name, value = self.get_data(line)
-        if name not in kwargs["constants"]:
-            goal = len(kwargs["goals"]) + 1
-            kwargs["goals"].append(goal)
-            kwargs["definitions"].insert(0, Defconst(name, goal))
-            kwargs["constants"].append(name)
-        return Defrule(["true"], ["set-goal {} {}".format(name, value)])
+        name, operator, value = self.get_data(line)
+        if operator is None:
+            if name not in kwargs["constants"]:
+                goal = len(kwargs["goals"]) + 1
+                kwargs["goals"].append(goal)
+                kwargs["definitions"].insert(0, Defconst(name, goal))
+                kwargs["constants"].append(name)
+            return Defrule(["true"], ["set-goal {} {}".format(name, value)])
+        return Defrule(["true"], ["up-modify-goal {} c:{} {}".format(name, operator, value)])
 
 @rule
 class SetConst(Rule):
     def __init__(self):
         self.name = "set const"
-        self.regex = re.compile("^const ([^ ]+) = (.+)$")
+        self.regex = re.compile("^const ([^ ]+) ?= ?(.+)$")
 
     def parse(self, line, **kwargs):
         name, value = self.get_data(line)
@@ -515,13 +546,13 @@ class SetConst(Rule):
 class SetStrategicNumber(Rule):
     def __init__(self):
         self.name = "set strategic number"
-        self.regex = re.compile("^(sn-[^ ]+) (\+|-)?= (.+)$")
+        self.regex = re.compile("^(sn-[^ ]+) ?(\+|\-|\*|\/)?= ?(.+)$")
 
     def parse(self, line, **kwargs):
-        name, operation, value = self.get_data(line)
-        if operation is None:
+        name, operator, value = self.get_data(line)
+        if operator is None:
             return Defrule(["true"], ["set-strategic-number {} {}".format(name, value)])
-        return Defrule(["true"], ["up-modify-sn {} c:{} {}".format(name, operation, value)])
+        return Defrule(["true"], ["up-modify-sn {} c:{} {}".format(name, operator, value)])
 
 @rule
 class SendScout(Rule):
@@ -554,3 +585,4 @@ class SetEscrow(Rule):
     def parse(self, line, **kwargs):
         amount, resource = self.get_data(line)
         return Defrule(["true"], ["set-escrow-percentage {} {}".format(resource, amount)])
+
