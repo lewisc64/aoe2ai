@@ -7,8 +7,10 @@ file = open(input_path, "r")
 content = file.read()
 file.close()
 
+per = aoeai.interpret(content)
+
 file = open(output_path + "/" + name + ".per", "w")
-file.write(aoeai.interpret(content))
+file.write(per)
 print("Saved to '{}'.".format(file.name))
 file.close()
 

@@ -586,3 +586,13 @@ class SetEscrow(Rule):
         amount, resource = self.get_data(line)
         return Defrule(["true"], ["set-escrow-percentage {} {}".format(resource, amount)])
 
+@rule
+class Delete(Rule):
+    def __init__(self):
+        self.name = "delete"
+        self.regex = re.compile("^delete (unit|building) (.+)$")
+
+    def parse(self, line, **kwargs):
+        form, name = self.get_data(line)
+        return Defrule(["true"], ["delete-{} {}".format(form, name)])
+
