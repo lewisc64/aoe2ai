@@ -42,6 +42,12 @@ rules.append(Snippet("take boar",
                       "set-strategic-number sn-minimum-number-hunters 3",
                       "set-strategic-number sn-minimum-boar-lure-group-size 3",
                       "set-strategic-number sn-minimum-boar-hunt-group-size 3"]))
+rules.append(Snippet("take boar and deer",
+                     ["true"],
+                     ["set-strategic-number sn-enable-boar-hunting 1",
+                      "set-strategic-number sn-minimum-number-hunters 3",
+                      "set-strategic-number sn-minimum-boar-lure-group-size 3",
+                      "set-strategic-number sn-minimum-boar-hunt-group-size 3"]))
 rules.append(Snippet("set up new building system",
                      ["true"],
                      ["set-strategic-number sn-enable-new-building-system 1",
@@ -107,30 +113,35 @@ class Load(Rule):
         content = file.read()
         file.close()
               
-        output = interpreter.interpret(content)
-
-        if not kwargs["condition_stack"]:
-            return output
+        output = interpreter.interpret(content, timers=kwargs["timers"], goals=kwargs["goals"], constants=kwargs["constants"])
 
         rules = []
 
         for rule in output:
             if isinstance(rule, Defconst):
                 kwargs["definitions"].insert(0, rule)
-                kwargs["consts"].append(rule.name)
+                kwargs["constants"].append(rule.name)
             elif isinstance(rule, Defrule):
-                rule.compressable = False
-                rule.ignore_stacks = True
                 rules.append(rule)
+
+        if not kwargs["condition_stack"]:
+            return rules
+
+        for rule in rules:
+            rule.compressable = False
+            rule.ignore_stacks = True
 
         goal = len(kwargs["goals"]) + 1
         kwargs["goals"].append(goal)
 
         jump_amount = len(rules)
 
-        rules.insert(0, Defrule(["true"], ["set-goal {} {}".format(goal, 1)], ignore_stacks=True))
-        rules.insert(1, Defrule(["true"], ["set-goal {} {}".format(goal, 0)]))
-        rules.insert(2, Defrule(["goal {} {}".format(goal, 1)], ["up-jump-rule {}".format(jump_amount)], ignore_stacks=True))
+        if len(kwargs["condition_stack"]) == 1:
+            rules.insert(0, Defrule(["not({})".format(kwargs["condition_stack"][0])], ["up-jump-rule {}".format(jump_amount)], ignore_stacks=True))
+        else:
+            rules.insert(0, Defrule(["true"], ["set-goal {} {}".format(goal, 1)], ignore_stacks=True))
+            rules.insert(1, Defrule(["true"], ["set-goal {} {}".format(goal, 0)]))
+            rules.insert(2, Defrule(["goal {} {}".format(goal, 1)], ["up-jump-rule {}".format(jump_amount)], ignore_stacks=True))
         return rules
         
         

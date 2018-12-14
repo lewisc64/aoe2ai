@@ -11,7 +11,7 @@ def compact_rules(rules):
                     i += 1
                     break
             else:
-                if len(rule1.actions) + len(rule2.actions) < 32 and ("disable-self" not in rule1.actions and "disable-self" not in rule2.actions or "disable-self" in rule1.actions and "disable-self" in rule2.actions):
+                if len(rule1.actions) + len(rule2.actions) <= 32 and ("disable-self" not in rule1.actions and "disable-self" not in rule2.actions or "disable-self" in rule1.actions and "disable-self" in rule2.actions):
                     rule1.actions.extend(rule2.actions)
                     rules.pop(i+1)
                 else:
@@ -21,10 +21,13 @@ def compact_rules(rules):
             i += 1
     return rules
 
-def interpret(content):
-    timers = []
-    goals = []
-    constants = []
+def interpret(content, timers=None, goals=None, constants=None):
+    if timers is None:
+        timers = []
+    if goals is None:
+        goals = []
+    if constants is None:
+        constants = []
     condition_stack = []
     action_stack = []
     data_stack = []
