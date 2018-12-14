@@ -1,5 +1,7 @@
 import re
+
 from .defrule import *
+from . import interpreter
 
 rules = []
 
@@ -102,11 +104,36 @@ class Load(Rule):
     def parse(self, line, **kwargs):
         path = self.get_data(line)[0]
         file = open(path, "r")
-        items = [line.strip() for line in file.read().split("\n")]
+        content = file.read()
         file.close()
-        i = kwargs["current_position"]
-        for item in items[::-1]:
-            kwargs["items"].insert(i+1, item)
+              
+        output = interpreter.interpret(content)
+
+        if not kwargs["condition_stack"]:
+            return output
+
+        rules = []
+
+        for rule in output:
+            if isinstance(rule, Defconst):
+                kwargs["definitions"].insert(0, rule)
+                kwargs["consts"].append(rule.name)
+            elif isinstance(rule, Defrule):
+                rule.compressable = False
+                rule.ignore_stacks = True
+                rules.append(rule)
+
+        goal = len(kwargs["goals"]) + 1
+        kwargs["goals"].append(goal)
+
+        jump_amount = len(rules)
+
+        rules.insert(0, Defrule(["true"], ["set-goal {} {}".format(goal, 1)], ignore_stacks=True))
+        rules.insert(1, Defrule(["true"], ["set-goal {} {}".format(goal, 0)]))
+        rules.insert(2, Defrule(["goal {} {}".format(goal, 1)], ["up-jump-rule {}".format(jump_amount)], ignore_stacks=True))
+        return rules
+        
+        
 @rule
 class Cheat(Rule):
     def __init__(self):

@@ -1,9 +1,10 @@
 class Defrule:
-    def __init__(self, conditions, actions, ignore_stacks=False):
+    def __init__(self, conditions, actions, ignore_stacks=False, compressable=True):
         self.format = "(defrule\n{}\n=>\n{}\n)"
         self.conditions = conditions
         self.actions = actions
         self.ignore_stacks = ignore_stacks
+        self.compressable = compressable
     
     def format_list(self, items):
         statement = "    ({})"

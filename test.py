@@ -1,9 +1,8 @@
 import aoeai
 
-print(aoeai.interpret("""
-
-#repeat every 67 seconds
-train militiaman-line
-#end repeat
-
+print(aoeai.translate("""
+#add condition town-under-attack
+    load "test.aoe2ai"
+#remove condition
+chat to all "friend"
 """))

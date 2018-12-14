@@ -7,7 +7,7 @@ file = open(input_path, "r")
 content = file.read()
 file.close()
 
-per = aoeai.interpret(content)
+per = aoeai.translate(content)
 
 file = open(output_path + "/" + name + ".per", "w")
 file.write(per)

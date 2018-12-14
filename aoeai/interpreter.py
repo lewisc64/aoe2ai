@@ -1,11 +1,11 @@
 from .rules import rules
-from .defrule import Defrule
+from .defrule import *
 
 def compact_rules(rules):
     i = 0
     while i < len(rules) - 1:
         rule1, rule2 = rules[i:i+2]
-        if isinstance(rule1, Defrule) and isinstance(rule2, Defrule):
+        if isinstance(rule1, Defrule) and isinstance(rule2, Defrule) and rule1.compressable and rule2.compressable:
             for condition1, condition2 in zip(sorted(rule1.conditions), sorted(rule2.conditions)):
                 if condition1 != condition2:
                     i += 1
@@ -16,6 +16,7 @@ def compact_rules(rules):
                     rules.pop(i+1)
                 else:
                     i += 1
+                    
         else:
             i += 1
     return rules
@@ -80,4 +81,7 @@ def interpret(content):
     if condition_stack or action_stack or data_stack:
         print("WARNING: Interpretation finished with populated stacks. Remember to end blocks.")
     
-    return "\n".join([str(x) for x in compact_rules(definitions)])
+    return compact_rules(definitions)
+
+def translate(content):
+    return "\n".join(str(x) for x in interpret(content))
