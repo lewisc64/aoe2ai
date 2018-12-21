@@ -6,12 +6,12 @@ class Defrule:
         self.ignore_stacks = ignore_stacks
         self.compressable = compressable
     
-    def format_list(self, items):
+    def format_list(self, items, remove_duplicates=True):
         statement = "    ({})"
         out = []
         for item in items:
             formatted_item = statement.format(item)
-            if formatted_item not in out:
+            if not remove_duplicates or formatted_item not in out:
                 out.append(formatted_item)
         if len(out) > 1:
             if statement.format("true") in out:

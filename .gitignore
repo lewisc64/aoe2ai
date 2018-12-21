@@ -3,3 +3,6 @@
 *.ai
 *.aoe2ai
 *.bat
+*.spec
+build
+dist

@@ -86,5 +86,5 @@ def interpret(content, timers=None, goals=None, constants=None):
     
     return compact_rules(definitions)
 
-def translate(content):
-    return "\n".join(str(x) for x in interpret(content))
+def translate(content, stamp=False):
+    return (";Translated by https://github.com/lewisc64/aoe2ai\n" if stamp else "") + "\n".join(str(x) for x in interpret(content))

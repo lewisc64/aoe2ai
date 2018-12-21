@@ -201,28 +201,29 @@ class If(Rule):
     
     def parse(self, line, **kwargs):
         if line.startswith("#end"):
-            goal = kwargs["data_stack"].pop()
-            if kwargs["condition_stack"][-1] != "goal {} 1".format(goal):
+            amount = kwargs["data_stack"].pop()
+            for x in range(amount):
                 kwargs["condition_stack"].pop()
-            kwargs["condition_stack"].pop()
             return
         
         condition_if, condition_elseif = self.get_data(line)
 
         if condition_if is None:
-            old_condition = kwargs["condition_stack"].pop()
-            goal = kwargs["data_stack"][-1]
+
+            conditions = [kwargs["condition_stack"].pop() for x in range(kwargs["data_stack"].pop())][::-1]
+            conditions[-1] = "not({})".format(conditions[-1])
+            
             if condition_elseif is not None:
-                kwargs["condition_stack"].append(parse_condition(condition_elseif))
-            return Defrule(["goal {} 1".format(goal), old_condition], ["set-goal {} 0".format(goal)], ignore_stacks=True)
+                conditions.append(parse_condition(condition_elseif))
+                
+            kwargs["condition_stack"].extend(conditions)
+            kwargs["data_stack"].append(len(conditions))
+            
         
         else:
-            goal = len(kwargs["goals"]) + 1
-            kwargs["goals"].append(goal)
-            kwargs["data_stack"].append(goal)
-            kwargs["condition_stack"].append("goal {} 1".format(goal))
+
             kwargs["condition_stack"].append(parse_condition(condition_if))
-            return Defrule(["true"], ["set-goal {} 1".format(goal)], ignore_stacks=True)
+            kwargs["data_stack"].append(1)
 
 @rule
 class When(Rule):
@@ -365,6 +366,34 @@ class BlockRespond(Rule):
                 detect_type = "unit"
             
             kwargs["condition_stack"].append("players-{}-type-count any-enemy {} >= {}".format(detect_type, name, amount))
+
+@rule
+class Reply(Rule):
+    def __init__(self):
+        self.name = "block respond taunt"
+        self.regex = re.compile("^(?:#reply to (enemy|ally) taunt ([^ ]+)|#end reply)$")
+    
+    def parse(self, line, **kwargs):
+        if line.startswith("#end"):
+            kwargs["condition_stack"].pop()
+            number = kwargs["data_stack"].pop()
+            player_type = kwargs["data_stack"].pop()
+            return Defrule(["true"], ["acknowledge-taunt this-any-{} {}".format(player_type, number)])
+        else:
+            player_type, number = self.get_data(line)
+            kwargs["condition_stack"].append("taunt-detected any-{} {}".format(player_type, number))
+            kwargs["data_stack"].append(player_type)
+            kwargs["data_stack"].append(number)
+
+@rule
+class Tribute(Rule):
+    def __init__(self):
+        self.name = "tribute"
+        self.regex = re.compile("^tribute ([^ ]+) ([^ ]+) to (?:player )?([^ ]+)$")
+    
+    def parse(self, line, **kwargs):
+        amount, resource, player = self.get_data(line)
+        return Defrule(["true"], ["tribute-to-player {} {} {}".format(player, resource, amount)])
 
 @rule
 class BuildMiningCamps(Rule):
