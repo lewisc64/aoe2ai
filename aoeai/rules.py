@@ -570,7 +570,7 @@ class DistributeVillagersTo(Rule):
 class AssignBuilders(Rule):
     def __init__(self):
         self.name = "assign builders"
-        self.regex = re.compile("^assign ([^ ]+) builders to ([^ ]+)$")
+        self.regex = re.compile("^assign ([^ ]+) builders? to ([^ ]+)$")
 
     def parse(self, line, **kwargs):
         amount, building = self.get_data(line)
