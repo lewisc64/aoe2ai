@@ -58,7 +58,8 @@ rules.append(Snippet("set up scouting",
                      ["set-strategic-number sn-percent-civilian-explorers 0",
                       "set-strategic-number sn-cap-civilian-explorers 0",
                       "set-strategic-number sn-total-number-explorers 1",
-                      "set-strategic-number sn-number-explore-groups 1"]))
+                      "set-strategic-number sn-number-explore-groups 1",
+                      "set-strategic-number sn-initial-exploration-required 0"]))
 rules.append(Snippet("set up micro",
                      ["true"],
                      ["set-difficulty-parameter ability-to-maintain-distance 0",
