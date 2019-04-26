@@ -49,6 +49,7 @@ build lumber camps
 #end when
 
 build houses
+build 2 barracks
 build 1 mill
 build 10 farm
 ```
@@ -151,6 +152,12 @@ Translation:
     (housing-headroom < 5)
 =>
     (build house)
+)
+(defrule
+    (can-build barracks)
+    (building-type-count-total barracks < 2)
+=>
+    (build barracks)
 )
 (defrule
     (can-build mill)
