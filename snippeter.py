@@ -7,7 +7,7 @@ try:
     import pyperclip
     print("Output will be copied to the clipboard.\n")
 except ImportError:
-    print("pyperclip not found, automatic copying disabled.")
+    print("pyperclip not found, automatic copying disabled.\n")
     copy = False
 
 while True:
