@@ -33,6 +33,13 @@ class Snippet(Rule):
     def parse(self, line, **kwargs):
         return Defrule(self.conditions[:], self.actions[:])
 
+def create_merged_snippet(rules, rule_name, names):
+    rules.append(Snippet(rule_name, [], []))
+    for rule in rules[:-1]:
+        if rule.name in names:
+            rules[-1].conditions.extend(rule.conditions)
+            rules[-1].actions.extend(rule.actions)
+
 rules.append(Snippet("rule",
                      ["true"],
                      ["do-nothing"]))
@@ -69,7 +76,9 @@ rules.append(Snippet("set up micro",
                       "set-strategic-number sn-enable-patrol-attack 1",
                       "set-strategic-number sn-intelligent-gathering 1",
                       "set-strategic-number sn-local-targeting-mode 1",
-                      "set-strategic-number sn-percent-enemy-sighted-response 100"]))
+                      "set-strategic-number sn-percent-enemy-sighted-response 100",
+                      "set-strategic-number sn-task-ungrouped-soldiers 0",
+                      "set-strategic-number sn-gather-defense-units 1"]))
 rules.append(Snippet("build lumber camps",
                      ["dropsite-min-distance wood > 2", "resource-found wood", "up-pending-objects c: lumber-camp == 0", "can-build lumber-camp"],
                      ["build lumber-camp"]))
@@ -92,6 +101,8 @@ rules.append(Snippet("drop off food",
                       "up-drop-resources forage-food c: 5",
                       "up-drop-resources deer-food c: 20",
                       "up-drop-resources boar-food c: 10"]))
+
+create_merged_snippet(rules, "set up basics", ["set up scouting", "set up new building system", "set up micro"])
 
 @rule
 class Comment(Rule):
