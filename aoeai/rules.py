@@ -1,6 +1,7 @@
 import re
 
 from .defrule import *
+from .research import *
 from . import interpreter
 
 rules = []
@@ -32,6 +33,15 @@ class Snippet(Rule):
     
     def parse(self, line, **kwargs):
         return Defrule(self.conditions[:], self.actions[:])
+
+class SnippetCollection(Rule):
+    def __init__(self, trigger, snippets):
+        self.name = trigger
+        self.regex = re.compile("^{}$".format(trigger))
+        self.snippets = snippets
+
+    def parse(self, line, **kwargs):
+        return [snippet.parse(line, **kwargs) for snippet in self.snippets]
 
 def create_merged_snippet(rules, rule_name, names):
     rules.append(Snippet(rule_name, [], []))
@@ -97,6 +107,11 @@ rules.append(Snippet("drop off food",
                       "up-drop-resources boar-food c: 10"]))
 
 create_merged_snippet(rules, "set up basics", ["set up scouting", "set up new building system", "set up micro"])
+
+for key in research:
+    rules.append(SnippetCollection("research {} upgrades".format(key), []))
+    for name in research[key]:
+        rules[-1].snippets.append(Snippet("research {}".format(name), ["can-research {}".format(name)], ["research {}".format(name)]))
 
 @rule
 class Comment(Rule):
@@ -702,4 +717,5 @@ class Delete(Rule):
     def parse(self, line, **kwargs):
         form, name = self.get_data(line)
         return Defrule(["true"], ["delete-{} {}".format(form, name)])
+
 
