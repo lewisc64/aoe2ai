@@ -271,13 +271,19 @@ class DoOnce(Rule):
 class Delay(Rule):
     def __init__(self):
         self.name = "delay"
-        self.regex = re.compile("^(?:#delay by ([^ ]+) seconds|#end delay)$")
+        self.regex = re.compile("^(?:#delay by ([^ ]+) (seconds?|minutes?|hours?)|#end delay)$")
     
     def parse(self, line, **kwargs):
         if "end" in line:
             kwargs["condition_stack"].pop(-1)
         else:
-            amount = self.get_data(line)[0]
+            data = self.get_data(line)
+            unit = data[1]
+            amount = int(data[0])
+            if "minute" in unit:
+                amount *= 60
+            elif "hour" in unit:
+                amount *= 3600
             timer_number = len(kwargs["timers"]) + 1
             kwargs["timers"].append(timer_number)
             kwargs["condition_stack"].append("timer-triggered {}".format(timer_number))
@@ -287,7 +293,7 @@ class Delay(Rule):
 class Repeat(Rule):
     def __init__(self):
         self.name = "repeat"
-        self.regex = re.compile("^(?:#repeat every ([^ ]+) seconds?|#end repeat)$")
+        self.regex = re.compile("^(?:#repeat every ([^ ]+) (seconds?|minutes?|hours?)|#end repeat)$")
     
     def parse(self, line, **kwargs):
         if "end" in line:
@@ -296,7 +302,13 @@ class Repeat(Rule):
             kwargs["condition_stack"].pop()
             return Defrule(["timer-triggered {}".format(timer_number)], ["disable-timer {}".format(timer_number), "enable-timer {} {}".format(timer_number, amount)])
         else:
-            amount = self.get_data(line)[0]
+            data = self.get_data(line)
+            unit = data[1]
+            amount = int(data[0])
+            if "minute" in unit:
+                amount *= 60
+            elif "hour" in unit:
+                amount *= 3600
             timer_number = len(kwargs["timers"]) + 1
             kwargs["data_stack"].append(amount)
             kwargs["data_stack"].append(timer_number)
