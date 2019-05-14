@@ -79,12 +79,6 @@ rules.append(Snippet("set up micro",
                       "set-strategic-number sn-percent-enemy-sighted-response 100",
                       "set-strategic-number sn-task-ungrouped-soldiers 0",
                       "set-strategic-number sn-gather-defense-units 1"]))
-rules.append(Snippet("build lumber camps",
-                     ["dropsite-min-distance wood > 2", "resource-found wood", "up-pending-objects c: lumber-camp == 0", "can-build lumber-camp"],
-                     ["build lumber-camp"]))
-rules.append(Snippet("build mills",
-                     ["dropsite-min-distance food > 3", "resource-found food", "up-pending-objects c: mill == 0", "can-build mill"],
-                     ["build mill"]))
 rules.append(Snippet("target walls",
                      ["true"],
                      ["set-strategic-number sn-wall-targeting-mode 1"]))
@@ -408,19 +402,41 @@ class Tribute(Rule):
         return Defrule(["true"], ["tribute-to-player {} {} {}".format(player, resource, amount)])
 
 @rule
-class BuildMiningCamps(Rule):
+class BuildDropoffs(Rule):
     def __init__(self):
-        self.name = "build mining camps"
-        self.regex = re.compile("^build (gold|stone) mining camps$")
+        self.name = "build dropoffs"
+        self.regex = re.compile("^build (lumber camps|(?:gold|stone) mining camps|mills)(?: maintaining ([^ ]+) tiles?)?$")
         
     def parse(self, line, **kwargs):
-        resource = self.get_data(line)[0]
-        return Defrule(["dropsite-min-distance {} > 3".format(resource),
-                        "resource-found {}".format(resource),
-                        "up-pending-objects c: mining-camp == 0",
-                        "can-build mining-camp"],
-                       ["build mining-camp"])
+        data = self.get_data(line)
+        dropoff_type = data[0]
+        tiles = data[1]
 
+        if "mining camps" in dropoff_type:
+            if "gold" in dropoff_type:
+                resource = "gold"
+            else:
+                resource = "stone"
+            building = "mining-camp"
+            if tiles is None:
+                tiles = 3
+        
+        elif dropoff_type == "lumber camps":
+            resource = "wood"
+            building = "lumber-camp"
+            if tiles is None:
+                tiles = 2
+        elif dropoff_type == "mills":
+            resource = "food"
+            building = "mill"
+            if tiles is None:
+                tiles = 3
+
+        return Defrule(["dropsite-min-distance {} > {}".format(resource, tiles),
+                        "resource-found {}".format(resource),
+                        "up-pending-objects c: {} == 0".format(building),
+                        "can-build {}".format(building)],
+                       ["build {}".format(building)])
 
 @rule
 class BuildHouses(Rule):
