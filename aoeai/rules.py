@@ -88,7 +88,9 @@ rules.append(Snippet("set up micro",
                       "set-strategic-number sn-local-targeting-mode 1",
                       "set-strategic-number sn-percent-enemy-sighted-response 100",
                       "set-strategic-number sn-task-ungrouped-soldiers 0",
-                      "set-strategic-number sn-gather-defense-units 1"]))
+                      "set-strategic-number sn-gather-defense-units 1",
+                      "set-strategic-number sn-defer-dropsite-update 1",
+                      "set-strategic-number sn-do-not-scale-for-difficulty-level 1"]))
 rules.append(Snippet("target walls",
                      ["true"],
                      ["set-strategic-number sn-wall-targeting-mode 1"]))
@@ -107,11 +109,6 @@ rules.append(Snippet("drop off food",
                       "up-drop-resources boar-food c: 10"]))
 
 create_merged_snippet(rules, "set up basics", ["set up scouting", "set up new building system", "set up micro"])
-
-for key in research:
-    rules.append(SnippetCollection("research {} upgrades".format(key), []))
-    for name in research[key]:
-        rules[-1].snippets.append(Snippet("research {}".format(name), ["can-research {}".format(name)], ["research {}".format(name)]))
 
 @rule
 class Comment(Rule):
@@ -541,23 +538,28 @@ class Build(Rule):
 class Research(Rule):
     def __init__(self):
         self.name = "research"
-        self.regex = re.compile("^research ([^ ]+)(?: with ((?:[^ ]+(?: and )?)*) escrow)?$")
+        self.regex = re.compile("^research (?:([^ ]+)|({}) upgrades)(?: with ((?:[^ ]+(?: and )?)*) escrow)?$".format("|".join(research.keys())))
     
     def parse(self, line, **kwargs):
-        tech, escrow = self.get_data(line)
-
+        tech, tech_group, escrow = self.get_data(line)
+        
         actions = []
         conditions = []
 
         if escrow is None:
-            conditions.append("can-research " + tech)
+            conditions.append("can-research {}")
         else:
-            conditions.append("can-research-with-escrow " + tech)
+            conditions.append("can-research-with-escrow {}")
             for resource in escrow.split(" and "):
-                actions.append("release-escrow " + resource)
-        actions.append("research " + tech)
+                actions.append("release-escrow {}".format(resource))
+        actions.append("research {}")
+
+        out = []
         
-        return Defrule(conditions, actions)
+        for name in research[tech_group] if tech_group in research else [tech]:
+            out.append(Defrule([x.format(name) for x in conditions], [x.format(name) for x in actions]))
+        
+        return out
 
 @rule
 class Attack(Rule):
