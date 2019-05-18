@@ -9,7 +9,7 @@ def research_exists(name):
 
 # will only contain basic non-unique research. used for making rules, not verifying them.
 research = {
-    "blacksmith archery": ["fletching", "bodkin-arrow", "bracer", "padded-archer-armor", "leather-archer-armor", "ring-archer-armor"],
+    "blacksmith ranged": ["fletching", "bodkin-arrow", "bracer", "padded-archer-armor", "leather-archer-armor", "ring-archer-armor"],
     "blacksmith infantry": ["scale-mail", "chain-mail", "plate-mail"],
     "blacksmith cavalry": ["scale-barding", "chain-barding", "plate-barding"],
     "lumber camp": ["double-bit-axe", "bow-saw", "two-man-saw"],
@@ -28,7 +28,7 @@ research = {
     "university": ["masonry", "fortified-wall", "ballistics", "guard-tower", "heated-shot", "murder-holes", "treadmill-crane", "architecture", "chemistry", "siege-engineers", "keep", "arrowslits", "bombard-tower"]
 }
 common_inf_cav = ["forging", "iron-casting", "blast-furnace"]
-research["blacksmith"] = sum([research["blacksmith " + name] for name in ["archery", "infantry", "cavalry"]], [])
+research["blacksmith"] = sum([research["blacksmith " + name] for name in ["ranged", "infantry", "cavalry"]], [])
 research["blacksmith"].extend(common_inf_cav)
 research["blacksmith infantry"].extend(common_inf_cav)
 research["blacksmith cavalry"].extend(common_inf_cav)
