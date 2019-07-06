@@ -13,7 +13,10 @@ def rule(rule):
 class Rule:
     def __init__(self):
         self.name = ""
-        self.regex = re.compile("")
+        self.regex = None
+        self.help = ""
+        self.usage = ""
+        self.example = ""
 
     def is_match(self, line):
         return self.regex.match(line)
@@ -26,10 +29,12 @@ class Rule:
 
 class Snippet(Rule):
     def __init__(self, trigger, conditions, actions):
+        super().__init__()
         self.name = trigger
         self.regex = re.compile("^{}$".format(trigger))
         self.conditions = conditions
         self.actions = actions
+        self.usage = self.name
     
     def parse(self, line, **kwargs):
         return Defrule(self.conditions[:], self.actions[:])
@@ -113,8 +118,10 @@ create_merged_snippet(rules, "set up basics", ["set up scouting", "set up new bu
 @rule
 class Comment(Rule):
     def __init__(self):
+        super().__init__()
         self.name = "comment"
         self.regex = re.compile("^//(.+)$")
+        self.usage = "Place '//' before a line. Cannot be mid-line."
     
     def parse(self, line, **kwargs):
         return None
@@ -122,8 +129,11 @@ class Comment(Rule):
 @rule
 class Load(Rule):
     def __init__(self):
+        super().__init__()
         self.name = "load"
         self.regex = re.compile("^load \"([^\"]+)\"$")
+        self.usage = "load \"PATH\""
+        self.help = "Loads another aoe2ai file. Relative to main file if trying to load from a seperate file."
     
     def parse(self, line, **kwargs):
         path = self.get_data(line)[0]
@@ -166,8 +176,11 @@ class Load(Rule):
 @rule
 class Cheat(Rule):
     def __init__(self):
+        super().__init__()
         self.name = "cheat"
         self.regex = re.compile("^cheat ([^ ]+) ([^ ]+)$")
+        self.usage = "cheat RESOURCE_NAME AMOUNT"
+        self.help = "Gives the AI resources."
 
     def parse(self, line, **kwargs):
         amount, resource = self.get_data(line)
@@ -177,19 +190,30 @@ class Cheat(Rule):
 @rule
 class ChatTo(Rule):
     def __init__(self):
+        super().__init__()
         self.name = "chat to"
-        self.regex = re.compile("^chat to (all|self|allies) (.+)$")
+        self.regex = re.compile("^chat to (?:(all|self|allies)|([^ ]+)) (.+)$")
+        self.usage = "chat to PLAYER_TYPE \"MESSAGE\""
     
     def parse(self, line, **kwargs):
-        recipient, content = self.get_data(line)
-        return Defrule(["true"],
-                       ["chat-to-{} {}".format(recipient, content).replace("to-self", "local-to-self")])
+        group, recipient, content = self.get_data(line)
+        if group is not None:
+            return Defrule(["true"],
+                           ["chat-to-{} {}".format(group, content).replace("to-self", "local-to-self")])
+        else:
+            return Defrule(["true"],
+                           ["chat-to-player {} {}".format(recipient, content)])
 
 @rule
 class AddCondition(Rule):
     def __init__(self):
+        super().__init__()
         self.name = "add condition"
         self.regex = re.compile("^(?:#add condition (.+)|#remove condition)$")
+        self.usage = """#add condition CONDITION
+    RULES
+#remove condition"""
+        self.help = "Adds a condition to the condition stack. 'If' is preferred."
     
     def parse(self, line, **kwargs):
         condition = self.get_data(line)[0]
@@ -201,8 +225,13 @@ class AddCondition(Rule):
 @rule
 class AddAction(Rule):
     def __init__(self):
+        super().__init__()
         self.name = "add action"
         self.regex = re.compile("^(?:#add action (.+)|#remove action)$")
+        self.usage = """#add action ACTION
+    RULES
+#remove action"""
+        self.help = "Adds an action to the action stack."
     
     def parse(self, line, **kwargs):
         action = self.get_data(line)[0]
@@ -214,8 +243,17 @@ class AddAction(Rule):
 @rule
 class If(Rule):
     def __init__(self):
+        super().__init__()
         self.name = "if"
         self.regex = re.compile("^(?:#if (.+)|#else if (.+)|#else|#end if)$")
+        self.usage = """#if CONDITION
+    RULES
+#else if CONDITION
+    RULES
+#else
+    RULES
+#end if"""
+        self.help = "Adds a condition to the condition stack."
     
     def parse(self, line, **kwargs):
         if line.startswith("#end"):
@@ -246,8 +284,15 @@ class If(Rule):
 @rule
 class When(Rule):
     def __init__(self):
+        super().__init__()
         self.name = "when"
         self.regex = re.compile("^(?:#when( once)?|#then|#end when)$")
+        self.usage = """#when
+    RULE
+#then
+    RULES
+#end when"""
+        self.help = "Rules in the 'then' block are allowed to trigger when any rule in the main 'when' block is triggered."
     
     def parse(self, line, **kwargs):
         if line.startswith("#when"):
@@ -270,8 +315,13 @@ class When(Rule):
 @rule
 class DoOnce(Rule):
     def __init__(self):
+        super().__init__()
         self.name = "do once"
         self.regex = re.compile("^(?:#do once|#end do(?: once)?)$")
+        self.usage = """#do once
+    RULES
+#end do once"""
+        self.help = "Adds 'disable-self' to the action stack. Makes sure each rule in the block individually runs only once."
     
     def parse(self, line, **kwargs):
         if "end" in line:
@@ -282,8 +332,13 @@ class DoOnce(Rule):
 @rule
 class Delay(Rule):
     def __init__(self):
+        super().__init__()
         self.name = "delay"
         self.regex = re.compile("^(?:#delay by ([^ ]+) (seconds?|minutes?|hours?)|#end delay)$")
+        self.usage = """#delay by AMOUNT TIME_UNIT
+    RULES
+#end delay"""
+        self.help = "Block body is only allowed to trigger after the time is up."
     
     def parse(self, line, **kwargs):
         if "end" in line:
@@ -304,8 +359,13 @@ class Delay(Rule):
 @rule
 class Repeat(Rule):
     def __init__(self):
+        super().__init__()
         self.name = "repeat"
         self.regex = re.compile("^(?:#repeat every ([^ ]+) (seconds?|minutes?|hours?)|#end repeat)$")
+        self.usage = """#repeat every AMOUNT TIME_UNIT
+    RULES
+#end repeat"""
+        self.help = "Each rule is allowed to be triggered once after the time has elapsed, the process repeats."
     
     def parse(self, line, **kwargs):
         if "end" in line:
@@ -331,8 +391,15 @@ class Repeat(Rule):
 @rule
 class Train(Rule):
     def __init__(self):
+        super().__init__()
         self.name = "train"
         self.regex = re.compile("^train (?:([^ ]+) )?([^ ]+)(?: with ((?:[^ ]+(?: and )?)*) escrow)?$")
+        self.usage = """train UNIT_NAME
+train UNIT_NAME with RESOURCE_NAME escrow
+train AMOUNT UNIT_NAME
+train AMOUNT UNIT_NAME with RESOURCE_NAME escrow"""
+        self.example = "train 10 militiaman-line with food and gold escrow"
+        self.help = "Trains a unit using the specified parameters."
 
     def parse(self, line, **kwargs):
         amount, unit, escrow = self.get_data(line)
@@ -355,8 +422,11 @@ class Train(Rule):
 @rule
 class Respond(Rule):
     def __init__(self):
+        super().__init__()
         self.name = "respond"
         self.regex = re.compile("^respond to (?:([^ ]{1,3}) )?([^ ]+)(?: (building|unit))? with (?:([^ ]+) )?([^ ]+)(?: (building|unit))?$")
+        self.usage = "respond to ?AMOUNT NAME ?BUILDING/UNIT with NAME ?BUILDING/UNIT"
+        self.help = "When the AI sees the specified amount, it reacts with the specified parameters. If building/unit is unspecified, unit is assumed. If amount is unspecified, 1 is assumed."
 
     def parse(self, line, **kwargs):
         detect_amount, detect_name, detect_type, create_amount, create_name, create_type = self.get_data(line)
@@ -381,8 +451,16 @@ class Respond(Rule):
 @rule
 class BlockRespond(Rule):
     def __init__(self):
+        super().__init__()
         self.name = "block respond"
         self.regex = re.compile("^(?:#respond to (?:([^ ]{1,3}) )?([^ ]+)(?: (building|unit))?|#end respon(?:d|se))$")
+        self.usage = """#respond to ?AMOUNT NAME ?BUILDING/UNIT
+   RULES
+#end respond"""
+        self.help = "When the AI sees the specified amount, the body is allowed to trigger. If building/unit is unspecified, unit is assumed. If amount is unspecified, 1 is assumed."
+        self.example = """#respond to 3 scout-cavalry-line
+    train 4 spearman-line
+#end respond"""
     
     def parse(self, line, **kwargs):
         if line.startswith("#end"):
@@ -400,8 +478,16 @@ class BlockRespond(Rule):
 @rule
 class Reply(Rule):
     def __init__(self):
+        super().__init__()
         self.name = "block respond taunt"
         self.regex = re.compile("^(?:#reply to (enemy|ally) taunt ([^ ]+)|#end reply)$")
+        self.usage = """#reply to ?ENEMY/ALLY taunt TAUNT_NUMBER
+   RULES
+#end reply"""
+        self.help = "Body is allowed to trigger when the taunt is detected from the specified player. Taunt is acknowledged regardless of whether the body successfully triggers."
+        self.example = """#reply to ally taunt 5
+    tribute 100 gold to this-any-ally
+#end reply"""
     
     def parse(self, line, **kwargs):
         if line.startswith("#end"):
@@ -418,8 +504,12 @@ class Reply(Rule):
 @rule
 class Tribute(Rule):
     def __init__(self):
+        super().__init__()
         self.name = "tribute"
         self.regex = re.compile("^tribute ([^ ]+) ([^ ]+) to (?:player )?([^ ]+)$")
+        self.usage = "tribute AMOUNT RESOURCE_NAME to PLAYER_NUMBER"
+        self.help = "Gives the specified player resources."
+        self.example = "tribute 100 wood to any-ally"
     
     def parse(self, line, **kwargs):
         amount, resource, player = self.get_data(line)
@@ -428,8 +518,16 @@ class Tribute(Rule):
 @rule
 class BuildDropoffs(Rule):
     def __init__(self):
+        super().__init__()
         self.name = "build dropoffs"
         self.regex = re.compile("^build (lumber camps|(?:gold|stone) mining camps|mills)(?: maintaining ([^ ]+) tiles?)?$")
+        self.usage = "build BUILDING_TYPE"
+        self.help = "Sets up a rule for automatically refreshing dropoff points."
+        self.example = """
+build lumber camps
+build gold mining camps
+build stone mining camps
+build lumber camps maintaining 4 tiles"""
         
     def parse(self, line, **kwargs):
         data = self.get_data(line)
@@ -465,8 +563,16 @@ class BuildDropoffs(Rule):
 @rule
 class BuildHouses(Rule):
     def __init__(self):
+        super().__init__()
+
+        self.default_headroom = 5
+        
         self.name = "build houses"
         self.regex = re.compile("^build houses(?: with ([^ ]+) headroom)?$")
+        self.usage = "build houses with AMOUNT headroom"
+        self.example = """build houses
+build houses with 10 headroom"""
+        self.help = "Sets up rule to build houses, default headroom is {}.".format(self.default_headroom)
 
     def parse(self, line, **kwargs):
         headroom = self.get_data(line)[0]
@@ -475,7 +581,7 @@ class BuildHouses(Rule):
         actions = ["build house"]
         
         if headroom is None:
-            headroom = 5
+            headroom = self.default_headroom
 
         conditions.append("housing-headroom < {}".format(headroom))
         return Defrule(conditions, actions)
@@ -483,8 +589,12 @@ class BuildHouses(Rule):
 @rule
 class EnableWalls(Rule):
     def __init__(self):
+        super().__init__()
         self.name = "enable walls"
         self.regex = re.compile("^enable walls (?:with|on) perimeter (1|2)$")
+        self.usage = "enable walls on perimeter PERIMETER_NUMBER"
+        self.example = "enable walls on perimeter 2"
+        self.help = "Sets up rule that allows the AI to build walls on the specified perimeter."
 
     def parse(self, line, **kwargs):
         return Defrule(["true"], ["enable-wall-placement " + self.get_data(line)[0], "disable-self"])
@@ -492,8 +602,14 @@ class EnableWalls(Rule):
 @rule
 class BuildWalls(Rule):
     def __init__(self):
+        super().__init__()
         self.name = "build walls"
         self.regex = re.compile("^build (stone|palisade) (walls|gates) (?:with|on) perimeter (1|2)$")
+        self.usage = "build MATERIAL WALLS/GATES on perimeter PERIMETER_NUMBER"
+        self.example = """build stone walls on perimeter 2
+build stone gates on perimeter 2"""
+        self.help = "Wall placement must be enabled on the same perimeter to function."
+        
         self.materials = {"stone":"stone-wall-line", "palisade":"palisade-wall"}
     
     def parse(self, line, **kwargs):
@@ -511,11 +627,17 @@ class BuildWalls(Rule):
 @rule
 class Build(Rule):
     def __init__(self):
+        super().__init__()
         self.name = "build"
-        self.regex = re.compile("^build (forward )?(?:([^ ]+) )?([^ ]+)(?: with ((?:[^ ]+(?: and )?)*) escrow)?$")
+        self.regex = re.compile("^build (forward )?(?:([^ ]+) )?([^ ]+)(?: ([^ ]+) tiles? away from ([^ ]+))?(?: with ((?:[^ ]+(?: and )?)*) escrow)?$")
+        self.usage = "build ?forward AMOUNT BUILDING_NAME with RESOURCE_NAME escrow"
+        self.examples = """build 1 barracks
+build forward castle
+build archery-range with wood escrow"""
+        self.help = "Sets up the rule to build the building. If amount is unspecified, the building will be built infinitely."
 
     def parse(self, line, **kwargs):
-        forward, amount, building, escrow = self.get_data(line)
+        forward, amount, building, near_distance, near, escrow = self.get_data(line)
         
         actions = []
         conditions = []
@@ -530,15 +652,27 @@ class Build(Rule):
         if amount is not None:
             conditions.append("building-type-count-total {} < {}".format(building, amount))
 
-        actions.append("build{} {}".format("" if forward is None else "-forward", building))
+        if near is None:
+            actions.append("build{} {}".format("" if forward is None else "-forward", building))
+            compressable = True
+        else:
+            actions.append("up-set-placement-data {} {} c: {}".format("any-enemy" if forward else "my-player-number", near, near_distance))
+            actions.append("up-build place-{} 0 c: {}".format("forward" if forward else "control", building))
+            compressable = False
         
-        return Defrule(conditions, actions)
+        return Defrule(conditions, actions, compressable=compressable)
 
 @rule
 class Research(Rule):
     def __init__(self):
+        super().__init__()
         self.name = "research"
         self.regex = re.compile("^research (?:([^ ]+)|({}) upgrades)(?: with ((?:[^ ]+(?: and )?)*) escrow)?$".format("|".join(research.keys())))
+        self.usage = "research TECH_NAME with RESOURCE_NAME escrow"
+        self.example = """research ri-loom
+research feudal-age with food and gold escrow
+research blacksmith infantry upgrades"""
+        self.help = "Sets up the rule to research the specified research."
     
     def parse(self, line, **kwargs):
         tech, tech_group, escrow = self.get_data(line)
@@ -564,8 +698,13 @@ class Research(Rule):
 @rule
 class Attack(Rule):
     def __init__(self):
+        super().__init__()
         self.name = "attack"
         self.regex = re.compile("^attack(?: with ([^ ]+) units)?$")
+        self.usage = "attack with AMOUNT units"
+        self.example = """attack
+attack with 10 units"""
+        self.help = "Makes use of the attack-now action."
     
     def parse(self, line, **kwargs):
         number = self.get_data(line)[0]
@@ -577,8 +716,13 @@ class Attack(Rule):
 @rule
 class Market(Rule):
     def __init__(self):
+        super().__init__()
         self.name = "market"
         self.regex = re.compile("^(buy|sell) ([^ ]+) when ([^ +]+) ([<>!=]+) ([^ ]+)$")
+        self.usage = "buy/sell RESOURCE_NAME when RESOURCE_NAME COMPARISON AMOUNT"
+        self.example = """buy food when gold > 100
+sell wood when wood > 1500"""
+        self.help = "Buys/sells based on a condition."
 
     def parse(self, line, **kwargs):
         action, commodity, conditional, comparison, amount = self.get_data(line)
@@ -589,8 +733,12 @@ class Market(Rule):
 @rule
 class DistributeVillagers(Rule):
     def __init__(self):
+        super().__init__()
         self.name = "distribute villagers"
         self.regex = re.compile("^distribute villagers ([0-9]+) ([0-9]+) ([0-9]+) ([0-9]+)$")
+        self.usage = "distribute villagers WOOD_PERCENT FOOD_PERCENT GOLD_PERCENT STONE_PERCENT"
+        self.example = "distribute villagers 40 45 10 5"
+        self.help = "Percentages must add up to 100. Makes use of the sn-TYPE-gatherer-percentage strategic number."
 
     def parse(self, line, **kwargs):
         data = self.get_data(line)
@@ -603,8 +751,14 @@ class DistributeVillagers(Rule):
 @rule
 class DistributeVillagersTo(Rule):
     def __init__(self):
+        super().__init__()
         self.name = "distribute villagers to"
         self.regex = re.compile("^distribute ([0-9]+) villagers? from ((?:[^ ]+(?: and )?)*) to (.+)$")
+        self.usage = "distribute PERCENTAGE villagers from RESOURCE_NAME to RESOURCE_NAME"
+        self.example = """distibute 5 villagers from wood to stone
+distribute 10 villagers from wood and food to gold
+distribute 8 villagers from food to gold and stone"""
+        self.help = "Modifies the gatherer percentages. Precomputes, so no constants or facts can be used, just numbers."
 
     def parse(self, line, **kwargs):
         amount, sources, destinations = self.get_data(line)
@@ -626,8 +780,12 @@ class DistributeVillagersTo(Rule):
 @rule
 class AssignBuilders(Rule):
     def __init__(self):
+        super().__init__()
         self.name = "assign builders"
         self.regex = re.compile("^assign ([^ ]+) builders? to ([^ ]+)$")
+        self.usage = "assign AMOUNT builders to BUILDING_NAME"
+        self.example = "assign 8 builders to castle"
+        self.help = "Sets the amount of builders that should build a building."
 
     def parse(self, line, **kwargs):
         amount, building = self.get_data(line)
@@ -636,8 +794,13 @@ class AssignBuilders(Rule):
 @rule
 class SetGoal(Rule):
     def __init__(self):
+        super().__init__()
         self.name = "set goal"
         self.regex = re.compile("^goal ([^ ]+) ?(\+|\-|\*|\/)?= ?(.+)$")
+        self.usage = "goal GOAL_NAME = VALUE"
+        self.example = """goal advance = 1
+goal count += 1"""
+        self.help = "Sets a goal, and sets up the constant if it does not already exist."
 
     def parse(self, line, **kwargs):
         name, operator, value = self.get_data(line)
@@ -653,8 +816,12 @@ class SetGoal(Rule):
 @rule
 class SetConst(Rule):
     def __init__(self):
+        super().__init__()
         self.name = "set const"
         self.regex = re.compile("^const ([^ ]+) ?= ?(.+)$")
+        self.usage = "const CONST_NAME = VALUE"
+        self.example = "const max-villagers = 120"
+        self.help = "Sets a constant. Can only be done once for every name."
 
     def parse(self, line, **kwargs):
         name, value = self.get_data(line)
@@ -669,8 +836,13 @@ class SetConst(Rule):
 @rule
 class SetStrategicNumber(Rule):
     def __init__(self):
+        super().__init__()
         self.name = "set strategic number"
         self.regex = re.compile("^(sn-[^ ]+) ?(\+|\-|\*|\/)?= ?(.+)$")
+        self.usage = "STRATEGIC_NUMBER_NAME = VALUE"
+        self.example = """sn-maximum-gold-drop-distance = 8
+sn-maximum-town-size += 5"""
+        self.help = "Sets a strategic number. Uses the 'sn-' prefix for recognition of the rule."
 
     def parse(self, line, **kwargs):
         name, operator, value = self.get_data(line)
@@ -681,8 +853,13 @@ class SetStrategicNumber(Rule):
 @rule
 class SendScout(Rule):
     def __init__(self):
+        super().__init__()
         self.name = "scout"
         self.regex = re.compile("^scout (.+)$")
+        self.usage = "scout AREA_NAME"
+        self.example = """scout opposite
+scout enemy"""
+        self.help = "Sets up the userpatch rule to send the scout somewhere else."
 
     def parse(self, line, **kwargs):
         direction = self.get_data(line)[0]
@@ -691,8 +868,14 @@ class SendScout(Rule):
 @rule
 class ModifyTownSize(Rule):
     def __init__(self):
+        super().__init__()
         self.name = "modify town size"
         self.regex = re.compile("^(set|increase|decrease) town size (?:to|by) (.+)$")
+        self.usage = "set/increase/decrease town size by/to AMOUNT"
+        self.example = """set town size to 32
+increase town size by 5
+decrease town size by 1"""
+        self.help = "Modifies the sn-maximum-town-size strategic number."
 
     def parse(self, line, **kwargs):
         operation, amount = self.get_data(line)
@@ -703,8 +886,12 @@ class ModifyTownSize(Rule):
 @rule
 class SetEscrow(Rule):
     def __init__(self):
+        super().__init__()
         self.name = "set escrow"
         self.regex = re.compile("^escrow ([^ ]+) (.+)$")
+        self.usage = "escrow PERCENTAGE RESOURCE_NAME"
+        self.example = "escrow 50 gold"
+        self.help = "Creates rule that sets the escrow percentage."
 
     def parse(self, line, **kwargs):
         amount, resource = self.get_data(line)
@@ -713,8 +900,12 @@ class SetEscrow(Rule):
 @rule
 class Delete(Rule):
     def __init__(self):
+        super().__init__()
         self.name = "delete"
         self.regex = re.compile("^delete (unit|building) (.+)$")
+        self.usage = "delete unit/building NAME"
+        self.example = "delete unit villager"
+        self.help = "Creates a rule that deletes the specified object."
 
     def parse(self, line, **kwargs):
         form, name = self.get_data(line)

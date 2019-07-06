@@ -1,7 +1,7 @@
 import aoeai
 
 print(aoeai.translate("""
-#if current-age == dark-age
-    research feudal-age
-#end if
+#delay by 3 minutes
+    take boar
+#end delay
 """))
