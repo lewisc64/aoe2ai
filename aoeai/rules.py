@@ -95,7 +95,9 @@ rules.append(Snippet("set up micro",
                       "set-strategic-number sn-task-ungrouped-soldiers 0",
                       "set-strategic-number sn-gather-defense-units 1",
                       "set-strategic-number sn-defer-dropsite-update 1",
-                      "set-strategic-number sn-do-not-scale-for-difficulty-level 1"]))
+                      "set-strategic-number sn-do-not-scale-for-difficulty-level 1",
+                      "set-strategic-number sn-number-build-attempts-before-skip 5",
+                      "set-strategic-number sn-max-skips-per-attempt 5"]))
 rules.append(Snippet("target walls",
                      ["true"],
                      ["set-strategic-number sn-wall-targeting-mode 1"]))
