@@ -17,7 +17,7 @@ research = {
     "market": ["coinage", "banking", "guilds"],
     "mining camp gold": ["gold-mining", "gold-shaft-mining"],
     "mining camp stone": ["stone-mining", "stone-shaft-mining"],
-    "barracks": ["tracking", "squires", "arson", "long-swordsman", "two-handed-swordsman", "champion", "pikeman", "halberdier", "eagle-warrior", "elite-eagle-warrior"],
+    "barracks": ["tracking", "squires", "arson", "man-at-arms", "long-swordsman", "two-handed-swordsman", "champion", "pikeman", "halberdier", "eagle-warrior", "elite-eagle-warrior"],
     "archery range": ["thumb-ring", "parthian-tactics", "crossbow", "arbalest", "elite-skirmisher", "imperial-skirmisher", "heavy-cavalry-archer"],
     "stable": ["bloodlines", "husbandry", "light-cavalry", "hussar", "cavalier", "paladin", "heavy-camel", "elite-battle-elephant"],
     "dock": ["gillnets", "careening", "dry-dock", "shipwright", "war-galley", "fast-fire-ship", "heavy-demolition-ship", "cannon-galleon", "galleon"],
