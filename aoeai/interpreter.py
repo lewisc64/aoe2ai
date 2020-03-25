@@ -92,9 +92,10 @@ def interpret(content, timers=None, goals=None, constants=None, userpatch=False)
                     definitions.append(output)
                     
                 elif isinstance(output, list):
-                    for defrule in [x for x in output if not x.ignore_stacks]:
-                        defrule.conditions.extend(p_condition_stack)
-                        defrule.actions.extend(p_action_stack)
+                    for defrule in [x for x in output if isinstance(x, Defconst) or not x.ignore_stacks]:
+                        if not isinstance(defrule, Defconst):
+                            defrule.conditions.extend(p_condition_stack)
+                            defrule.actions.extend(p_action_stack)
                     definitions.extend(output)
                 
                 break

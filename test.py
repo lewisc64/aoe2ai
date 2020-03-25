@@ -1,9 +1,13 @@
 import aoeai
 
 print(aoeai.translate("""
-#select random
-  train militiaman-line
+#select random persistant
+  #select random
+    chat to all "1.2"
+  #randor
+    chat to all "1.7"
+  #end select
 #randor
-  train spearman-line
+  chat to all "2"
 #end select
 """))

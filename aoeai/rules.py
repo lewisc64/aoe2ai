@@ -936,32 +936,68 @@ class SelectRandom(Rule):
 #end select random"""
     
     def parse(self, line, **kwargs):
-        persistant = self.get_data(line)
+        persistant = self.get_data(line)[0]
         
         if line.startswith("#select"):
-            const_name = f"select-random-{uuid.uuid4()}"
-            kwargs["data_stack"].append(const_name)
+            identifier = uuid.uuid4()
+            const_name = f"select-random-{identifier}"
+            goal_name = f"select-random-result-{identifier}"
+            goal_number = len(kwargs["goals"]) + 1
+
+            kwargs["goals"].append(goal_number)
+            kwargs["definitions"].insert(0, Defconst(goal_name, goal_number))
+            kwargs["constants"].append(goal_name)
+
+            kwargs["data_stack"].append(persistant)
             kwargs["data_stack"].append(2)
-            kwargs["condition_stack"].append("random-number == 1")
+            kwargs["data_stack"].append(identifier)
+            
             kwargs["definitions"].insert(0, Defconst(const_name, -1))
-            actions = [f"generate-random-number {const_name}"]
+            kwargs["constants"].append(const_name)
+
+            kwargs["condition_stack"].append(f"goal {goal_name} 1")
+            
+            generate_rule = Defrule(["true"], [f"generate-random-number {const_name}"])
+            
             if persistant:
-                actions.append("disable-self")
-            return Defrule(["true"], actions)
+                generate_rule.actions.append("disable-self")
+                
+            return [generate_rule, Defconst(identifier, -1)]
         
         elif line.startswith("#end"):
             kwargs["condition_stack"].pop()
-            const_value = kwargs["data_stack"].pop() - 1
-            const_name = kwargs["data_stack"].pop()
+            
+            identifier = kwargs["data_stack"].pop()
+            number_of_blocks = kwargs["data_stack"].pop() - 1
+            persistant = kwargs["data_stack"].pop()
+            
+            const_name = f"select-random-{identifier}"
+            
             for const in kwargs["definitions"]:
                 if isinstance(const, Defconst) and const.name == const_name:
-                    const.value = const_value
+                    const.value = number_of_blocks
                     break
             else:
                 raise Exception(f"select random failed to find const name '{const_name}'")
+
+            for i, const in enumerate(kwargs["definitions"]):
+                if isinstance(const, Defconst) and const.name == identifier:
+                    kwargs["definitions"].pop(i)
+                    for goal_value in range(1, number_of_blocks + 1):
+                        actions = [f"set-goal select-random-result-{identifier} {goal_value}"]
+                        if persistant:
+                            actions.append("disable-self")
+                        goal_set_rule = Defrule([f"random-number == {goal_value}"], actions)
+                        goal_set_rule.conditions.extend(kwargs["condition_stack"])
+                        kwargs["definitions"].insert(i + goal_value - 1, goal_set_rule)
+                    break
+            else:
+                raise Exception(f"failed to find marker '{identifier}'")
         
         else:
+            identifier = kwargs["data_stack"].pop()
             number = kwargs["data_stack"].pop()
             kwargs["condition_stack"].pop()
-            kwargs["condition_stack"].append(f"random-number == {number}")
+            kwargs["condition_stack"].append(f"goal select-random-result-{identifier} {number}")
             kwargs["data_stack"].append(number + 1)
+            kwargs["data_stack"].append(identifier)
