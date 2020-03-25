@@ -284,6 +284,24 @@ scout AREA_NAME
 scout opposite
 scout enemy
 ```
+## select random
+A random block separated by randors will be allowed to execute. Using persistant mode means the randomly chosen one is picked every time, otherwise it will change.
+### Usage
+```
+#select random ?persistant
+   chat to all "option 1!"
+#randor
+   chat to all "option 2!"
+#end select random
+```
+### Example
+```
+#select random
+   chat to all "option 1!"
+#randor
+   chat to all "option 2!"
+#end select random
+```
 ## set const
 Sets a constant. Can only be done once for every name.
 ### Usage

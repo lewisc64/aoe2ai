@@ -1,7 +1,9 @@
 import aoeai
 
 print(aoeai.translate("""
-#delay by 3 minutes
-    take boar
-#end delay
+#select random
+  train militiaman-line
+#randor
+  train spearman-line
+#end select
 """))

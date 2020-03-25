@@ -1,4 +1,5 @@
 import re
+import uuid
 
 from .defrule import *
 from .research import *
@@ -91,6 +92,9 @@ rules.append(Snippet("set up micro",
                       "set-strategic-number sn-enable-patrol-attack 1",
                       "set-strategic-number sn-intelligent-gathering 1",
                       "set-strategic-number sn-local-targeting-mode 1",
+                      "set-strategic-number sn-retask-gather-amount 0",
+                      "set-strategic-number sn-target-evaluation-siege-weapon 500",
+                      "set-strategic-number sn-ttkfactor-scalar 500",
                       "set-strategic-number sn-percent-enemy-sighted-response 100",
                       "set-strategic-number sn-task-ungrouped-soldiers 0",
                       "set-strategic-number sn-gather-defense-units 1",
@@ -143,7 +147,7 @@ class Load(Rule):
         content = file.read()
         file.close()
               
-        output = interpreter.interpret(content, timers=kwargs["timers"], goals=kwargs["goals"], constants=kwargs["constants"])
+        output = interpreter.interpret(content, timers=kwargs["timers"], goals=kwargs["goals"], constants=kwargs["constants"], userpatch=kwargs["userpatch"])
 
         rules = []
 
@@ -913,4 +917,51 @@ class Delete(Rule):
         form, name = self.get_data(line)
         return Defrule(["true"], ["delete-{} {}".format(form, name)])
 
-
+@rule
+class SelectRandom(Rule):
+    def __init__(self):
+        super().__init__()
+        self.name = "select random"
+        self.regex = re.compile("^#select random( persistant)?|#randor|#end select(?: random)?$")
+        self.usage = """#select random ?persistant
+   chat to all \"option 1!\"
+#randor
+   chat to all \"option 2!\"
+#end select random"""
+        self.help = "A random block separated by randors will be allowed to execute. Using persistant mode means the randomly chosen one is picked every time, otherwise it will change."
+        self.example = """#select random
+   chat to all \"option 1!\"
+#randor
+   chat to all \"option 2!\"
+#end select random"""
+    
+    def parse(self, line, **kwargs):
+        persistant = self.get_data(line)
+        
+        if line.startswith("#select"):
+            const_name = f"select-random-{uuid.uuid4()}"
+            kwargs["data_stack"].append(const_name)
+            kwargs["data_stack"].append(2)
+            kwargs["condition_stack"].append("random-number == 1")
+            kwargs["definitions"].insert(0, Defconst(const_name, -1))
+            actions = [f"generate-random-number {const_name}"]
+            if persistant:
+                actions.append("disable-self")
+            return Defrule(["true"], actions)
+        
+        elif line.startswith("#end"):
+            kwargs["condition_stack"].pop()
+            const_value = kwargs["data_stack"].pop() - 1
+            const_name = kwargs["data_stack"].pop()
+            for const in kwargs["definitions"]:
+                if isinstance(const, Defconst) and const.name == const_name:
+                    const.value = const_value
+                    break
+            else:
+                raise Exception(f"select random failed to find const name '{const_name}'")
+        
+        else:
+            number = kwargs["data_stack"].pop()
+            kwargs["condition_stack"].pop()
+            kwargs["condition_stack"].append(f"random-number == {number}")
+            kwargs["data_stack"].append(number + 1)

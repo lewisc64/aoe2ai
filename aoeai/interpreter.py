@@ -1,7 +1,33 @@
 from .rules import rules
 from .defrule import *
 
-def compact_rules(rules):
+def ensure_rule_length(rules, rule_length=32):
+
+    for i in range(len(rules) - 1, -1, -1):
+        
+        rule = rules[i]
+        if not isinstance(rule, Defrule):
+            continue
+        
+        if len(rule.actions) > rule_length:
+
+            if not rule.compressable:
+                print("WARNING: An incompressable rule is being split.")
+            
+            rules.remove(rule)
+            
+            disable_self = "disable-self" in rule.actions
+            if disable_self:
+                rule.actions.remove("disable-self")
+
+            step = rule_length - (1 if disable_self else 0)
+            
+            for j in range(0, len(rule.actions), step):
+                
+                rules.insert(i, Defrule(rule.conditions, rule.actions[j:j+step]))
+                if disable_self and not "disable-self" in rules[i].actions:
+                    rules[i].actions.append("disable-self")
+    
     i = 0
     while i < len(rules) - 1:
         rule1, rule2 = rules[i:i+2]
@@ -11,17 +37,15 @@ def compact_rules(rules):
                     i += 1
                     break
             else:
-                if len(rule1.actions) + len(rule2.actions) <= 32 and ("disable-self" not in rule1.actions and "disable-self" not in rule2.actions or "disable-self" in rule1.actions and "disable-self" in rule2.actions):
-                    rule1.actions.extend(rule2.actions)
-                    rules.pop(i+1)
-                else:
-                    i += 1
-                    
-        else:
-            i += 1
+                if "disable-self" not in rule1.actions and "disable-self" not in rule2.actions or "disable-self" in rule1.actions and "disable-self" in rule2.actions:
+                    if len(rule1.actions) + len(rule2.actions) <= rule_length:
+                        rule1.actions.extend(rule2.actions)
+                        rules.pop(i+1)
+                        continue
+        i += 1
     return rules
 
-def interpret(content, timers=None, goals=None, constants=None):
+def interpret(content, timers=None, goals=None, constants=None, userpatch=False):
     if timers is None:
         timers = []
     if goals is None:
@@ -58,7 +82,8 @@ def interpret(content, timers=None, goals=None, constants=None):
                                           goals=goals,
                                           constants=constants,
                                           items=items,
-                                          current_position=i)
+                                          current_position=i,
+                                          userpatch=userpatch)
                 
                 if isinstance(output, Defrule):
                     if not output.ignore_stacks:
@@ -84,7 +109,7 @@ def interpret(content, timers=None, goals=None, constants=None):
     if condition_stack or action_stack or data_stack:
         print("WARNING: Interpretation finished with populated stacks. Remember to end blocks.")
     
-    return compact_rules(definitions)
+    return ensure_rule_length(definitions, rule_length=(16 if userpatch else 32))
 
-def translate(content, stamp=False):
-    return (";Translated by https://github.com/lewisc64/aoe2ai\n" if stamp else "") + "\n".join(str(x) for x in interpret(content))
+def translate(content, stamp=False, userpatch=False):
+    return (";Translated by https://github.com/lewisc64/aoe2ai\n" if stamp else "") + "\n".join(str(x) for x in interpret(content, userpatch=userpatch))
