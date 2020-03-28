@@ -941,21 +941,19 @@ class SelectRandom(Rule):
         if line.startswith("#select"):
             identifier = uuid.uuid4()
             const_name = f"select-random-{identifier}"
-            goal_name = f"select-random-result-{identifier}"
             goal_number = len(kwargs["goals"]) + 1
 
             kwargs["goals"].append(goal_number)
-            kwargs["definitions"].insert(0, Defconst(goal_name, goal_number))
-            kwargs["constants"].append(goal_name)
 
             kwargs["data_stack"].append(persistant)
             kwargs["data_stack"].append(2)
             kwargs["data_stack"].append(identifier)
+            kwargs["data_stack"].append(goal_number)
             
             kwargs["definitions"].insert(0, Defconst(const_name, -1))
             kwargs["constants"].append(const_name)
 
-            kwargs["condition_stack"].append(f"goal {goal_name} 1")
+            kwargs["condition_stack"].append(f"goal {goal_number} 1")
             
             generate_rule = Defrule(["true"], [f"generate-random-number {const_name}"])
             
@@ -966,7 +964,8 @@ class SelectRandom(Rule):
         
         elif line.startswith("#end"):
             kwargs["condition_stack"].pop()
-            
+
+            goal_number = kwargs["data_stack"].pop()
             identifier = kwargs["data_stack"].pop()
             number_of_blocks = kwargs["data_stack"].pop() - 1
             persistant = kwargs["data_stack"].pop()
@@ -984,7 +983,7 @@ class SelectRandom(Rule):
                 if isinstance(const, Defconst) and const.name == identifier:
                     kwargs["definitions"].pop(i)
                     for goal_value in range(1, number_of_blocks + 1):
-                        actions = [f"set-goal select-random-result-{identifier} {goal_value}"]
+                        actions = [f"set-goal {goal_number} {goal_value}"]
                         if persistant:
                             actions.append("disable-self")
                         goal_set_rule = Defrule([f"random-number == {goal_value}"], actions)
@@ -995,9 +994,11 @@ class SelectRandom(Rule):
                 raise Exception(f"failed to find marker '{identifier}'")
         
         else:
+            goal_number = kwargs["data_stack"].pop()
             identifier = kwargs["data_stack"].pop()
             number = kwargs["data_stack"].pop()
             kwargs["condition_stack"].pop()
-            kwargs["condition_stack"].append(f"goal select-random-result-{identifier} {number}")
+            kwargs["condition_stack"].append(f"goal {goal_number} {number}")
             kwargs["data_stack"].append(number + 1)
             kwargs["data_stack"].append(identifier)
+            kwargs["data_stack"].append(goal_number)
