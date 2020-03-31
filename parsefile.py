@@ -1,6 +1,6 @@
 import aoeai
 import sys
-
+import os
 
 if len(sys.argv) < 4 or "-help" in sys.argv:
     print("Usage:")
@@ -18,12 +18,16 @@ file.close()
 
 per = aoeai.translate(content, stamp=True, userpatch=("-userpatch" in sys.argv))
 
-file = open(output_path + "/" + name + ".per", "w")
+per_path = output_path + "/" + name + ".per"
+ai_path = output_path + "/" + name + ".ai"
+
+file = open(per_path, "w")
 file.write(per)
 print("Saved to '{}'.".format(file.name))
 file.close()
 
-file = open(output_path + "/" + name + ".ai", "w")
-print("Saved to '{}'.".format(file.name))
-file.close()
+if not os.path.isfile(ai_path):
+    file = open(ai_path, "w")
+    print("Saved to '{}'.".format(file.name))
+    file.close()
 

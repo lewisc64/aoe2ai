@@ -10,6 +10,7 @@ rules = []
 def rule(rule):
     global rules
     rules.append(rule())
+    return rule
 
 class Rule:
     def __init__(self):
@@ -665,6 +666,9 @@ build archery-range with wood escrow"""
             actions.append("up-set-placement-data {} {} c: {}".format("any-enemy" if forward else "my-player-number", near, near_distance))
             actions.append("up-build place-{} 0 c: {}".format("forward" if forward else "control", building))
             compressable = False
+
+        if building == "castle":
+            conditions.append("stone-amount >= 650")
         
         return Defrule(conditions, actions, compressable=compressable)
 
@@ -955,7 +959,7 @@ class SelectRandom(Rule):
 
             kwargs["condition_stack"].append(f"goal {goal_number} 1")
             
-            generate_rule = Defrule(["true"], [f"generate-random-number {const_name}"])
+            generate_rule = Defrule(["true"], [f"generate-random-number {const_name}", f"set-goal {goal_number} 0"])
             
             if persistant:
                 generate_rule.actions.append("disable-self")
@@ -986,8 +990,9 @@ class SelectRandom(Rule):
                         actions = [f"set-goal {goal_number} {goal_value}"]
                         if persistant:
                             actions.append("disable-self")
-                        goal_set_rule = Defrule([f"random-number == {goal_value}"], actions)
+                        goal_set_rule = Defrule([f"random-number == {goal_value}", f"goal {goal_number} 0"], actions)
                         goal_set_rule.conditions.extend(kwargs["condition_stack"])
+                        goal_set_rule.actions.extend(kwargs["action_stack"])
                         kwargs["definitions"].insert(i + goal_value - 1, goal_set_rule)
                     break
             else:
