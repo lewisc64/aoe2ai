@@ -95,6 +95,12 @@ build houses with AMOUNT headroom
 build houses
 build houses with 10 headroom
 ```
+## build safety mill
+
+### Usage
+```
+build safety mill
+```
 ## build walls
 Wall placement must be enabled on the same perimeter to function.
 ### Usage

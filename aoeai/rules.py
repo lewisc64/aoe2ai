@@ -119,6 +119,11 @@ rules.append(Snippet("drop off food",
                       "up-drop-resources forage-food c: 5",
                       "up-drop-resources deer-food c: 20",
                       "up-drop-resources boar-food c: 10"]))
+rules.append(Snippet("build safety mill",
+                     ["can-build mill",
+                      "building-type-count-total mill == 0",
+                      "game-time >= 360"],
+                     ["build mill"]))
 
 create_merged_snippet(rules, "set up basics", ["set up scouting", "set up new building system", "set up micro"])
 
