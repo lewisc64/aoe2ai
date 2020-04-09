@@ -650,6 +650,10 @@ build archery-range with wood escrow"""
 
     def parse(self, line, **kwargs):
         forward, amount, building, near_distance, near, escrow = self.get_data(line)
+
+        # eventually stop flooding build queue due to low town size.
+        if amount is None:
+            amount = 100
         
         actions = []
         conditions = []
@@ -661,9 +665,8 @@ build archery-range with wood escrow"""
             for resource in escrow.split(" and "):
                 actions.append("release-escrow " + resource)
         
-        if amount is not None:
-            conditions.append("building-type-count-total {} < {}".format(building, amount))
-
+        conditions.append("building-type-count-total {} < {}".format(building, amount))
+        
         if near is None:
             actions.append("build{} {}".format("" if forward is None else "-forward", building))
             compressable = True
@@ -671,9 +674,6 @@ build archery-range with wood escrow"""
             actions.append("up-set-placement-data {} {} c: {}".format("any-enemy" if forward else "my-player-number", near, near_distance))
             actions.append("up-build place-{} 0 c: {}".format("forward" if forward else "control", building))
             compressable = False
-
-        if building == "castle":
-            conditions.append("stone-amount >= 650")
         
         return Defrule(conditions, actions, compressable=compressable)
 
