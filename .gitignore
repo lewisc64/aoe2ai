@@ -6,3 +6,4 @@
 *.spec
 build
 dist
+*.7z
