@@ -45,3 +45,5 @@ for key in research:
 
 create_merged_research(research, "all", research.keys())
 create_merged_research(research, "mining camp", ["mining camp gold", "mining camp stone"])
+create_merged_research(research, "gold mining camp", ["mining camp gold"])
+create_merged_research(research, "stone mining camp", ["mining camp stone"])

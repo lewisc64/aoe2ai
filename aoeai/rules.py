@@ -212,7 +212,7 @@ class Order(Load):
             rule.conditions.append(f"goal {goal_number} 1")
         segments[-1][-1].actions.append(f"set-goal {goal_number} 0")
         
-        return [Defrule(["true"], [f"set-goal {goal_number} 0", "disable-self"]), *reduce(lambda x, y: x + y, segments)]
+        return [Defrule(["true"], [f"set-goal {goal_number} 0", "disable-self"]), *reduce(lambda x, y: x + y, segments[::-1])]
 
 @rule
 class Cheat(Rule):

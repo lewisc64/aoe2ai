@@ -31,16 +31,21 @@ def ensure_rule_length(rules, rule_length=32):
     while i < len(rules) - 1:
         rule1, rule2 = rules[i:i+2]
         if isinstance(rule1, Defrule) and isinstance(rule2, Defrule) and rule1.compressable and rule2.compressable:
-            for condition1, condition2 in zip(sorted(rule1.conditions), sorted(rule2.conditions)):
-                if condition1 != condition2:
-                    i += 1
-                    break
+            rule1_conditions = [x for x in rule1.conditions if x != "true"]
+            rule2_conditions = [x for x in rule2.conditions if x != "true"]
+            if len(rule1_conditions) != len(rule2_conditions):
+                i += 1
             else:
-                if "disable-self" not in rule1.actions and "disable-self" not in rule2.actions or "disable-self" in rule1.actions and "disable-self" in rule2.actions:
-                    if len(rule1.actions) + len(rule2.actions) + len(rule2.conditions) <= rule_length:
-                        rule1.actions.extend(rule2.actions)
-                        rules.pop(i+1)
-                        continue
+                for condition1, condition2 in zip(sorted(rule1_conditions), sorted(rule2_conditions)):
+                    if condition1 != condition2:
+                        i += 1
+                        break
+                else:
+                    if "disable-self" not in rule1.actions and "disable-self" not in rule2.actions or "disable-self" in rule1.actions and "disable-self" in rule2.actions:
+                        if len(rule1.actions) + len(rule2.actions) + len(rule2.conditions) <= rule_length:
+                            rule1.actions.extend(rule2.actions)
+                            rules.pop(i+1)
+                            continue
         i += 1
     return rules
 
@@ -102,7 +107,7 @@ def interpret(content, timers=None, goals=None, constants=None, userpatch=False)
             print("WARNING: Line {} did not match:".format(i + 1))
             print(item)
 
-        print(item, condition_stack, action_stack, data_stack)
+        #print(item, condition_stack, action_stack, data_stack)
         
         i += 1
     

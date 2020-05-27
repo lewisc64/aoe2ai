@@ -1,5 +1,15 @@
 import aoeai
 
 print(aoeai.translate("""
-train archer-line => train skirmisher-line => train militiaman-line => train spearman-line
+#when
+  research ri-arbalest
+#then
+  #select random
+    chat to all "Precision engineering."
+  #randor
+    chat to all "Apex predator."
+  #randor
+    chat to all "Perforating, machinating..."
+  #end select
+#end when
 """))
