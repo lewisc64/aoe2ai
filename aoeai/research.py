@@ -14,7 +14,7 @@ research = {
     "blacksmith cavalry": ["scale-barding", "chain-barding", "plate-barding"],
     "lumber camp": ["double-bit-axe", "bow-saw", "two-man-saw"],
     "mill": ["horse-collar", "heavy-plow", "crop-rotation"],
-    "market": ["coinage", "banking", "guilds"],
+    "market": ["coinage", "banking", "guilds", "caravan"],
     "mining camp gold": ["gold-mining", "gold-shaft-mining"],
     "mining camp stone": ["stone-mining", "stone-shaft-mining"],
     "barracks": ["tracking", "squires", "arson", "man-at-arms", "long-swordsman", "two-handed-swordsman", "champion", "pikeman", "halberdier", "eagle-warrior", "elite-eagle-warrior"],

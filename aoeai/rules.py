@@ -1,3 +1,4 @@
+from functools import reduce
 import re
 import uuid
 
@@ -19,6 +20,15 @@ class Rule:
         self.help = ""
         self.usage = ""
         self.example = ""
+
+    def append_rule_lists(self, rules1, rules2):
+        output = []
+        for rule in rules2:
+            if isinstance(rule, Defconst):
+                kwargs["definitions"].insert(0, rule)
+                kwargs["constants"].append(rule.name)
+            elif isinstance(rule, Defrule):
+                output.append(rule)
 
     def is_match(self, line):
         return self.regex.match(line)
@@ -128,17 +138,6 @@ rules.append(Snippet("build safety mill",
 create_merged_snippet(rules, "set up basics", ["set up scouting", "set up new building system", "set up micro"])
 
 @rule
-class Comment(Rule):
-    def __init__(self):
-        super().__init__()
-        self.name = "comment"
-        self.regex = re.compile("^//(.+)$")
-        self.usage = "Place '//' before a line. Cannot be mid-line."
-    
-    def parse(self, line, **kwargs):
-        return None
-
-@rule
 class Load(Rule):
     def __init__(self):
         super().__init__()
@@ -152,7 +151,9 @@ class Load(Rule):
         file = open(path, "r")
         content = file.read()
         file.close()
-              
+        return self.parse_file_content(content, **kwargs)
+
+    def parse_file_content(self, content, jump=True, **kwargs):
         output = interpreter.interpret(content, timers=kwargs["timers"], goals=kwargs["goals"], constants=kwargs["constants"], userpatch=kwargs["userpatch"])
 
         rules = []
@@ -171,20 +172,50 @@ class Load(Rule):
             rule.compressable = False
             rule.ignore_stacks = True
 
-        goal = len(kwargs["goals"]) + 1
-        kwargs["goals"].append(goal)
+        if jump:
+            goal = len(kwargs["goals"]) + 1
+            kwargs["goals"].append(goal)
 
-        jump_amount = len(rules)
+            jump_amount = len(rules)
 
-        if len(kwargs["condition_stack"]) == 1:
-            rules.insert(0, Defrule(["not({})".format(kwargs["condition_stack"][0])], ["up-jump-rule {}".format(jump_amount)], ignore_stacks=True))
+            if len(kwargs["condition_stack"]) == 1:
+                rules.insert(0, Defrule(["not({})".format(kwargs["condition_stack"][0])], ["up-jump-rule {}".format(jump_amount)], ignore_stacks=True))
+            else:
+                rules.insert(0, Defrule(["true"], ["set-goal {} {}".format(goal, 1)], ignore_stacks=True))
+                rules.insert(1, Defrule(["true"], ["set-goal {} {}".format(goal, 0)]))
+                rules.insert(2, Defrule(["goal {} {}".format(goal, 1)], ["up-jump-rule {}".format(jump_amount)], ignore_stacks=True))
+
         else:
-            rules.insert(0, Defrule(["true"], ["set-goal {} {}".format(goal, 1)], ignore_stacks=True))
-            rules.insert(1, Defrule(["true"], ["set-goal {} {}".format(goal, 0)]))
-            rules.insert(2, Defrule(["goal {} {}".format(goal, 1)], ["up-jump-rule {}".format(jump_amount)], ignore_stacks=True))
+            for rule in rules:
+                rule.conditions.extend(kwargs["condition_stack"])
+            
         return rules
+
+@rule
+class Order(Load):
+    def __init__(self):
+        super().__init__()
+        self.name = "order"
+        self.regex = re.compile("^(.+?) *=> *(.+)$")
+
+    def parse(self, line, **kwargs):
+        segments = [Load.parse_file_content(self, x, jump=False, **kwargs) for x in self.get_data(line)]
+        
+        goal_number = len(kwargs["goals"]) + 1
+        kwargs["goals"].append(goal_number)
+
+        for rule in segments[0]:
+            rule.conditions.append(f"goal {goal_number} 0")
+        segments[0][-1].actions.append(f"set-goal {goal_number} 1")
+
+        for rule in segments[-1]:
+            rule.conditions.append(f"goal {goal_number} 1")
+        segments[-1][-1].actions.append(f"set-goal {goal_number} 0")
+
         
         
+        return [Defrule(["true"], [f"set-goal {goal_number} 0", "disable-self"]), *reduce(lambda x, y: x + y, segments)]
+
 @rule
 class Cheat(Rule):
     def __init__(self):
@@ -287,9 +318,7 @@ class If(Rule):
             kwargs["condition_stack"].extend(conditions)
             kwargs["data_stack"].append(len(conditions))
             
-        
         else:
-
             kwargs["condition_stack"].append(parse_condition(condition_if))
             kwargs["data_stack"].append(1)
 

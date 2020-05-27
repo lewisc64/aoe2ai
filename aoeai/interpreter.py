@@ -9,8 +9,7 @@ def ensure_rule_length(rules, rule_length=32):
         if not isinstance(rule, Defrule):
             continue
         
-        if len(rule.actions) > rule_length:
-
+        if len(rule.actions) + len(rule.conditions) > rule_length:
             if not rule.compressable:
                 print("WARNING: An incompressable rule is being split.")
             
@@ -20,7 +19,7 @@ def ensure_rule_length(rules, rule_length=32):
             if disable_self:
                 rule.actions.remove("disable-self")
 
-            step = rule_length - (1 if disable_self else 0)
+            step = rule_length - (2 if disable_self else 0)
             
             for j in range(0, len(rule.actions), step):
                 
@@ -38,7 +37,7 @@ def ensure_rule_length(rules, rule_length=32):
                     break
             else:
                 if "disable-self" not in rule1.actions and "disable-self" not in rule2.actions or "disable-self" in rule1.actions and "disable-self" in rule2.actions:
-                    if len(rule1.actions) + len(rule2.actions) <= rule_length:
+                    if len(rule1.actions) + len(rule2.actions) + len(rule2.conditions) <= rule_length:
                         rule1.actions.extend(rule2.actions)
                         rules.pop(i+1)
                         continue
@@ -62,7 +61,7 @@ def interpret(content, timers=None, goals=None, constants=None, userpatch=False)
     i = 0
     while i < len(items):
 
-        item = items[i]
+        item = items[i].split("//")[0].strip()
         
         if item == "":
             i += 1
@@ -103,7 +102,7 @@ def interpret(content, timers=None, goals=None, constants=None, userpatch=False)
             print("WARNING: Line {} did not match:".format(i + 1))
             print(item)
 
-        #print(item, condition_stack, action_stack, data_stack)
+        print(item, condition_stack, action_stack, data_stack)
         
         i += 1
     
