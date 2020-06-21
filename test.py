@@ -1,15 +1,8 @@
 import aoeai
+from aoeai import Defrule
 
 print(aoeai.translate("""
-#when
-  research ri-arbalest
-#then
-  #select random
-    chat to all "Precision engineering."
-  #randor
-    chat to all "Apex predator."
-  #randor
-    chat to all "Perforating, machinating..."
-  #end select
-#end when
+#while not(enemy-buildings-in-town) and strategic-number sn-maximum-town-size < 255
+  sn-maximum-town-size += 1
+#end while
 """))

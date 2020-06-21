@@ -187,7 +187,8 @@ class Load(Rule):
 
         else:
             for rule in rules:
-                rule.conditions.extend(kwargs["condition_stack"])
+                if not rule.ignore_stacks:
+                    rule.conditions.extend(kwargs["condition_stack"])
             
         return rules
 
@@ -261,7 +262,7 @@ class AddCondition(Rule):
         if condition is None:
             kwargs["condition_stack"].pop(-1)
         else:
-            kwargs["condition_stack"].append(parse_condition(condition))
+            kwargs["condition_stack"].append(condition)
 
 @rule
 class AddAction(Rule):
@@ -308,7 +309,7 @@ class If(Rule):
         if condition_if is None:
 
             conditions = [kwargs["condition_stack"].pop() for x in range(kwargs["data_stack"].pop())][::-1]
-            conditions[-1] = "not({})".format(conditions[-1])
+            conditions[-1] = "not ({})".format(conditions[-1])
             
             if condition_elseif is not None:
                 conditions.append(parse_condition(condition_elseif))
@@ -321,11 +322,53 @@ class If(Rule):
             kwargs["data_stack"].append(1)
 
 @rule
+class While(Rule):
+    def __init__(self):
+        super().__init__()
+        self.name = "while"
+        self.regex = re.compile("^#(?:while (.+)|end while)$")
+        self.usage = """#while CONDITION
+    RULES
+#end WHILE"""
+        self.help = "Repeats a set of rules until the condition is false."
+
+    def parse(self, line, **kwargs):
+        if line.startswith("#end"):
+            tag, condition = [kwargs["data_stack"].pop() for x in range(2)]
+            kwargs["condition_stack"].pop()
+            
+            marker_index = -1
+            for i, rule in enumerate(kwargs["definitions"]):
+                if rule.tag == tag:
+                    marker_index = i
+                    break
+            else:
+                print("ERROR: while failed to find tag.")
+                return;
+
+            kwargs["definitions"].pop(marker_index)
+            for rule in kwargs["definitions"][marker_index:]:
+                rule.compressable = False
+
+            jump = marker_index - len(kwargs["definitions"]) - 1
+            return Defrule([], [f"up-jump-rule {jump}"], compressable=False);
+
+        condition = parse_condition(self.get_data(line)[0])
+
+        kwargs["condition_stack"].append(condition)
+
+        tag = uuid.uuid4()
+        kwargs["data_stack"].append(condition)
+        kwargs["data_stack"].append(tag)
+        
+        return Defrule(["true"], ["do-nothing"], tag=tag)
+
+@rule
 class When(Rule):
     def __init__(self):
         super().__init__()
         self.name = "when"
-        self.regex = re.compile("^(?:#when( once)?|#then|#end when)$")
+        self.regex = re.compile("^(?:#when|#then( always)?|#end when)$")
         self.usage = """#when
     RULE
 #then
@@ -339,17 +382,21 @@ class When(Rule):
             kwargs["goals"].append(goal)
             kwargs["data_stack"].append(goal)
             kwargs["action_stack"].append("set-goal {} 1".format(goal))
-            actions = ["set-goal {} 0".format(goal)]
-            if self.get_data(line)[0] is not None:
-                actions.append("disable-self")
-            return Defrule(["true"], actions, ignore_stacks=True)
+            return Defrule(["true"], ["set-goal {} 0".format(goal), "disable-self"], ignore_stacks=True)
+        
         elif line.startswith("#then"):
             goal = kwargs["data_stack"][-1]
+            kwargs["data_stack"].append(self.get_data(line)[0] != None)
             kwargs["action_stack"].pop()
             kwargs["condition_stack"].append("goal {} 1".format(goal))
+            
         elif line.startswith("#end"):
-            kwargs["data_stack"].pop()
+            always = kwargs["data_stack"].pop()
+            goal = kwargs["data_stack"].pop()
             kwargs["condition_stack"].pop()
+
+            if not always:
+                return Defrule(["true"], [f"set-goal {goal} 0"], ignore_stacks=True)
 
 @rule
 class DoOnce(Rule):
@@ -364,7 +411,7 @@ class DoOnce(Rule):
     
     def parse(self, line, **kwargs):
         if "end" in line:
-            kwargs["action_stack"].pop(-1)
+            kwargs["action_stack"].pop()
         else:
             kwargs["action_stack"].append("disable-self")
 
@@ -463,7 +510,7 @@ class Respond(Rule):
     def __init__(self):
         super().__init__()
         self.name = "respond"
-        self.regex = re.compile("^respond to (?:([^ ]{1,3}) )?([^ ]+)(?: (building|unit))? with (?:([^ ]+) )?([^ ]+)(?: (building|unit))?$")
+        self.regex = re.compile("^respond to (?:([^ ]+) )??([^ ]+)(?: (building|unit))? with (?:([^ ]+) )?([^ ]+)(?: (building|unit))?$")
         self.usage = "respond to ?AMOUNT NAME ?BUILDING/UNIT with NAME ?BUILDING/UNIT"
         self.help = "When the AI sees the specified amount, it reacts with the specified parameters. If building/unit is unspecified, unit is assumed. If amount is unspecified, 1 is assumed."
 
@@ -492,7 +539,7 @@ class BlockRespond(Rule):
     def __init__(self):
         super().__init__()
         self.name = "block respond"
-        self.regex = re.compile("^(?:#respond to (?:([^ ]{1,3}) )?([^ ]+)(?: (building|unit))?|#end respon(?:d|se))$")
+        self.regex = re.compile("^(?:#respond to (?:([^ ]+) )??([^ ]+)(?: (building|unit))?|#end respon(?:d|se))$")
         self.usage = """#respond to ?AMOUNT NAME ?BUILDING/UNIT
    RULES
 #end respond"""
@@ -593,11 +640,18 @@ build lumber camps maintaining 4 tiles"""
             if tiles is None:
                 tiles = 3
 
-        return Defrule(["dropsite-min-distance {} > {}".format(resource, tiles),
-                        "resource-found {}".format(resource),
-                        "up-pending-objects c: {} == 0".format(building),
-                        "can-build {}".format(building)],
-                       ["build {}".format(building)])
+
+        conditions = [
+            "dropsite-min-distance {} > {}".format(resource, tiles),
+            "resource-found {}".format(resource),
+            "up-pending-objects c: {} == 0".format(building),
+            "can-build {}".format(building)
+        ]
+
+        if "mining camps" in dropoff_type and "gold" in dropoff_type:
+            conditions[0] = parse_condition(f"{conditions[0]} or unit-type-count 579 == 0 and unit-type-count 581 == 0 and strategic-number sn-gold-gatherer-percentage > 0")
+        
+        return Defrule(conditions, ["build {}".format(building)])
 
 @rule
 class BuildHouses(Rule):
@@ -668,7 +722,7 @@ class Build(Rule):
     def __init__(self):
         super().__init__()
         self.name = "build"
-        self.regex = re.compile("^build (forward )?(?:([^ ]+) )?([^ ]+)(?: ([^ ]+) tiles? away from ([^ ]+))?(?: with ((?:[^ ]+(?: and )?)*) escrow)?$")
+        self.regex = re.compile("^build (forward )?(?:([^ ]+) )?([^ ]+)(?: near ([^ ]+))?(?: with ((?:[^ ]+(?: and )?)*) escrow)?$")
         self.usage = "build ?forward AMOUNT BUILDING_NAME with RESOURCE_NAME escrow"
         self.examples = """build 1 barracks
 build forward castle
@@ -676,7 +730,7 @@ build archery-range with wood escrow"""
         self.help = "Sets up the rule to build the building. If amount is unspecified, the building will be built infinitely."
 
     def parse(self, line, **kwargs):
-        forward, amount, building, near_distance, near, escrow = self.get_data(line)
+        forward, amount, building, near, escrow = self.get_data(line)
 
         # eventually stop flooding build queue due to low town size.
         if amount is None:
@@ -698,6 +752,7 @@ build archery-range with wood escrow"""
             actions.append("build{} {}".format("" if forward is None else "-forward", building))
             compressable = True
         else:
+            near_distance = 0
             actions.append("up-set-placement-data {} {} c: {}".format("any-enemy" if forward else "my-player-number", near, near_distance))
             actions.append("up-build place-{} 0 c: {}".format("forward" if forward else "control", building))
             compressable = False
@@ -734,7 +789,7 @@ research blacksmith infantry upgrades"""
         
         for name in research[tech_group] if tech_group in research else [tech]:
             out.append(Defrule([x.format(name) for x in conditions], [x.format(name) for x in actions]))
-        
+    
         return out
 
 @rule

@@ -33,12 +33,9 @@ def ensure_rule_length(rules, rule_length=32):
         if isinstance(rule1, Defrule) and isinstance(rule2, Defrule) and rule1.compressable and rule2.compressable:
             rule1_conditions = [x for x in rule1.conditions if x != "true"]
             rule2_conditions = [x for x in rule2.conditions if x != "true"]
-            if len(rule1_conditions) != len(rule2_conditions):
-                i += 1
-            else:
+            if len(rule1_conditions) == len(rule2_conditions):
                 for condition1, condition2 in zip(sorted(rule1_conditions), sorted(rule2_conditions)):
                     if condition1 != condition2:
-                        i += 1
                         break
                 else:
                     if "disable-self" not in rule1.actions and "disable-self" not in rule2.actions or "disable-self" in rule1.actions and "disable-self" in rule2.actions:

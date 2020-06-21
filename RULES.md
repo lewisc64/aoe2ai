@@ -124,12 +124,6 @@ Gives the AI resources.
 ```
 cheat RESOURCE_NAME AMOUNT
 ```
-## comment
-
-### Usage
-```
-Place '//' before a line. Cannot be mid-line.
-```
 ## delay
 Block body is only allowed to trigger after the time is up.
 ### Usage
@@ -234,6 +228,12 @@ set/increase/decrease town size by/to AMOUNT
 set town size to 32
 increase town size by 5
 decrease town size by 1
+```
+## order
+Loads another aoe2ai file. Relative to main file if trying to load from a seperate file.
+### Usage
+```
+load "PATH"
 ```
 ## repeat
 Each rule is allowed to be triggered once after the time has elapsed, the process repeats.
@@ -424,4 +424,12 @@ Rules in the 'then' block are allowed to trigger when any rule in the main 'when
 #then
     RULES
 #end when
+```
+## while
+Repeats a set of rules until the condition is false.
+### Usage
+```
+#while CONDITION
+    RULES
+#end WHILE
 ```
