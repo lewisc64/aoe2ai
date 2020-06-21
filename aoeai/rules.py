@@ -643,6 +643,7 @@ build lumber camps maintaining 4 tiles"""
 
         conditions = [
             "dropsite-min-distance {} > {}".format(resource, tiles),
+            "dropsite-min-distance {} != -1".format(resource),
             "resource-found {}".format(resource),
             "up-pending-objects c: {} == 0".format(building),
             "can-build {}".format(building)
