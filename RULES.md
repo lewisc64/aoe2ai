@@ -84,6 +84,12 @@ build gold mining camps
 build stone mining camps
 build lumber camps maintaining 4 tiles
 ```
+## build farms
+Builds farms according to how many food gatherers should exist.
+### Usage
+```
+build farms
+```
 ## build houses
 Sets up rule to build houses, default headroom is 5.
 ### Usage
@@ -94,6 +100,12 @@ build houses with AMOUNT headroom
 ```
 build houses
 build houses with 10 headroom
+```
+## build safety mill
+
+### Usage
+```
+build safety mill
 ```
 ## build safety mill
 
@@ -123,6 +135,16 @@ Gives the AI resources.
 ### Usage
 ```
 cheat RESOURCE_NAME AMOUNT
+```
+## create action
+Creates a rule with the action contained within.
+### Usage
+```
+@ACTION
+```
+### Example
+```
+@chat-to-all "test"
 ```
 ## delay
 Block body is only allowed to trigger after the time is up.
@@ -162,7 +184,7 @@ distribute PERCENTAGE villagers from RESOURCE_NAME to RESOURCE_NAME
 ```
 distibute 5 villagers from wood to stone
 distribute 10 villagers from wood and food to gold
-distribute 8 villagers from food to gold and stone
+distribute 8 villagers from food to gold and stone using modifiers
 ```
 ## do once
 Adds 'disable-self' to the action stack. Makes sure each rule in the block individually runs only once.
@@ -385,6 +407,16 @@ take boar
 ### Usage
 ```
 take boar and deer
+```
+## target player
+Sets sn-target-player-number and sn-focus-player-number.
+### Usage
+```
+target winning/closest/attacking/random enemy/ally
+```
+### Example
+```
+target closest enemy
 ```
 ## target walls
 
