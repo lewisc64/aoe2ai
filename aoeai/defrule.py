@@ -14,7 +14,7 @@ class Defrule:
         out = []
         for item in items:
             formatted_item = statement.format(item)
-            if not remove_duplicates or formatted_item not in out:
+            if (not remove_duplicates and item != "disable-self") or formatted_item not in out:
                 out.append(formatted_item)
         if len(out) > 1:
             if statement.format("true") in out:
@@ -25,13 +25,14 @@ class Defrule:
     
     def __str__(self):
         return self.format.format("\n".join(self.format_list(self.conditions)),
-                                  "\n".join(self.format_list(self.actions)))
+                                  "\n".join(self.format_list(self.actions, remove_duplicates=False)))
 
 class Defconst:
-    def __init__(self, name, value):
+    def __init__(self, name, value, tag=None):
         self.format = "(defconst {} {})"
         self.name = name
         self.value = value
+        self.tag = tag
 
     def __str__(self):
         return self.format.format(self.name, self.value)

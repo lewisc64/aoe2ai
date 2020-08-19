@@ -136,6 +136,11 @@ rules.append(Snippet("build safety mill",
                       "building-type-count-total mill == 0",
                       "game-time >= 360"],
                      ["build mill"]))
+rules.append(Snippet("build safety mill",
+                     ["can-build mill",
+                      "building-type-count-total mill == 0",
+                      "game-time >= 360"],
+                     ["build mill"]))
 
 create_merged_snippet(rules, "set up basics", ["set up scouting", "set up new building system", "set up micro"])
 
@@ -175,17 +180,10 @@ class Load(Rule):
             rule.ignore_stacks = True
 
         if jump:
-            goal = len(kwargs["goals"]) + 1
-            kwargs["goals"].append(goal)
-
             jump_amount = len(rules)
-
-            if len(kwargs["condition_stack"]) == 1:
-                rules.insert(0, Defrule(["not({})".format(kwargs["condition_stack"][0])], ["up-jump-rule {}".format(jump_amount)], ignore_stacks=True))
-            else:
-                rules.insert(0, Defrule(["true"], ["set-goal {} {}".format(goal, 1)], ignore_stacks=True))
-                rules.insert(1, Defrule(["true"], ["set-goal {} {}".format(goal, 0)]))
-                rules.insert(2, Defrule(["goal {} {}".format(goal, 1)], ["up-jump-rule {}".format(jump_amount)], ignore_stacks=True))
+            condition = self.__join_conditions(kwargs["condition_stack"])
+            
+            rules.insert(0, Defrule(["not ({})".format(condition)], ["up-jump-rule {}".format(jump_amount)], ignore_stacks=True))
 
         else:
             for rule in rules:
@@ -193,6 +191,11 @@ class Load(Rule):
                     rule.conditions.extend(kwargs["condition_stack"])
             
         return rules
+
+    def __join_conditions(self, conditions):
+        if len(conditions) == 1:
+            return conditions[0]
+        return f"and ({conditions[0]}) ({self.__join_conditions(conditions[1:])})"
 
 @rule
 class Order(Load):
@@ -721,6 +724,32 @@ build stone gates on perimeter 2"""
                            ["build-gate {}".format(perimeter)])
 
 @rule
+class BuildFarms(Rule):
+    def __init__(self):
+        super().__init__()
+        self.name = "build farms"
+        self.regex = re.compile("^build farms$")
+        self.usage = "build farms"
+        self.help = "Builds farms according to how many food gatherers should exist."
+    
+    def parse(self, line, **kwargs):
+        gatherer_goal = len(kwargs["goals"]) + 1
+        kwargs["goals"].append(gatherer_goal)
+
+        farm_goal = len(kwargs["goals"]) + 1
+        kwargs["goals"].append(farm_goal)
+        
+        return [
+            Defrule(["true"], [
+                    f"up-get-fact unit-type-count villager {gatherer_goal}",
+                    f"up-modify-goal {gatherer_goal} s:* sn-food-gatherer-percentage",
+                    f"up-modify-goal {gatherer_goal} c:/ 100",
+                    f"up-get-fact building-type-count-total farm {farm_goal}",
+                ]),
+            Defrule([f"up-compare-goal {farm_goal} g:< {gatherer_goal}", "can-build farm"], ["build farm"]),
+        ]
+
+@rule
 class Build(Rule):
     def __init__(self):
         super().__init__()
@@ -853,11 +882,11 @@ class DistributeVillagersTo(Rule):
     def __init__(self):
         super().__init__()
         self.name = "distribute villagers to"
-        self.regex = re.compile("^distribute ([0-9]+) villagers? from ((?:[^ ]+(?: and )?)*) to (.+)$")
+        self.regex = re.compile("^distribute ([0-9]+) villagers? from ((?:[^ ]+(?: and )?)*) to (.+?)$")
         self.usage = "distribute PERCENTAGE villagers from RESOURCE_NAME to RESOURCE_NAME"
         self.example = """distibute 5 villagers from wood to stone
 distribute 10 villagers from wood and food to gold
-distribute 8 villagers from food to gold and stone"""
+distribute 8 villagers from food to gold and stone using modifiers"""
         self.help = "Modifies the gatherer percentages. Precomputes, so no constants or facts can be used, just numbers."
 
     def parse(self, line, **kwargs):
@@ -866,8 +895,9 @@ distribute 8 villagers from food to gold and stone"""
         sources = sources.split(" and ")
         destinations = destinations.split(" and ")
         
-        conditions = []
-        actions = []
+        conditions = ["true"]
+        actions = ["do-nothing"]
+        
         for resource in sources:
             conditions.append("strategic-number sn-{}-gatherer-percentage >= {}".format(resource, amount // len(sources)))
             actions.append("up-modify-sn sn-{}-gatherer-percentage c:- {}".format(resource, amount // len(sources)))
@@ -1012,6 +1042,38 @@ class Delete(Rule):
         return Defrule(["true"], ["delete-{} {}".format(form, name)])
 
 @rule
+class TargetPlayer(Rule):
+    def __init__(self):
+        super().__init__()
+        self.name = "target player"
+        self.regex = re.compile("^target (winning|closest|attacking|random) (enemy|ally)$")
+        self.usage = "target winning/closest/attacking/random enemy/ally"
+        self.example = "target closest enemy"
+        self.help = "Sets sn-target-player-number and sn-focus-player-number."
+        self.__find_types = {
+            "winning": None,
+            "closest": "closest",
+            "attacking": "attacker",
+        }
+
+    def parse(self, line, **kwargs):
+        find_type, player_type = self.get_data(line)
+
+        if find_type != "winning":
+            goal = len(kwargs["goals"]) + 1
+            kwargs["goals"].append(goal)
+            return Defrule(["true"], [
+                f"up-find-player {player_type} find-{self.__find_types[find_type]} {goal}",
+                f"up-modify-sn sn-target-player-number g:= {goal}",
+                f"up-modify-sn sn-focus-player-number g:= {goal}",
+            ])
+        else:
+            return Defrule(["true"], [
+                "set-strategic-number sn-target-player-number 0",
+                "set-strategic-number sn-focus-player-number 0",
+            ])
+
+@rule
 class SelectRandom(Rule):
     def __init__(self):
         super().__init__()
@@ -1097,3 +1159,16 @@ class SelectRandom(Rule):
             kwargs["data_stack"].append(number + 1)
             kwargs["data_stack"].append(identifier)
             kwargs["data_stack"].append(goal_number)
+
+@rule
+class CreateAction(Rule):
+    def __init__(self):
+        super().__init__()
+        self.name = "create action"
+        self.regex = re.compile("^@(.+)$")
+        self.usage = "@ACTION"
+        self.example = "@chat-to-all \"test\""
+        self.help = "Creates a rule with the action contained within."
+
+    def parse(self, line, **kwargs):
+        return Defrule(["true"], [self.get_data(line)[0]])

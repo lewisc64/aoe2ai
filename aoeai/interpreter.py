@@ -44,6 +44,11 @@ def ensure_rule_length(rules, rule_length=32):
                             rules.pop(i+1)
                             continue
         i += 1
+
+    for rule in [x for x in rules if isinstance(x, Defrule)]:
+        if "false" in rule.conditions and rule.compressable:
+            rules.remove(rule)
+    
     return rules
 
 def interpret(content, timers=None, goals=None, constants=None, userpatch=False):
