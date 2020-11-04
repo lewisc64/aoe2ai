@@ -164,6 +164,12 @@ delete unit/building NAME
 ```
 delete unit villager
 ```
+## delete walls
+
+### Usage
+```
+delete walls
+```
 ## distribute villagers
 Percentages must add up to 100. Makes use of the sn-TYPE-gatherer-percentage strategic number.
 ### Usage

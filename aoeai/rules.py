@@ -141,6 +141,10 @@ rules.append(Snippet("build safety mill",
                       "building-type-count-total mill == 0",
                       "game-time >= 360"],
                      ["build mill"]))
+rules.append(Snippet("delete walls",
+                     ["true"],
+                     ["delete-building stone-wall-line",
+                      "delete-building palisade-wall"]))
 
 create_merged_snippet(rules, "set up basics", ["set up scouting", "set up new building system", "set up micro"])
 
@@ -175,20 +179,15 @@ class Load(Rule):
         if not kwargs["condition_stack"]:
             return rules
 
-        for rule in rules:
-            rule.compressable = False
-            rule.ignore_stacks = True
-
         if jump:
+            for rule in rules:
+                rule.compressable = False
+                rule.ignore_stacks = True
+            
             jump_amount = len(rules)
             condition = self.__join_conditions(kwargs["condition_stack"])
             
             rules.insert(0, Defrule(["not ({})".format(condition)], ["up-jump-rule {}".format(jump_amount)], ignore_stacks=True))
-
-        else:
-            for rule in rules:
-                if not rule.ignore_stacks:
-                    rule.conditions.extend(kwargs["condition_stack"])
             
         return rules
 
