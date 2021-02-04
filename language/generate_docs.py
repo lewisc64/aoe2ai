@@ -1,6 +1,6 @@
 import aoeai
 
-PATH = "RULES.md"
+PATH = "../RULES.md"
 
 document = ["# rules"]
 
