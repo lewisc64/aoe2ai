@@ -490,6 +490,7 @@ train AMOUNT UNIT_NAME
 train AMOUNT UNIT_NAME with RESOURCE_NAME escrow"""
         self.example = "train 10 militiaman-line with food and gold escrow"
         self.help = "Trains a unit using the specified parameters."
+        self.__set_units = ["trebuchet", "monk"]
 
     def parse(self, line, **kwargs):
         amount, unit, escrow = self.get_data(line)
@@ -504,7 +505,7 @@ train AMOUNT UNIT_NAME with RESOURCE_NAME escrow"""
             for resource in escrow.split(" and "):
                 actions.append("release-escrow " + resource)
         if amount is not None:
-            conditions.append("unit-type-count-total {} < {}".format(unit, amount))
+            conditions.append("unit-type-count-total {} < {}".format(unit + ("-set" if unit in self.__set_units else ""), amount))
         actions.append("train " + unit)
         
         return Defrule(conditions, actions)
