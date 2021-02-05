@@ -162,10 +162,10 @@ class Load(Rule):
         file = open(path, "r")
         content = file.read()
         file.close()
-        return self.parse_file_content(content, **kwargs)
+        return self.parse_file_content(content, path=path, **kwargs)
 
-    def parse_file_content(self, content, jump=True, **kwargs):
-        output = interpreter.interpret(content, timers=kwargs["timers"], goals=kwargs["goals"], constants=kwargs["constants"], userpatch=kwargs["userpatch"])
+    def parse_file_content(self, content, path=None, jump=True, **kwargs):
+        output = interpreter.interpret(content, timers=kwargs["timers"], goals=kwargs["goals"], constants=kwargs["constants"], userpatch=kwargs["userpatch"], content_identifier=path)
 
         rules = []
 
@@ -591,6 +591,34 @@ class Reply(Rule):
             kwargs["condition_stack"].append("taunt-detected any-{} {}".format(player_type, number))
             kwargs["data_stack"].append(player_type)
             kwargs["data_stack"].append(number)
+
+@rule
+class NoMerge(Rule):
+    def __init__(self):
+        super().__init__()
+        self.name = "no merge"
+        self.regex = re.compile("^(?:#nomerge|#end nomerge)$")
+        self.usage = """#nomerge
+   RULES
+#end nomerge"""
+        self.help = "Prevents the rules within from being merged together in compilation."
+    
+    def parse(self, line, **kwargs):
+        if line.startswith("#end"):
+            tag = kwargs["data_stack"].pop()
+            tagged_rule = None
+            for rule in kwargs["definitions"]:
+                if not isinstance(rule, Defrule):
+                    continue
+                if rule.tag == tag:
+                    tagged_rule = rule
+                elif tagged_rule is not None:
+                    rule.compressable = False
+            kwargs["definitions"].remove(tagged_rule)
+        else:
+            tag = uuid.uuid4()
+            kwargs["data_stack"].append(tag)
+            return Defrule(["true"], ["do-nothing"], tag=tag)
 
 @rule
 class Tribute(Rule):

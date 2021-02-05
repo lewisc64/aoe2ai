@@ -257,6 +257,14 @@ set town size to 32
 increase town size by 5
 decrease town size by 1
 ```
+## no merge
+Prevents the rules within from being merged together in compilation.
+### Usage
+```
+#nomerge
+   RULES
+#end nomerge
+```
 ## order
 Loads another aoe2ai file. Relative to main file if trying to load from a seperate file.
 ### Usage

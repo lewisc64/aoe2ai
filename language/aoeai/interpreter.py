@@ -51,7 +51,7 @@ def ensure_rule_length(rules, rule_length=32):
     
     return rules
 
-def interpret(content, timers=None, goals=None, constants=None, userpatch=False):
+def interpret(content, timers=None, goals=None, constants=None, userpatch=False, content_identifier=None):
     if timers is None:
         timers = []
     if goals is None:
@@ -106,15 +106,16 @@ def interpret(content, timers=None, goals=None, constants=None, userpatch=False)
                 
                 break
         else:
-            print("WARNING: Line {} did not match:".format(i + 1))
-            print(item)
-
-        #print(item, condition_stack, action_stack, data_stack)
+            print(f"WARNING: Line {i + 1} did not match: {item}")
+            if content_identifier is not None:
+                print(f"    in file {content_identifier}")
         
         i += 1
     
     if condition_stack or action_stack or data_stack:
         print("WARNING: Interpretation finished with populated stacks. Remember to end blocks.")
+        if content_identifier is not None:
+            print(f"    in file {content_identifier}")
     
     return ensure_rule_length(definitions, rule_length=(16 if userpatch else 32))
 
