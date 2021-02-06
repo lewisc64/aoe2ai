@@ -15,13 +15,22 @@ class Defrule:
         for item in items:
             formatted_item = statement.format(item)
             if (not remove_duplicates and item != "disable-self") or formatted_item not in out:
-                out.append(formatted_item)
+                out.append(self.split_line_for_length(formatted_item))
         if len(out) > 1:
             if statement.format("true") in out:
                 out.remove(statement.format("true"))
             if statement.format("do-nothing") in out:
                 out.remove(statement.format("do-nothing"))
         return out
+
+    def split_line_for_length(self, s, length=255):
+        if len(s) <= length:
+            return s
+        for offset in range(len(s) // 2):
+            for sign in range(-1, 2):
+                i = offset * sign + len(s) // 2
+                if s[i] == " ":
+                    return self.split_line_for_length(s[:i], length=length) + "\n" + self.split_line_for_length(s[i+1:], length=length)
     
     def __str__(self):
         return self.format.format("\n".join(self.format_list(self.conditions)),

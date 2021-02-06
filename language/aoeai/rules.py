@@ -144,7 +144,8 @@ rules.append(Snippet("build safety mill",
 rules.append(Snippet("delete walls",
                      ["true"],
                      ["delete-building stone-wall-line",
-                      "delete-building palisade-wall"]))
+                      "delete-building palisade-wall",
+                      "delete-building gate"]))
 
 create_merged_snippet(rules, "set up basics", ["set up scouting", "set up new building system", "set up micro"])
 
