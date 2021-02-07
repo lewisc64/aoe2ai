@@ -116,6 +116,9 @@ def interpret(content, timers=None, goals=None, constants=None, userpatch=False,
         print("WARNING: Interpretation finished with populated stacks. Remember to end blocks.")
         if content_identifier is not None:
             print(f"    in file {content_identifier}")
+
+    if len(goals) > 512:
+        print("WARNING: Over 512 goals are used. They may not function.")
     
     return ensure_rule_length(definitions, rule_length=(16 if userpatch else 32))
 
