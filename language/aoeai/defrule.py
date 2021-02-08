@@ -1,13 +1,15 @@
 import re
 
 class Defrule:
-    def __init__(self, conditions, actions, ignore_stacks=False, compressable=True, tag=None):
+    def __init__(self, conditions, actions, required_constants=[], ignore_stacks=False, compressable=True, tag=None):
         self.format = "(defrule\n{}\n=>\n{}\n)"
+        self.load_if_defined_format = "#load-if-defined {}\n{}\n#end-if"
         self.conditions = conditions
         self.actions = actions
         self.ignore_stacks = ignore_stacks
         self.compressable = compressable
         self.tag = tag
+        self.required_constants = required_constants
     
     def format_list(self, items, remove_duplicates=True):
         statement = "    ({})"
@@ -23,6 +25,12 @@ class Defrule:
                 out.remove(statement.format("do-nothing"))
         return out
 
+    def apply_load_if_defined(self, rule_text):
+        out = rule_text
+        for definition in self.required_constants:
+            out = self.load_if_defined_format.format(definition, out)
+        return out
+
     def split_line_for_length(self, s, length=255):
         if len(s) <= length:
             return s
@@ -33,8 +41,8 @@ class Defrule:
                     return self.split_line_for_length(s[:i], length=length) + "\n" + self.split_line_for_length(s[i+1:], length=length)
     
     def __str__(self):
-        return self.format.format("\n".join(self.format_list(self.conditions)),
-                                  "\n".join(self.format_list(self.actions, remove_duplicates=False)))
+        return self.apply_load_if_defined(self.format.format("\n".join(self.format_list(self.conditions)),
+                                                             "\n".join(self.format_list(self.actions, remove_duplicates=False))))
 
 class Defconst:
     def __init__(self, name, value, tag=None):

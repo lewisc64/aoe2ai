@@ -146,6 +146,24 @@ rules.append(Snippet("delete walls",
                      ["delete-building stone-wall-line",
                       "delete-building palisade-wall",
                       "delete-building gate"]))
+rules.append(Snippet("buy wood",
+                     ["can-buy-commodity wood"],
+                     ["buy-commodity wood"]))
+rules.append(Snippet("buy food",
+                     ["can-buy-commodity wood"],
+                     ["buy-commodity wood"]))
+rules.append(Snippet("buy stone",
+                     ["can-buy-commodity wood"],
+                     ["buy-commodity wood"]))
+rules.append(Snippet("sell wood",
+                     ["can-sell-commodity wood"],
+                     ["sell-commodity wood"]))
+rules.append(Snippet("sell food",
+                     ["can-sell-commodity food"],
+                     ["sell-commodity food"]))
+rules.append(Snippet("sell stone",
+                     ["can-sell-commodity stone"],
+                     ["sell-commodity stone"]))
 
 create_merged_snippet(rules, "set up basics", ["set up scouting", "set up new building system", "set up micro"])
 
@@ -325,6 +343,29 @@ class If(Rule):
         else:
             kwargs["condition_stack"].append(parse_condition(condition_if))
             kwargs["data_stack"].append(1)
+
+#@rule
+class Check(Rule):
+    def __init__(self):
+        super().__init__()
+        self.name = "check"
+        self.regex = re.compile("^(?:#check (.+)|#end check)$")
+        self.usage = """#check CONSTANT
+    RULES
+#end check"""
+        self.help = "Requires a constant to be defined."
+        self.example = """#check UP-POCKET-POSITION
+    ...
+#end check"""
+
+    def parse(self, line, **kwargs):
+        if line.startswith("#end"):
+            pass
+            # TODO
+        else:
+            constant = self.get_data(line)[0]
+            # TODO
+            
 
 @rule
 class While(Rule):
