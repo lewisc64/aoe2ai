@@ -150,11 +150,11 @@ rules.append(Snippet("buy wood",
                      ["can-buy-commodity wood"],
                      ["buy-commodity wood"]))
 rules.append(Snippet("buy food",
-                     ["can-buy-commodity wood"],
-                     ["buy-commodity wood"]))
+                     ["can-buy-commodity food"],
+                     ["buy-commodity food"]))
 rules.append(Snippet("buy stone",
-                     ["can-buy-commodity wood"],
-                     ["buy-commodity wood"]))
+                     ["can-buy-commodity stone"],
+                     ["buy-commodity stone"]))
 rules.append(Snippet("sell wood",
                      ["can-sell-commodity wood"],
                      ["sell-commodity wood"]))
@@ -164,6 +164,17 @@ rules.append(Snippet("sell food",
 rules.append(Snippet("sell stone",
                      ["can-sell-commodity stone"],
                      ["sell-commodity stone"]))
+rules.append(SnippetCollection(
+    "lure boars",
+    [Snippet(None,
+            ["true"],
+            ["set-strategic-number sn-enable-boar-hunting 2",
+             "set-strategic-number sn-minimum-number-hunters 1",
+             "set-strategic-number sn-minimum-boar-lure-group-size 1",
+             "set-strategic-number sn-minimum-boar-hunt-group-size 1"]),
+     Snippet(None,
+             ["dropsite-min-distance live-boar < 4"],
+             ["up-request-hunters c: 5"])]))
 
 create_merged_snippet(rules, "set up basics", ["set up scouting", "set up new building system", "set up micro"])
 
