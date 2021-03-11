@@ -114,7 +114,8 @@ rules.append(Snippet("set up micro",
                       "set-strategic-number sn-defer-dropsite-update 1",
                       "set-strategic-number sn-do-not-scale-for-difficulty-level 1",
                       "set-strategic-number sn-number-build-attempts-before-skip 5",
-                      "set-strategic-number sn-max-skips-per-attempt 5"]))
+                      "set-strategic-number sn-max-skips-per-attempt 5",
+                      "set-strategic-number sn-dropsite-separation-distance 8"]))
 rules.append(Snippet("target walls",
                      ["true"],
                      ["set-strategic-number sn-wall-targeting-mode 1"]))
@@ -171,10 +172,35 @@ rules.append(SnippetCollection(
             ["set-strategic-number sn-enable-boar-hunting 2",
              "set-strategic-number sn-minimum-number-hunters 1",
              "set-strategic-number sn-minimum-boar-lure-group-size 1",
+             "set-strategic-number sn-minimum-boar-hunt-group-size 1",
+             "up-request-hunters c: 1",
+             "disable-self"]),
+     Snippet(None,
+             ["or (dropsite-min-distance live-boar < 4) (dropsite-min-distance boar-food < 4)"],
+             ["up-request-hunters c: 8",
+              "set-strategic-number sn-minimum-number-hunters 8"]),
+     Snippet(None,
+             ["strategic-number sn-minimum-number-hunters == 8",
+              "nor (dropsite-min-distance live-boar < 4) (dropsite-min-distance boar-food < 4)"],
+             ["set-strategic-number sn-minimum-number-hunters 1",
+              "up-retask-gatherers food c: 255"])]))
+"""
+rules.append(SnippetCollection(
+    "lure boars",
+    [Snippet(None,
+            ["true"],
+            ["set-strategic-number sn-enable-boar-hunting 2",
+             "set-strategic-number sn-minimum-number-hunters 1",
+             "set-strategic-number sn-minimum-boar-lure-group-size 1",
              "set-strategic-number sn-minimum-boar-hunt-group-size 1"]),
      Snippet(None,
-             ["dropsite-min-distance live-boar < 4"],
-             ["up-request-hunters c: 5"])]))
+             ["or (dropsite-min-distance live-boar < 4) (dropsite-min-distance boar-food < 4)"],
+             ["up-request-hunters c: 8",
+              "set-strategic-number sn-minimum-number-hunters 8"]),
+     Snippet(None,
+             ["strategic-number sn-minimum-number-hunters == 8"],
+             ["set-strategic-number sn-minimum-number-hunters 1",
+              "up-retask-gatherers food c: 255"])]))"""
 
 create_merged_snippet(rules, "set up basics", ["set up scouting", "set up new building system", "set up micro"])
 
@@ -748,17 +774,18 @@ class BuildHouses(Rule):
         self.default_headroom = 5
         
         self.name = "build houses"
-        self.regex = re.compile("^build houses(?: with ([^ ]+) headroom)?$")
+        self.regex = re.compile("^build (houses|yurts)(?: with ([^ ]+) headroom)?$")
         self.usage = "build houses with AMOUNT headroom"
         self.example = """build houses
 build houses with 10 headroom"""
         self.help = "Sets up rule to build houses, default headroom is {}.".format(self.default_headroom)
 
     def parse(self, line, **kwargs):
-        headroom = self.get_data(line)[0]
+        building_type, headroom = self.get_data(line)
+        building = "house" if building_type == "houses" else 712
         
-        conditions = ["population-headroom != 0", "up-pending-objects c: house == 0", "can-build house"]
-        actions = ["build house"]
+        conditions = ["population-headroom != 0", f"up-pending-objects c: {building} == 0", f"can-build {building}"]
+        actions = [f"build {building}"]
         
         if headroom is None:
             headroom = self.default_headroom
