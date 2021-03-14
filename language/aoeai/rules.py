@@ -173,6 +173,7 @@ rules.append(SnippetCollection(
              "set-strategic-number sn-minimum-number-hunters 1",
              "set-strategic-number sn-minimum-boar-lure-group-size 1",
              "set-strategic-number sn-minimum-boar-hunt-group-size 1",
+             "set-strategic-number sn-maximum-hunt-drop-distance 48",
              "up-request-hunters c: 1",
              "disable-self"]),
      Snippet(None,
@@ -184,23 +185,6 @@ rules.append(SnippetCollection(
               "nor (dropsite-min-distance live-boar < 4) (dropsite-min-distance boar-food < 4)"],
              ["set-strategic-number sn-minimum-number-hunters 1",
               "up-retask-gatherers food c: 255"])]))
-"""
-rules.append(SnippetCollection(
-    "lure boars",
-    [Snippet(None,
-            ["true"],
-            ["set-strategic-number sn-enable-boar-hunting 2",
-             "set-strategic-number sn-minimum-number-hunters 1",
-             "set-strategic-number sn-minimum-boar-lure-group-size 1",
-             "set-strategic-number sn-minimum-boar-hunt-group-size 1"]),
-     Snippet(None,
-             ["or (dropsite-min-distance live-boar < 4) (dropsite-min-distance boar-food < 4)"],
-             ["up-request-hunters c: 8",
-              "set-strategic-number sn-minimum-number-hunters 8"]),
-     Snippet(None,
-             ["strategic-number sn-minimum-number-hunters == 8"],
-             ["set-strategic-number sn-minimum-number-hunters 1",
-              "up-retask-gatherers food c: 255"])]))"""
 
 create_merged_snippet(rules, "set up basics", ["set up scouting", "set up new building system", "set up micro"])
 
