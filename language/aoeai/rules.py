@@ -174,7 +174,6 @@ rules.append(SnippetCollection(
              "set-strategic-number sn-minimum-boar-lure-group-size 1",
              "set-strategic-number sn-minimum-boar-hunt-group-size 1",
              "set-strategic-number sn-maximum-hunt-drop-distance 48",
-             "up-request-hunters c: 1",
              "disable-self"]),
      Snippet(None,
              ["or (dropsite-min-distance live-boar < 4) (dropsite-min-distance boar-food < 4)"],
@@ -265,7 +264,7 @@ class Cheat(Rule):
         super().__init__()
         self.name = "cheat"
         self.regex = re.compile("^cheat ([^ ]+) ([^ ]+)$")
-        self.usage = "cheat RESOURCE_NAME AMOUNT"
+        self.usage = "cheat AMOUNT RESOURCE_NAME"
         self.help = "Gives the AI resources."
 
     def parse(self, line, **kwargs):
@@ -839,6 +838,31 @@ class BuildFarms(Rule):
                     f"up-get-fact building-type-count-total farm {farm_goal}",
                 ]),
             Defrule([f"up-compare-goal {farm_goal} g:< {gatherer_goal}", "can-build farm"], ["build farm"]),
+        ]
+
+# the AI engine cannot build these.
+#@rule
+class BuildFishTraps(Rule):
+    def __init__(self):
+        super().__init__()
+        self.name = "build fish traps"
+        self.regex = re.compile("^build fish traps$")
+        self.usage = "build fish traps"
+        self.help = "Builds as many fish traps as there are fishing ships."
+    
+    def parse(self, line, **kwargs):
+        gatherer_goal = len(kwargs["goals"]) + 1
+        kwargs["goals"].append(gatherer_goal)
+
+        fish_trap_goal = len(kwargs["goals"]) + 1
+        kwargs["goals"].append(fish_trap_goal)
+        
+        return [
+            Defrule(["true"], [
+                    f"up-get-fact unit-type-count fishing-ship {gatherer_goal}",
+                    f"up-get-fact building-type-count-total fish-trap {fish_trap_goal}",
+                ]),
+            Defrule([f"up-compare-goal {fish_trap_goal} g:< {gatherer_goal}", "can-build fish-trap"], ["build fish-trap"]),
         ]
 
 @rule
