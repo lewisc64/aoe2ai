@@ -6,6 +6,8 @@ from .defrule import *
 from .research import *
 from . import interpreter
 
+GENERATED_DEFCONST_PREFIX = "ece68be9-bb87-4460-b929-f5380c05f942-"
+
 rules = []
 
 def rule(rule):
@@ -1214,7 +1216,7 @@ class SelectRandom(Rule):
         if line.startswith("#select"):
             identifier = self.__next_id
             self.__next_id += 1
-            const_name = f"select-random-{identifier}"
+            const_name = f"{GENERATED_DEFCONST_PREFIX}select-random-{identifier}"
             goal_number = len(kwargs["goals"]) + 1
 
             kwargs["goals"].append(goal_number)
@@ -1244,7 +1246,7 @@ class SelectRandom(Rule):
             number_of_blocks = kwargs["data_stack"].pop() - 1
             persistant = kwargs["data_stack"].pop()
             
-            const_name = f"select-random-{identifier}"
+            const_name = f"{GENERATED_DEFCONST_PREFIX}select-random-{identifier}"
             
             for const in kwargs["definitions"]:
                 if isinstance(const, Defconst) and const.name == const_name:
