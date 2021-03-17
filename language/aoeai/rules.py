@@ -1237,18 +1237,11 @@ class SelectRandom(Rule):
             identifier = kwargs["data_stack"].pop()
             number_of_blocks = kwargs["data_stack"].pop() - 1
             persistant = kwargs["data_stack"].pop()
-            
-            for rule in kwargs["definitions"]:
-                if isinstance(rule, Defrule) and rule.tag == identifier:
-                    rule.conditions.append(f"generate-random-number {number_of_blocks}")
-                    break
-            else:
-                raise Exception(f"select random failed to find initial random rule with identifier '{identifier}'")
 
             for i, rule in enumerate(kwargs["definitions"]):
                 if isinstance(rule, Defrule) and rule.tag == identifier:
 
-                    rule.conditions.append(f"generate-random-number {number_of_blocks}")
+                    rule.actions.append(f"generate-random-number {number_of_blocks}")
                     
                     for goal_value in range(1, number_of_blocks + 1):
                         actions = [f"set-goal {goal_number} {goal_value}"]
