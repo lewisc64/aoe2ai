@@ -176,12 +176,12 @@ rules.append(SnippetCollection(
              "set-strategic-number sn-maximum-hunt-drop-distance 48",
              "disable-self"]),
      Snippet(None,
-             ["or (dropsite-min-distance live-boar < 4) (dropsite-min-distance boar-food < 4)"],
+             ["dropsite-min-distance live-boar < 4"],
              ["up-request-hunters c: 8",
               "set-strategic-number sn-minimum-number-hunters 8"]),
      Snippet(None,
              ["strategic-number sn-minimum-number-hunters == 8",
-              "nor (dropsite-min-distance live-boar < 4) (dropsite-min-distance boar-food < 4)"],
+              "and (dropsite-min-distance live-boar > 4) (or (dropsite-min-distance boar-food > 4) (dropsite-min-distance boar-food == -1))"],
              ["set-strategic-number sn-minimum-number-hunters 1",
               "up-retask-gatherers food c: 255"])]))
 
@@ -1206,12 +1206,14 @@ class SelectRandom(Rule):
 #randor
    chat to all \"option 2!\"
 #end select random"""
+        self.__next_id = 0
     
     def parse(self, line, **kwargs):
         persistant = self.get_data(line)[0]
         
         if line.startswith("#select"):
-            identifier = uuid.uuid4()
+            identifier = self.__next_id
+            self.__next_id += 1
             const_name = f"select-random-{identifier}"
             goal_number = len(kwargs["goals"]) + 1
 
