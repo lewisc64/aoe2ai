@@ -6,8 +6,6 @@ from .defrule import *
 from .research import *
 from . import interpreter
 
-GENERATED_DEFCONST_PREFIX = "ece68be9-bb87-4460-b929-f5380c05f942-"
-
 rules = []
 
 def rule(rule):
@@ -1208,15 +1206,12 @@ class SelectRandom(Rule):
 #randor
    chat to all \"option 2!\"
 #end select random"""
-        self.__next_id = 0
     
     def parse(self, line, **kwargs):
         persistant = self.get_data(line)[0]
         
         if line.startswith("#select"):
-            identifier = self.__next_id
-            self.__next_id += 1
-            const_name = f"{GENERATED_DEFCONST_PREFIX}select-random-{identifier}"
+            identifier = uuid.uuid4()
             goal_number = len(kwargs["goals"]) + 1
 
             kwargs["goals"].append(goal_number)
@@ -1225,18 +1220,15 @@ class SelectRandom(Rule):
             kwargs["data_stack"].append(2)
             kwargs["data_stack"].append(identifier)
             kwargs["data_stack"].append(goal_number)
-            
-            kwargs["definitions"].insert(0, Defconst(const_name, -1))
-            kwargs["constants"].append(const_name)
 
             kwargs["condition_stack"].append(f"goal {goal_number} 1")
             
-            generate_rule = Defrule(["true"], [f"generate-random-number {const_name}", f"set-goal {goal_number} 0"])
+            generate_rule = Defrule(["true"], [f"set-goal {goal_number} 0"], tag=identifier)
             
             if persistant:
                 generate_rule.actions.append("disable-self")
                 
-            return [generate_rule, Defconst(identifier, -1)]
+            return [generate_rule]
         
         elif line.startswith("#end"):
             kwargs["condition_stack"].pop()
@@ -1246,18 +1238,18 @@ class SelectRandom(Rule):
             number_of_blocks = kwargs["data_stack"].pop() - 1
             persistant = kwargs["data_stack"].pop()
             
-            const_name = f"{GENERATED_DEFCONST_PREFIX}select-random-{identifier}"
-            
-            for const in kwargs["definitions"]:
-                if isinstance(const, Defconst) and const.name == const_name:
-                    const.value = number_of_blocks
+            for rule in kwargs["definitions"]:
+                if isinstance(rule, Defrule) and rule.tag == identifier:
+                    rule.conditions.append(f"generate-random-number {number_of_blocks}")
                     break
             else:
-                raise Exception(f"select random failed to find const name '{const_name}'")
+                raise Exception(f"select random failed to find initial random rule with identifier '{identifier}'")
 
-            for i, const in enumerate(kwargs["definitions"]):
-                if isinstance(const, Defconst) and const.name == identifier:
-                    kwargs["definitions"].pop(i)
+            for i, rule in enumerate(kwargs["definitions"]):
+                if isinstance(rule, Defrule) and rule.tag == identifier:
+
+                    rule.conditions.append(f"generate-random-number {number_of_blocks}")
+                    
                     for goal_value in range(1, number_of_blocks + 1):
                         actions = [f"set-goal {goal_number} {goal_value}"]
                         if persistant:
@@ -1265,10 +1257,10 @@ class SelectRandom(Rule):
                         goal_set_rule = Defrule([f"random-number == {goal_value}", f"goal {goal_number} 0"], actions)
                         goal_set_rule.conditions.extend(kwargs["condition_stack"])
                         goal_set_rule.actions.extend(kwargs["action_stack"])
-                        kwargs["definitions"].insert(i + goal_value - 1, goal_set_rule)
+                        kwargs["definitions"].insert(i + goal_value, goal_set_rule)
                     break
             else:
-                raise Exception(f"failed to find marker '{identifier}'")
+                raise Exception(f"select random failed to find initial random rule with identifier '{identifier}'")
         
         else:
             goal_number = kwargs["data_stack"].pop()
