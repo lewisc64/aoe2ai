@@ -280,36 +280,17 @@ class Subroutine(Rule):
         self.help = "Allows rules to be grouped into a repeatable section, used with 'call'."
 
     def parse(self, line, **kwargs):
-        name = self.get_data(line)[0]
-
         if "#end" not in line:
-            identifier = uuid.uuid4()
-            kwargs["data_stack"].append(identifier)
+            name = self.get_data(line)[0]
+            kwargs["rule_whitelist"].append(self.name)
             kwargs["data_stack"].append(name)
-            kwargs["data_stack"].append(kwargs["condition_stack"][:])
-            kwargs["condition_stack"].clear()
-            return Defrule(["true"], ["do-nothing"], tag=identifier, ignore_stacks=True)
+            kwargs["data_stack"].append(kwargs["current_position"])
 
         else:
-            stack = kwargs["data_stack"].pop()
+            start = kwargs["data_stack"].pop()
             name = kwargs["data_stack"].pop()
-            identifier = kwargs["data_stack"].pop()
-
-            rules = []
-            
-            for i, rule in enumerate(kwargs["definitions"]):
-                if isinstance(rule, Defrule) and rule.tag == identifier:
-                    for x in range(len(kwargs["definitions"]) - i):
-                        rules.append(kwargs["definitions"].pop())
-                        
-                    break
-            else:
-                raise Exception(f"subroutine failed to find marker rule with identifier '{identifier}'")
-            rules.pop(-1)
-
-            global_subroutine_table[name] = rules[::-1]
-            
-            kwargs["condition_stack"].extend(stack)
+            kwargs["rule_whitelist"].remove(self.name)
+            global_subroutine_table[name] = kwargs["items"][start+1:kwargs["current_position"]]
 
 @rule
 class Call(Rule):
@@ -318,28 +299,30 @@ class Call(Rule):
         self.name = "call"
         self.regex = re.compile("^call ([^ ()]+)(?:\(.+\))?$")
         self.usage = "call SUBROUTINE_NAME"
-        self.help = "Inserts all the rules within a subroutine."
+        self.help = "Inserts all the rules within a subroutine. Can make replacements as a form of pre-processing."
 
     def parse(self, line, **kwargs):
         name = self.get_data(line)[0]
 
         params = {}
         
-        for match in re.findall(r"([^\s(,]+)\s*=\s*((?:\"[^\"]+\"|[^,)]+))\s*", line):
-            params[match[0]] = match[1]
+        for match in re.findall(r"([^\s(,]+)\s*=\s*((?:\"(?:\\\"|[^\"])+\"|[0-9]+))\s*", line):
+            if match[1].startswith("\"") and match[1].endswith("\""):
+                value = match[1].strip("\"")
+            else:
+                value = match[1]
+            params[match[0]] = value.replace("\\\"", "\"")
         
-        rules = copy.deepcopy(global_subroutine_table[name])
-        prepend_conditional_jump(rules, kwargs["condition_stack"])
+        items = global_subroutine_table[name][:]
 
+        content = "\n".join(items)
         for param_name, value in params.items():
-
-            for rule in rules:
-                for i, condition in enumerate(rule.conditions):
-                    rule.conditions[i] = condition.replace("{" + param_name + "}", value)
-                for i, action in enumerate(rule.actions):
-                    rule.actions[i] = action.replace("{" + param_name + "}", value)
+            content = content.replace("{" + param_name + "}", value)
         
-        return rules
+        output = interpreter.interpret(content, timers=kwargs["timers"], goals=kwargs["goals"], constants=kwargs["constants"], userpatch=kwargs["userpatch"], content_identifier=kwargs["content_identifier"])
+        prepend_conditional_jump(output, kwargs["condition_stack"])
+        
+        return output
 
 @rule
 class Cheat(Rule):

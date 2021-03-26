@@ -62,6 +62,7 @@ def interpret(content, timers=None, goals=None, constants=None, userpatch=False,
     action_stack = []
     data_stack = []
     definitions = []
+    rule_whitelist = []
 
     items = [line.strip() for line in content.split("\n")]
 
@@ -75,40 +76,45 @@ def interpret(content, timers=None, goals=None, constants=None, userpatch=False,
             continue
         
         for rule in rules:
-            if rule.is_match(item):
 
-                p_condition_stack = condition_stack[:]                
-                p_action_stack = action_stack[:]
-                
-                output = rule.parse(item, definitions=definitions,
-                                          condition_stack=condition_stack,
-                                          action_stack=action_stack,
-                                          data_stack=data_stack,
-                                          timers=timers,
-                                          goals=goals,
-                                          constants=constants,
-                                          items=items,
-                                          current_position=i,
-                                          userpatch=userpatch)
-                
-                if isinstance(output, Defrule):
-                    if not output.ignore_stacks:
-                        output.conditions.extend(p_condition_stack)
-                        output.actions.extend(p_action_stack)
-                    definitions.append(output)
+            if len(rule_whitelist) == 0 or rule.name in rule_whitelist:
+                if rule.is_match(item):
+
+                    p_condition_stack = condition_stack[:]                
+                    p_action_stack = action_stack[:]
                     
-                elif isinstance(output, list):
-                    for defrule in [x for x in output if isinstance(x, Defconst) or not x.ignore_stacks]:
-                        if not isinstance(defrule, Defconst):
-                            defrule.conditions.extend(p_condition_stack)
-                            defrule.actions.extend(p_action_stack)
-                    definitions.extend(output)
-                
-                break
+                    output = rule.parse(item, definitions=definitions,
+                                              condition_stack=condition_stack,
+                                              action_stack=action_stack,
+                                              data_stack=data_stack,
+                                              timers=timers,
+                                              goals=goals,
+                                              constants=constants,
+                                              items=items,
+                                              current_position=i,
+                                              rule_whitelist=rule_whitelist,
+                                              userpatch=userpatch,
+                                              content_identifier=content_identifier)
+                    
+                    if isinstance(output, Defrule):
+                        if not output.ignore_stacks:
+                            output.conditions.extend(p_condition_stack)
+                            output.actions.extend(p_action_stack)
+                        definitions.append(output)
+                        
+                    elif isinstance(output, list):
+                        for defrule in [x for x in output if isinstance(x, Defconst) or not x.ignore_stacks]:
+                            if not isinstance(defrule, Defconst):
+                                defrule.conditions.extend(p_condition_stack)
+                                defrule.actions.extend(p_action_stack)
+                        definitions.extend(output)
+                    
+                    break
         else:
-            print(f"WARNING: Line {i + 1} did not match: {item}")
-            if content_identifier is not None:
-                print(f"    in file {content_identifier}")
+            if len(rule_whitelist) == 0:
+                print(f"WARNING: Line {i + 1} did not match: {item}")
+                if content_identifier is not None:
+                    print(f"    in file {content_identifier}")
         
         i += 1
     

@@ -143,7 +143,7 @@ buy stone
 buy wood
 ```
 ## call
-Inserts all the rules within a subroutine.
+Inserts all the rules within a subroutine. Can make replacements as a form of pre-processing.
 ### Usage
 ```
 call SUBROUTINE_NAME
