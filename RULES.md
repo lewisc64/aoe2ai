@@ -124,6 +124,30 @@ build MATERIAL WALLS/GATES on perimeter PERIMETER_NUMBER
 build stone walls on perimeter 2
 build stone gates on perimeter 2
 ```
+## buy food
+
+### Usage
+```
+buy food
+```
+## buy stone
+
+### Usage
+```
+buy stone
+```
+## buy wood
+
+### Usage
+```
+buy wood
+```
+## call
+Inserts all the rules within a subroutine.
+### Usage
+```
+call SUBROUTINE_NAME
+```
 ## chat to
 
 ### Usage
@@ -134,7 +158,7 @@ chat to PLAYER_TYPE "MESSAGE"
 Gives the AI resources.
 ### Usage
 ```
-cheat RESOURCE_NAME AMOUNT
+cheat AMOUNT RESOURCE_NAME
 ```
 ## create action
 Creates a rule with the action contained within.
@@ -234,6 +258,8 @@ Loads another aoe2ai file. Relative to main file if trying to load from a sepera
 ```
 load "PATH"
 ```
+## lure boars
+
 ## market
 Buys/sells based on a condition.
 ### Usage
@@ -344,6 +370,24 @@ A random block separated by randors will be allowed to execute. Using persistant
    chat to all "option 2!"
 #end select random
 ```
+## sell food
+
+### Usage
+```
+sell food
+```
+## sell stone
+
+### Usage
+```
+sell stone
+```
+## sell wood
+
+### Usage
+```
+sell wood
+```
 ## set const
 Sets a constant. Can only be done once for every name.
 ### Usage
@@ -409,6 +453,14 @@ set up new building system
 ### Usage
 ```
 set up scouting
+```
+## subroutine
+Allows rules to be grouped into a repeatable section, used with 'call'.
+### Usage
+```
+#subroutine
+    RULES
+#end subroutine
 ```
 ## take boar
 

@@ -1,11 +1,13 @@
 from functools import reduce
 import re
 import uuid
+import copy
 
 from .defrule import *
 from .research import *
 from . import interpreter
 
+global_subroutine_table = {}
 rules = []
 
 def rule(rule):
@@ -53,6 +55,7 @@ class Snippet(Rule):
 
 class SnippetCollection(Rule):
     def __init__(self, trigger, snippets):
+        super().__init__()
         self.name = trigger
         self.regex = re.compile("^{}$".format(trigger))
         self.snippets = snippets
@@ -187,6 +190,24 @@ rules.append(SnippetCollection(
 
 create_merged_snippet(rules, "set up basics", ["set up scouting", "set up new building system", "set up micro"])
 
+def prepend_conditional_jump(rules, conditions):
+    if len(conditions) == 0:
+        return
+    
+    for rule in rules:
+        rule.compressable = False
+        rule.ignore_stacks = True
+    
+    jump_amount = len(rules)
+    condition = join_conditions(conditions)
+    
+    rules.insert(0, Defrule(["not ({})".format(condition)], ["up-jump-rule {}".format(jump_amount)], ignore_stacks=True))
+
+def join_conditions(conditions):
+    if len(conditions) == 1:
+        return conditions[0]
+    return f"and ({conditions[0]}) ({join_conditions(conditions[1:])})"
+
 @rule
 class Load(Rule):
     def __init__(self):
@@ -219,21 +240,9 @@ class Load(Rule):
             return rules
 
         if jump:
-            for rule in rules:
-                rule.compressable = False
-                rule.ignore_stacks = True
-            
-            jump_amount = len(rules)
-            condition = self.__join_conditions(kwargs["condition_stack"])
-            
-            rules.insert(0, Defrule(["not ({})".format(condition)], ["up-jump-rule {}".format(jump_amount)], ignore_stacks=True))
+            prepend_conditional_jump(rules, kwargs["condition_stack"])
             
         return rules
-
-    def __join_conditions(self, conditions):
-        if len(conditions) == 1:
-            return conditions[0]
-        return f"and ({conditions[0]}) ({self.__join_conditions(conditions[1:])})"
 
 @rule
 class Order(Load):
@@ -257,6 +266,79 @@ class Order(Load):
         segments[-1][-1].actions.append(f"set-goal {goal_number} 0")
         
         return [Defrule(["true"], [f"set-goal {goal_number} 0", "disable-self"]), *reduce(lambda x, y: x + y, segments[::-1])]
+
+@rule
+class Subroutine(Rule):
+    def __init__(self):
+        super().__init__()
+        self.name = "subroutine"
+        self.regex = re.compile("^(?:#subroutine ([^ ]+)|#end subroutine)$")
+        self.usage = """#subroutine
+    RULES
+#end subroutine"""
+        self.help = "Allows rules to be grouped into a repeatable section, used with 'call'."
+
+    def parse(self, line, **kwargs):
+        name = self.get_data(line)[0]
+
+        if "#end" not in line:
+            identifier = uuid.uuid4()
+            kwargs["data_stack"].append(identifier)
+            kwargs["data_stack"].append(name)
+            kwargs["data_stack"].append(kwargs["condition_stack"][:])
+            kwargs["condition_stack"].clear()
+            return Defrule(["true"], ["do-nothing"], tag=identifier, ignore_stacks=True)
+
+        else:
+            stack = kwargs["data_stack"].pop()
+            name = kwargs["data_stack"].pop()
+            identifier = kwargs["data_stack"].pop()
+
+            rules = []
+            
+            for i, rule in enumerate(kwargs["definitions"]):
+                if isinstance(rule, Defrule) and rule.tag == identifier:
+                    for x in range(len(kwargs["definitions"]) - i):
+                        rules.append(kwargs["definitions"].pop())
+                        
+                    break
+            else:
+                raise Exception(f"subroutine failed to find marker rule with identifier '{identifier}'")
+            rules.pop(-1)
+
+            global_subroutine_table[name] = rules[::-1]
+            
+            kwargs["condition_stack"].extend(stack)
+
+@rule
+class Call(Rule):
+    def __init__(self):
+        super().__init__()
+        self.name = "call"
+        self.regex = re.compile("^call ([^ ()]+)(?:\(.+\))?$")
+        self.usage = "call SUBROUTINE_NAME"
+        self.help = "Inserts all the rules within a subroutine."
+
+    def parse(self, line, **kwargs):
+        name = self.get_data(line)[0]
+
+        params = {}
+        
+        for match in re.findall(r"([^\s(,]+)\s*=\s*((?:\"[^\"]+\"|[^,)]+))\s*", line):
+            params[match[0]] = match[1]
+        
+        rules = copy.deepcopy(global_subroutine_table[name])
+        prepend_conditional_jump(rules, kwargs["condition_stack"])
+
+        for param_name, value in params.items():
+
+            for rule in rules:
+                for i, condition in enumerate(rule.conditions):
+                    rule.conditions[i] = condition.replace("{" + param_name + "}", value)
+                for i, action in enumerate(rule.actions):
+                    rule.actions[i] = action.replace("{" + param_name + "}", value)
+        
+        return rules
 
 @rule
 class Cheat(Rule):
