@@ -59,6 +59,7 @@ class SnippetCollection(Rule):
         self.name = trigger
         self.regex = re.compile("^{}$".format(trigger))
         self.snippets = snippets
+        self.usage = self.name
 
     def parse(self, line, **kwargs):
         return [snippet.parse(line, **kwargs) for snippet in self.snippets]

@@ -260,6 +260,10 @@ load "PATH"
 ```
 ## lure boars
 
+### Usage
+```
+lure boars
+```
 ## market
 Buys/sells based on a condition.
 ### Usage
