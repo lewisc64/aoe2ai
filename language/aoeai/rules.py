@@ -320,6 +320,11 @@ class Call(Rule):
             content = content.replace("{" + param_name + "}", value)
         
         output = interpreter.interpret(content, timers=kwargs["timers"], goals=kwargs["goals"], constants=kwargs["constants"], userpatch=kwargs["userpatch"], content_identifier=kwargs["content_identifier"])
+        for rule in output[:]:
+            if isinstance(rule, Defconst):
+                kwargs["definitions"].insert(0, rule)
+                kwargs["constants"].append(rule.name)
+                output.remove(rule)
         prepend_conditional_jump(output, kwargs["condition_stack"])
         
         return output
@@ -1088,6 +1093,83 @@ distribute 8 villagers from food to gold and stone using modifiers"""
             actions.append("up-modify-sn sn-{}-gatherer-percentage c:+ {}".format(resource, amount // len(destinations)))
 
         return Defrule(conditions, actions)
+
+@rule
+class ForceGatherers(Rule):
+    def __init__(self):
+        super().__init__()
+        self.name = "force gatherers"
+        self.regex = re.compile("^force(?: at (least|most))? ([0-9]+) (wood|food|gold|stone) gatherers$")
+        self.usage = ""
+        self.example = ""
+        self.help = ""
+
+    def parse(self, line, **kwargs):
+        data = self.get_data(line)
+        distribute_up = data[0] == "least" or data[0] is None
+        distribute_down = data[0] == "most" or data[0] is None
+        vills, resource = int(data[1]), data[2]
+
+        other_resources = ["wood", "food", "gold", "stone"]
+        other_resources.remove(resource)
+
+        villager_goal = len(kwargs["goals"]) + 1
+        kwargs["goals"].append(villager_goal)
+
+        target_goal = len(kwargs["goals"]) + 1
+        kwargs["goals"].append(target_goal)
+
+        rules = [
+            Defrule(
+                ["true"],
+                [f"up-get-fact unit-type-count villager {villager_goal}",
+                 f"up-modify-goal {target_goal} c:= {vills * 100}",
+                 f"up-modify-goal {target_goal} g:/ {villager_goal}"])
+        ]
+        
+        #for combination in sorted(self.__get_combinations(other_resources), key=lambda x: -len(x)):
+
+        for other_resource in other_resources:
+            if distribute_up:
+                rules.append(Defrule(
+                    [f"up-compare-goal {target_goal} s:> sn-{resource}-gatherer-percentage",
+                     f"strategic-number sn-{other_resource}-gatherer-percentage >= 1"],
+                    [f"up-modify-sn sn-{resource}-gatherer-percentage g:+ 1",
+                     f"up-modify-sn sn-{other_resource}-gatherer-percentage c:- 1"],
+                    compressable=False))
+
+            if distribute_down:
+                rules.append(Defrule(
+                    [f"up-compare-goal {target_goal} s:< sn-{resource}-gatherer-percentage",
+                     f"strategic-number sn-{other_resource}-gatherer-percentage <= 99"],
+                    [f"up-modify-sn sn-{resource}-gatherer-percentage g:- 1",
+                     f"up-modify-sn sn-{other_resource}-gatherer-percentage c:+ 1"],
+                    compressable=False))
+
+        return rules
+
+    def __get_combinations(self, resources, current=None):
+        if current is None:
+            current = []
+            
+        output = []
+        
+        for resource in resources:
+            if resource not in current:
+                
+                current.append(resource)
+                
+                current_set = set(current)
+                if current_set not in output:
+                    output.append(current_set)
+                
+                for combination in [set(x) for x in self.__get_combinations(resources, current=current[:])]:
+                    if combination not in output:
+                        output.append(combination)
+                
+                current.remove(resource)
+
+        return [list(x) for x in output]
 
 @rule
 class AssignBuilders(Rule):
