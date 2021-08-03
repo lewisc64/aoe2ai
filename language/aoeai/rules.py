@@ -648,12 +648,12 @@ class Respond(Rule):
     def __init__(self):
         super().__init__()
         self.name = "respond"
-        self.regex = re.compile("^respond to (?:([^ ]+) )??([^ ]+)(?: (building|unit))? with (?:([^ ]+) )?([^ ]+)(?: (building|unit))?$")
+        self.regex = re.compile("^respond to (?:([^ ]+) )??([^ ]+)(?: (building|unit))?(?: from(?: player)? ([^ ]+))? with (?:([^ ]+) )?([^ ]+)(?: (building|unit))?$")
         self.usage = "respond to ?AMOUNT NAME ?BUILDING/UNIT with NAME ?BUILDING/UNIT"
         self.help = "When the AI sees the specified amount, it reacts with the specified parameters. If building/unit is unspecified, unit is assumed. If amount is unspecified, 1 is assumed."
 
     def parse(self, line, **kwargs):
-        detect_amount, detect_name, detect_type, create_amount, create_name, create_type = self.get_data(line)
+        detect_amount, detect_name, detect_type, target, create_amount, create_name, create_type = self.get_data(line)
 
         if detect_amount is None:
             detect_amount = 1
@@ -661,11 +661,13 @@ class Respond(Rule):
             detect_type = "unit"
         if create_type is None:
             create_type = "unit"
+        if target is None:
+            target = "any-enemy"
         action = "train" if create_type == "unit" else "build"
 
         conditions = []
 
-        conditions.append("players-{}-type-count any-enemy {} >= {}".format(detect_type, detect_name, detect_amount))
+        conditions.append("players-{}-type-count {} {} >= {}".format(detect_type, target, detect_name, detect_amount))
         if create_amount is not None:
             conditions.append("{}-type-count-total {} < {}".format(create_type, create_name, create_amount))
         conditions.append("can-{} {}".format(action, create_name))
@@ -677,7 +679,7 @@ class BlockRespond(Rule):
     def __init__(self):
         super().__init__()
         self.name = "block respond"
-        self.regex = re.compile("^(?:#respond to (?:([^ ]+) )??([^ ]+)(?: (building|unit))?|#end respon(?:d|se))$")
+        self.regex = re.compile("^(?:#respond to (?:([^ ]+) )??([^ ]+)(?: (building|unit))?(?: from(?: player)? ([^ ]+))?|#end respon(?:d|se))$")
         self.usage = """#respond to ?AMOUNT NAME ?BUILDING/UNIT
    RULES
 #end respond"""
@@ -690,20 +692,22 @@ class BlockRespond(Rule):
         if line.startswith("#end"):
             kwargs["condition_stack"].pop()
         else:
-            amount, name, detect_type = self.get_data(line)
+            amount, name, detect_type, target = self.get_data(line)
 
             if amount is None:
                 amount = 1
             if detect_type is None:
                 detect_type = "unit"
+            if target is None:
+                target = "any-enemy"
             
-            kwargs["condition_stack"].append("players-{}-type-count any-enemy {} >= {}".format(detect_type, name, amount))
+            kwargs["condition_stack"].append("players-{}-type-count {} {} >= {}".format(detect_type, target, name, amount))
 
 @rule
 class Reply(Rule):
     def __init__(self):
         super().__init__()
-        self.name = "block respond taunt"
+        self.name = "reply"
         self.regex = re.compile("^(?:#reply to (enemy|ally) taunt ([^ ]+)|#end reply)$")
         self.usage = """#reply to ?ENEMY/ALLY taunt TAUNT_NUMBER
    RULES

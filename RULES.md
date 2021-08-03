@@ -240,6 +240,8 @@ enable walls on perimeter PERIMETER_NUMBER
 ```
 enable walls on perimeter 2
 ```
+## force gatherers
+
 ## if
 Adds a condition to the condition stack.
 ### Usage
