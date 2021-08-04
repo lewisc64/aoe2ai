@@ -85,6 +85,10 @@ namespace Language.ScriptItems
                 // TODO: investigate
                 // MarkedForDeletion = true;
             }
+            if (Length > MaxRuleSize)
+            {
+                throw new InvalidOperationException($"Rule is overlength. Length: {Length}, Maximum length: {MaxRuleSize}.");
+            }
         }
 
         public void MergeIn(Defrule rule)
@@ -101,6 +105,10 @@ namespace Language.ScriptItems
             {
                 throw new ArgumentException("The provided rule has too many actions to be merged.");
             }
+            if (Actions.Any(x => x.Text == "disable-self") || rule.Actions.Any(x => x.Text == "disable-self"))
+            {
+                throw new ArgumentException("Rules with the action 'disable-self' cannot be merged.");
+            }
             Actions.AddRange(rule.Actions);
             rule.Actions.Clear();
             rule.Actions.Add(new Action("do-nothing"));
@@ -108,7 +116,12 @@ namespace Language.ScriptItems
 
         public bool CanMergeWith(Defrule rule)
         {
-            return !Locked && !rule.Locked && string.Join("", Conditions) == string.Join("", rule.Conditions) && Length + rule.LengthOfActions <= MaxRuleSize;
+            return !Locked
+                && !rule.Locked
+                && string.Join("", Conditions) == string.Join("", rule.Conditions)
+                && Length + rule.LengthOfActions <= MaxRuleSize
+                && !Actions.Any(x => x.Text == "disable-self")
+                && !rule.Actions.Any(x => x.Text == "disable-self");
         }
     }
 }

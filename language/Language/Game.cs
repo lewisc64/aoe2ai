@@ -50,7 +50,7 @@ namespace Language
                 all.AddRange(research[key]);
             }
 
-            research["all"] = all.ToArray();
+            research["all"] = all.Distinct().ToArray();
 
             // aliases
             research["ranged blacksmith"] = research["blacksmith ranged"];

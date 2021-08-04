@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace Language.Rules
 {
     [ActiveRule]
-    public class If : Rule
+    public class If : RuleBase
     {
         public If()
             : base(@"^#if (?<ifcondition>.+)|#else if (?<elseifcondition>.+)|#else|#end if$")

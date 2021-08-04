@@ -10,23 +10,9 @@ namespace Aoe2AI
         {
             var t = new Transpiler();
             Console.WriteLine(t.Transpile(@"
-
-#if a
-    rule
-#else if b
-    rule
-#else if c
-    rule
-#else
-    rule
-#end if
-rule
-#if current-age == feudal-age
-    rule
-#end if
+set up basics
+lure boars
 "));
-
-            var research = Game.GetResearches();
         }
     }
 }

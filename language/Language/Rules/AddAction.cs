@@ -3,7 +3,7 @@
 namespace Language.Rules
 {
     [ActiveRule]
-    public class AddAction : Rule
+    public class AddAction : RuleBase
     {
         public AddAction()
             : base(@"^#add action (?<condition>.+)|#remove action")
