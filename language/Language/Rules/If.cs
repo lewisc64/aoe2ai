@@ -6,6 +6,8 @@ namespace Language.Rules
     [ActiveRule]
     public class If : RuleBase
     {
+        public override string Name => "if";
+
         public If()
             : base(@"^#if (?<ifcondition>.+)|#else if (?<elseifcondition>.+)|#else|#end if$")
         {

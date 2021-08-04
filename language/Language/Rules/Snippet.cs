@@ -19,7 +19,7 @@ namespace Language.Rules
 
         public override void Parse(string line, TranspilerContext context)
         {
-            context.AddToScript(new Defrule(Conditions, Actions));
+            context.AddToScript(context.ApplyStacks(new Defrule(Conditions, Actions)));
         }
     }
 }

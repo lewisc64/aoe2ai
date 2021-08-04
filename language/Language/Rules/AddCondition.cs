@@ -5,6 +5,8 @@ namespace Language.Rules
     [ActiveRule]
     public class AddCondition : RuleBase
     {
+        public override string Name => "add condition";
+
         public AddCondition()
             : base(@"^#add condition (?<condition>.+)|#remove condition$")
         {

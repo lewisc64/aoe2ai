@@ -5,6 +5,8 @@ namespace Language.Rules
     [ActiveRule]
     public class AddAction : RuleBase
     {
+        public override string Name => "add action";
+
         public AddAction()
             : base(@"^#add action (?<condition>.+)|#remove action")
         {

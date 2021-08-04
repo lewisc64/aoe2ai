@@ -10,15 +10,11 @@ namespace Language.ScriptItems
 
         public static int MaxRuleSize = 32;
 
-        public bool IgnoreStacks { get; set; } = false;
-
         public bool Compressable { get; set; } = true;
 
         public bool Splittable { get; set; } = true;
 
         public bool MarkedForDeletion { get; set; } = false;
-
-        public bool Locked { get; set; } = false;
 
         public List<Condition> Conditions { get; }
 
@@ -59,10 +55,6 @@ namespace Language.ScriptItems
 
         public void Optimize()
         {
-            if (Locked)
-            {
-                return;
-            }
             if (Conditions.Count > 1)
             {
                 Conditions.RemoveAll(x => x.Text == "true");
@@ -93,9 +85,13 @@ namespace Language.ScriptItems
 
         public void MergeIn(Defrule rule)
         {
-            if (Locked)
+            if (!Compressable)
             {
-                return;
+                throw new ArgumentException("This rule is not compressable.");
+            }
+            if (!rule.Compressable)
+            {
+                throw new ArgumentException("The rule being merged in is not compressable.");
             }
             if (string.Join("", Conditions) != string.Join("", rule.Conditions))
             {
@@ -116,12 +112,12 @@ namespace Language.ScriptItems
 
         public bool CanMergeWith(Defrule rule)
         {
-            return !Locked
-                && !rule.Locked
-                && string.Join("", Conditions) == string.Join("", rule.Conditions)
+            return string.Join("", Conditions) == string.Join("", rule.Conditions)
                 && Length + rule.LengthOfActions <= MaxRuleSize
                 && !Actions.Any(x => x.Text == "disable-self")
-                && !rule.Actions.Any(x => x.Text == "disable-self");
+                && !rule.Actions.Any(x => x.Text == "disable-self")
+                && Compressable
+                && rule.Compressable;
         }
     }
 }

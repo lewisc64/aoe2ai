@@ -6,13 +6,17 @@ namespace Language
 {
     public class TranspilerContext
     {
-        public Stack<Condition> ConditionStack { get; } = new Stack<Condition>();
+        public Stack<Condition> ConditionStack { get; set; } = new Stack<Condition>();
 
-        public Stack<Action> ActionStack { get; } = new Stack<Action>();
+        public Stack<Action> ActionStack { get; set; } = new Stack<Action>();
 
-        public Stack<object> DataStack { get; } = new Stack<object>();
+        public Stack<object> DataStack { get; set; } = new Stack<object>();
 
-        public List<IScriptItem> Script { get; } = new List<IScriptItem>();
+        public List<IScriptItem> Script { get; set; } = new List<IScriptItem>();
+
+        public string CurrentPath { get; set; }
+
+        public string CurrentFileName { get; set; }
 
         public IScriptItem ApplyStacks(IScriptItem item)
         {
@@ -22,6 +26,25 @@ namespace Language
                 ((Defrule)item).Actions.AddRange(ActionStack.Select(x => x.Copy()));
             }
             return item;
+        }
+
+        public void AddToScriptWithJump(IEnumerable<IScriptItem> items, Condition skipCondition)
+        {
+            AddToScript(new Defrule(
+                new[] { skipCondition },
+                new[] { new Action($"up-jump-rule {items.Count(x => x is Defrule)}") })
+            { Compressable = false, Splittable = false });
+
+            foreach (var rule in items)
+            {
+                if (rule is Defrule)
+                {
+                    ((Defrule)rule).Compressable = false;
+                    ((Defrule)rule).Splittable = false;
+                }
+            }
+
+            AddToScript(items);
         }
 
         public void AddToScript(IEnumerable<IScriptItem> items)
@@ -34,14 +57,7 @@ namespace Language
 
         public void AddToScript(IScriptItem item)
         {
-            if (item is Defrule)
-            {
-                if (!((Defrule)item).IgnoreStacks)
-                {
-                    ApplyStacks(item);
-                }
-                Script.Add(item);
-            }
+            Script.Add(item);
         }
 
         public void OptimizeScript()

@@ -9,6 +9,8 @@ namespace Language
 {
     public class Transpiler
     {
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+
         public List<IRule> Rules { get; } = new List<IRule>();
 
         public Transpiler()
@@ -182,15 +184,33 @@ namespace Language
 
         public IEnumerable<IScriptItem> Transpile(string source, TranspilerContext context)
         {
+            var lineNumber = 1;
             foreach (var line in source.Split(new[] { '\r', '\n' }).Select(x => x.Trim()))
             {
+                var lineNoComments = line.Split("//").First().Trim();
+
+                if (string.IsNullOrEmpty(lineNoComments))
+                {
+                    lineNumber++;
+                    continue;
+                }
+
+                var matched = false;
                 foreach (var rule in Rules)
                 {
-                    if (rule.Match(line))
+                    if (rule.Match(lineNoComments))
                     {
-                        rule.Parse(line, context);
+                        matched = true;
+                        rule.Parse(lineNoComments, context);
                     }
                 }
+
+                if (!matched)
+                {
+                    Logger.Warn($"Line {lineNumber} did not match: {line}");
+                }
+
+                lineNumber++;
             }
 
             context.OptimizeScript();

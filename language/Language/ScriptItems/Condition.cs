@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace Language.ScriptItems
@@ -22,6 +23,15 @@ namespace Language.ScriptItems
         public virtual Condition Copy()
         {
             return new Condition(Text);
+        }
+
+        public static Condition JoinConditions(string operation, IEnumerable<Condition> conditions)
+        {
+            if (conditions.Count() == 1)
+            {
+                return conditions.Single();
+            }
+            return new CombinatoryCondition(operation, new[] { conditions.First(), JoinConditions(operation, conditions.Skip(1)) });
         }
 
         public static Condition Parse(string text)
