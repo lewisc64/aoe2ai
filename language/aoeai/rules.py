@@ -1342,6 +1342,39 @@ class TargetPlayer(Rule):
             ])
 
 @rule
+class DetectScoreChange(Rule):
+    def __init__(self):
+        super().__init__()
+        self.name = "detect score change"
+        self.regex = re.compile("^detect score change (?:of|between) ([^ ]+)(?: and ([^ ]+))? from ([^ ]+)$")
+        self.usage = "detect score change of/between UPPER_BOUND and LOWER_BOUND from PLAYER"
+        self.example = """#when
+    detect score change between -120 and -80 from target-player
+#then
+    chat to all "enemy probably clicked up to castle"
+#end when"""
+        self.help = "Creates a rule with the condition that the score has changed by a certain amount from the specified player."
+
+    def parse(self, line, **kwargs):
+        lower_bound, upper_bound, target = self.get_data(line)
+
+        if upper_bound is None:
+            upper_bound = lower_bound
+        
+        previous_score_goal = len(kwargs["goals"]) + 1
+        kwargs["goals"].append(previous_score_goal)
+        
+        score_delta_goal = len(kwargs["goals"]) + 1
+        kwargs["goals"].append(score_delta_goal)
+        
+        return [
+            Defrule(["true"], [f"up-get-fact-max {target} current-score 0 {score_delta_goal}",
+                               f"up-modify-goal {score_delta_goal} g:- {previous_score_goal}"], ignore_stacks=True),
+            Defrule([f"up-compare-goal {score_delta_goal} c:>= {lower_bound}", f"up-compare-goal {score_delta_goal} c:<= {upper_bound}"], ["do-nothing"]),
+            Defrule(["true"], [f"up-get-fact-max {target} current-score 0 {previous_score_goal}"], ignore_stacks=True),
+        ]
+
+@rule
 class SelectRandom(Rule):
     def __init__(self):
         super().__init__()
@@ -1354,9 +1387,9 @@ class SelectRandom(Rule):
 #end select random"""
         self.help = "A random block separated by randors will be allowed to execute. Using persistant mode means the randomly chosen one is picked every time, otherwise it will change."
         self.example = """#select random
-   chat to all \"option 1!\"
+    chat to all \"option 1!\"
 #randor
-   chat to all \"option 2!\"
+    chat to all \"option 2!\"
 #end select random"""
     
     def parse(self, line, **kwargs):
