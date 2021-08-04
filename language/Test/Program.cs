@@ -25,6 +25,8 @@ rule
     rule
 #end if
 "));
+
+            var research = Game.GetResearches();
         }
     }
 }
