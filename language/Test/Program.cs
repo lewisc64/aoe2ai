@@ -15,7 +15,7 @@ namespace Aoe2AI
             var t = new Transpiler();
             Console.WriteLine(string.Join("\n", t.Transpile(@"
 
-distribute villagers 40 30 20 10
+distribute 8 villagers from wood to food and gold
 
 ", new TranspilerContext { CurrentPath = @"E:\coding\GitHub\aoe2bots\bots" })));
         }
