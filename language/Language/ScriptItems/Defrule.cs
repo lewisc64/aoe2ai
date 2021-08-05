@@ -113,7 +113,7 @@ namespace Language.ScriptItems
             {
                 throw new ArgumentException("The provided rule has too many actions to be merged.");
             }
-            if (Actions.Any(x => x.Text == "disable-self") || rule.Actions.Any(x => x.Text == "disable-self"))
+            if (Actions.Any(x => x.Text == "disable-self") != rule.Actions.Any(x => x.Text == "disable-self"))
             {
                 throw new ArgumentException("Rules with the action 'disable-self' cannot be merged.");
             }
@@ -126,8 +126,7 @@ namespace Language.ScriptItems
         {
             return string.Join("", Conditions) == string.Join("", rule.Conditions)
                 && Length + rule.LengthOfActions <= MaxRuleSize
-                && !Actions.Any(x => x.Text == "disable-self")
-                && !rule.Actions.Any(x => x.Text == "disable-self")
+                && Actions.Any(x => x.Text == "disable-self") == rule.Actions.Any(x => x.Text == "disable-self")
                 && Compressable
                 && rule.Compressable;
         }

@@ -15,10 +15,9 @@ namespace Aoe2AI
             var t = new Transpiler();
             Console.WriteLine(string.Join("\n", t.Transpile(@"
 
+load ""jotting.aoe2ai""
 
-load ""main.aoe2ai""
-
-", new TranspilerContext { CurrentPath = @"E:\coding\GitHub\aoe2bots\bots\charlotte" })).Length);
+", new TranspilerContext { CurrentPath = @"E:\coding\GitHub\aoe2bots\bots" })));
         }
     }
 }
