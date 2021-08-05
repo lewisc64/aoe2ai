@@ -17,6 +17,9 @@ namespace Aoe2AI
 
 enable walls on perimeter 2
 
+build stone walls on perimeter 2
+build stone gates on perimeter 2
+
 ", new TranspilerContext { CurrentPath = @"E:\coding\GitHub\aoe2bots\bots" })));
         }
     }
