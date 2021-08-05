@@ -16,14 +16,10 @@ namespace Aoe2AI
             Console.WriteLine(string.Join("\n", t.Transpile(@"
 
 #do once
-    sn-maximum-town-size = 20
+    scout opposite
 #end do
 
-#when
-    build gold mining camps
-#then
-    sn-camp-max-distance += 8
-#end when
+scout enemy
 
 ", new TranspilerContext { CurrentPath = @"E:\coding\GitHub\aoe2bots\bots" })));
         }
