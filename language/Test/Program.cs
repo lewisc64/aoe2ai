@@ -16,7 +16,9 @@ namespace Aoe2AI
             var t = new Transpiler();
             Console.WriteLine(string.Join("\n", t.Transpile(@"
 
-cheat 500 wood
+chat to allies ""hi""
+chat to all ""hi""
+chat to this-any-enemy ""bye""
 
 ", new TranspilerContext { CurrentPath = @"E:\coding\GitHub\aoe2bots\bots" })));
         }
