@@ -15,9 +15,7 @@ namespace Aoe2AI
             var t = new Transpiler();
             Console.WriteLine(string.Join("\n", t.Transpile(@"
 
-increase town size by 5
-set town size to 20
-decrease town size by 2
+escrow 20 gold
 
 ", new TranspilerContext { CurrentPath = @"E:\coding\GitHub\aoe2bots\bots" })));
         }
