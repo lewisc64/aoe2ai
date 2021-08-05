@@ -15,10 +15,11 @@ namespace Aoe2AI
 
             var t = new Transpiler();
             Console.WriteLine(string.Join("\n", t.Transpile(@"
-
-chat to allies ""hi""
-chat to all ""hi""
-chat to this-any-enemy ""bye""
+#when
+    chat to all ""hi""
+#then always
+    resign
+#end when
 
 ", new TranspilerContext { CurrentPath = @"E:\coding\GitHub\aoe2bots\bots" })));
         }
