@@ -15,11 +15,9 @@ namespace Aoe2AI
             var t = new Transpiler();
             Console.WriteLine(string.Join("\n", t.Transpile(@"
 
-#select random persistant
-    chat to all ""1""
-#randor
-    chat to all ""2""
-#end select
+increase town size by 5
+set town size to 20
+decrease town size by 2
 
 ", new TranspilerContext { CurrentPath = @"E:\coding\GitHub\aoe2bots\bots" })));
         }
