@@ -3,7 +3,9 @@ A fast way to write simple Age of Empires 2 AI.
 
 ## Usage
 
-TODO
+```
+parsefile.exe -help
+```
 
 ## Example AI
 
