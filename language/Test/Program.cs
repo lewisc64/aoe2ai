@@ -15,7 +15,10 @@ namespace Aoe2AI
             var t = new Transpiler();
             Console.WriteLine(string.Join("\n", t.Transpile(@"
 
-research infantry blacksmith upgrades
+#if current-age = feudal-age
+    attack
+#end if
+attack with 10 units
 
 ", new TranspilerContext { CurrentPath = @"E:\coding\GitHub\aoe2bots\bots" })));
         }
