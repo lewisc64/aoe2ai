@@ -15,11 +15,11 @@ namespace Aoe2AI
             var t = new Transpiler();
             Console.WriteLine(string.Join("\n", t.Transpile(@"
 
-#do once
-    scout opposite
-#end do
-
-scout enemy
+#select random persistant
+    chat to all ""1""
+#randor
+    chat to all ""2""
+#end select
 
 ", new TranspilerContext { CurrentPath = @"E:\coding\GitHub\aoe2bots\bots" })));
         }
