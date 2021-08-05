@@ -15,10 +15,10 @@ namespace Aoe2AI
 
             var t = new Transpiler();
             Console.WriteLine(string.Join("\n", t.Transpile(@"
-train 5 militiaman-line
-train archer-line
-train 10 skirmisher-line with food and wood escrow
-train mangonel-line with wood and gold escrow
+respond to archer-line with skirmisher-line
+respond to 2 scout-cavalry-line with 4 spearman-line
+respond to archery-range building with 10 skirmisher-line
+respond to battle-elephant-line from target-player with 1 monastery building
 ", new TranspilerContext { CurrentPath = @"E:\coding\GitHub\aoe2bots\bots" })));
         }
     }
