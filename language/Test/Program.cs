@@ -15,10 +15,7 @@ namespace Aoe2AI
             var t = new Transpiler();
             Console.WriteLine(string.Join("\n", t.Transpile(@"
 
-#if current-age = feudal-age
-    attack
-#end if
-attack with 10 units
+buy wood when gold > 40
 
 ", new TranspilerContext { CurrentPath = @"E:\coding\GitHub\aoe2bots\bots" })));
         }
