@@ -221,7 +221,14 @@ namespace Language
                         if (rule.Match(lineNoComments))
                         {
                             matched = true;
-                            rule.Parse(lineNoComments, context);
+                            try
+                            {
+                                rule.Parse(lineNoComments, context);
+                            }
+                            catch (Exception ex)
+                            {
+                                Logger.Error($"Exception occurred while parsing line {lineNumber}: {ex.Message}");
+                            }
                         }
                     }
 
@@ -238,17 +245,17 @@ namespace Language
             {
                 if (context.ConditionStack.Any())
                 {
-                    Logger.Error($"Transpiling finished with a populated condition stack: {{ {string.Join(", ", context.ConditionStack)} }}");
+                    Logger.Error($"Transpiling of '{context.CurrentFileName}' finished with a populated condition stack: {{ {string.Join(", ", context.ConditionStack)} }}");
                 }
 
                 if (context.ActionStack.Any())
                 {
-                    Logger.Error($"Transpiling finished with a populated action stack: {{ {string.Join(", ", context.ActionStack)} }}");
+                    Logger.Error($"Transpiling of '{context.CurrentFileName}' finished with a populated action stack: {{ {string.Join(", ", context.ActionStack)} }}");
                 }
 
                 if (context.DataStack.Any())
                 {
-                    Logger.Error($"Transpiling finished with a populated internal data stack: {{ {string.Join(", ", context.DataStack)} }}");
+                    Logger.Error($"Transpiling of '{context.CurrentFileName}' finished with a populated internal data stack: {{ {string.Join(", ", context.DataStack)} }}");
                 }
             }
 

@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Language.Rules
 {
-    [ActiveRule]
+    [ActiveRule(-1)]
     public class Train : RuleBase
     {
         private static readonly string[] SetUnits = new[] { "monk", "trebuchet" };

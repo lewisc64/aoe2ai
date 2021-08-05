@@ -22,7 +22,7 @@ namespace Language
         
         public string CurrentPath { get; set; }
 
-        public string CurrentFileName { get; set; }
+        public string CurrentFileName { get; set; } = "unknown";
 
         public IScriptItem ApplyStacks(IScriptItem item)
         {

@@ -15,7 +15,8 @@ namespace Aoe2AI
             var t = new Transpiler();
             Console.WriteLine(string.Join("\n", t.Transpile(@"
 
-tribute 50 wood to target-player
+build gold mining camps
+build lumber camps maintaining 5 tiles
 
 ", new TranspilerContext { CurrentPath = @"E:\coding\GitHub\aoe2bots\bots" })));
         }
