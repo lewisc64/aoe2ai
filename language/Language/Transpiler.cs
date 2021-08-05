@@ -184,6 +184,10 @@ namespace Language
 
         public IEnumerable<IScriptItem> Transpile(string source, TranspilerContext context)
         {
+            var withinSubroutine = false;
+            string subroutineName = null;
+            string subroutine = null;
+
             var lineNumber = 1;
             foreach (var line in source.Split(new[] { '\r', '\n' }).Select(x => x.Trim()))
             {
@@ -195,19 +199,37 @@ namespace Language
                     continue;
                 }
 
-                var matched = false;
-                foreach (var rule in Rules)
+                if (line.StartsWith("#subroutine "))
                 {
-                    if (rule.Match(lineNoComments))
-                    {
-                        matched = true;
-                        rule.Parse(lineNoComments, context);
-                    }
+                    withinSubroutine = true;
+                    subroutineName = line.Split(' ').Last();
+                    subroutine = "";
                 }
-
-                if (!matched)
+                else if (withinSubroutine && line.StartsWith("#end subroutine"))
                 {
-                    Logger.Warn($"Line {lineNumber} did not match: {line}");
+                    context.Subroutines[subroutineName] = subroutine;
+                    withinSubroutine = false;
+                }
+                else if (withinSubroutine)
+                {
+                    subroutine += line + "\n";
+                }
+                else
+                {
+                    var matched = false;
+                    foreach (var rule in Rules)
+                    {
+                        if (rule.Match(lineNoComments))
+                        {
+                            matched = true;
+                            rule.Parse(lineNoComments, context);
+                        }
+                    }
+
+                    if (!matched)
+                    {
+                        Logger.Warn($"Line {lineNumber} did not match: {line}");
+                    }
                 }
 
                 lineNumber++;

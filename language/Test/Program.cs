@@ -1,5 +1,4 @@
 ﻿using Language;
-using Language.ScriptItems;
 using NLog;
 using System;
 
@@ -15,12 +14,23 @@ namespace Aoe2AI
 
             var t = new Transpiler();
             Console.WriteLine(string.Join("\n", t.Transpile(@"
-#respond to archer-line
-    train skirmisher-line
-#end respond
-#respond to 2 scout-cavalry-line from target-player
-    chat to all ""nice horse""
-#end respond
+#subroutine archer-response
+    #respond to archer-line
+        train {unit}
+    #end respond
+#end subroutine
+
+call archer-response(unit=""monk"")
+
+chat to all ""hi""
+
+#if current-age == feudal-age
+    call archer-response(unit=""skirmisher-line"")
+    call archer-response(unit=""scout-cavalry-line"")
+#else
+    call archer-response(unit=""scorpion-line"")
+#end if
+call archer-response(unit=""mangonel-line"")
 ", new TranspilerContext { CurrentPath = @"E:\coding\GitHub\aoe2bots\bots" })));
         }
     }
