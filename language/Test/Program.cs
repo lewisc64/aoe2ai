@@ -18,7 +18,7 @@ namespace Aoe2AI
 
 load ""main.aoe2ai""
 
-", new TranspilerContext { CurrentPath = @"E:\coding\GitHub\aoe2bots\bots\charlotte" })));
+", new TranspilerContext { CurrentPath = @"E:\coding\GitHub\aoe2bots\bots\charlotte" })).Length);
         }
     }
 }

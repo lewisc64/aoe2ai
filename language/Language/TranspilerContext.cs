@@ -19,7 +19,7 @@ namespace Language
         public List<string> Timers { get; set; } = new List<string>();
 
         public Dictionary<string, string> Subroutines { get; set; } = new Dictionary<string, string>();
-        
+
         public string CurrentPath { get; set; }
 
         public string CurrentFileName { get; set; } = "unknown";

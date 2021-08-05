@@ -45,6 +45,7 @@ namespace Language.Rules
             var subcontext = context.Copy();
             subcontext.Script.Clear();
             subcontext.ConditionStack.Clear();
+            subcontext.ActionStack.Clear();
             subcontext.DataStack.Clear();
             subcontext.CurrentFileName = $"subroutine '{subroutineName}'";
 
@@ -53,11 +54,15 @@ namespace Language.Rules
 
             if (context.ConditionStack.Any())
             {
+                foreach (var rule in rules)
+                {
+                    (rule as Defrule)?.Actions.AddRange(context.ActionStack);
+                }
                 context.AddToScriptWithJump(rules, Condition.JoinConditions("and", context.ConditionStack).Invert());
             }
             else
             {
-                context.AddToScript(rules);
+                context.AddToScript(context.ApplyStacks(rules));
             }
         }
     }

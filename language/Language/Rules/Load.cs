@@ -1,5 +1,4 @@
 ﻿using Language.ScriptItems;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -21,6 +20,7 @@ namespace Language.Rules
             var path = Path.Combine(context.CurrentPath, relativePath);
 
             var subcontext = context.Copy();
+            subcontext.ActionStack.Clear();
             subcontext.ConditionStack.Clear();
             subcontext.DataStack.Clear();
             subcontext.Script.Clear();
@@ -30,11 +30,15 @@ namespace Language.Rules
 
             if (context.ConditionStack.Any())
             {
+                foreach (var rule in rules)
+                {
+                    (rule as Defrule)?.Actions.AddRange(context.ActionStack);
+                }
                 context.AddToScriptWithJump(rules, Condition.JoinConditions("and", context.ConditionStack).Invert());
             }
             else
             {
-                context.AddToScript(rules);
+                context.AddToScript(context.ApplyStacks(rules));
             }
         }
     }

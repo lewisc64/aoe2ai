@@ -1,5 +1,4 @@
 ﻿using Language.ScriptItems;
-using System.Collections.Generic;
 
 namespace Language.Rules
 {

@@ -1,5 +1,4 @@
-﻿using Language.Extensions;
-using Language.ScriptItems;
+﻿using Language.ScriptItems;
 
 namespace Language.Rules
 {
