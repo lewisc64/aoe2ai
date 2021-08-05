@@ -15,8 +15,9 @@ namespace Aoe2AI
             var t = new Transpiler();
             Console.WriteLine(string.Join("\n", t.Transpile(@"
 
-build gold mining camps
-build lumber camps maintaining 5 tiles
+build houses
+build houses with 15 headroom
+build yurts
 
 ", new TranspilerContext { CurrentPath = @"E:\coding\GitHub\aoe2bots\bots" })));
         }
