@@ -16,7 +16,7 @@ namespace Aoe2AI
             Console.WriteLine(string.Join("\n", t.Transpile(@"
 #subroutine archer-response
     #respond to archer-line
-        train {unit}
+        train 10 {unit}
     #end respond
 #end subroutine
 

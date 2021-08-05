@@ -1,11 +1,14 @@
 ﻿using Language.ScriptItems;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Language.Rules
 {
     [ActiveRule]
     public class Train : RuleBase
     {
+        private static readonly string[] SetUnits = new[] { "monk", "trebuchet" };
+
         public override string Name => "train";
 
         public Train()
@@ -38,7 +41,7 @@ namespace Language.Rules
 
             if (!string.IsNullOrEmpty(amount))
             {
-                conditions.Add($"unit-type-count-total {unit} < {amount}");
+                conditions.Add($"unit-type-count-total {unit + (SetUnits.Contains(unit) ? "-set" : "")} < {amount}");
             }
 
             actions.Add($"train {unit}");
