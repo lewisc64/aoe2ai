@@ -16,7 +16,7 @@
 
         public override string ToString()
         {
-            return $"(defconst {Name} = {Value})";
+            return $"(defconst {Name} {Value})";
         }
 
         public void Optimize()

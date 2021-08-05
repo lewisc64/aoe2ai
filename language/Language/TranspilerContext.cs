@@ -91,7 +91,14 @@ namespace Language
 
         public void AddToScript(IScriptItem item)
         {
-            Script.Add(item);
+            if (item is Defconst)
+            {
+                Script.Insert(0, item);
+            }
+            else
+            {
+                Script.Add(item);
+            }
         }
 
         public void OptimizeScript()
@@ -120,6 +127,10 @@ namespace Language
                     {
                         i++;
                     }
+                }
+                else
+                {
+                    i++;
                 }
             }
         }
