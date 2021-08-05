@@ -18,7 +18,9 @@ namespace Aoe2AI
 #when
     chat to all ""hi""
 #then always
-    resign
+    #do once
+        resign
+    #end do
 #end when
 
 ", new TranspilerContext { CurrentPath = @"E:\coding\GitHub\aoe2bots\bots" })));
