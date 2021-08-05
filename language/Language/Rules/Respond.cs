@@ -7,7 +7,7 @@ namespace Language.Rules
     [ActiveRule]
     public class Respond : RuleBase
     {
-        public override string Name => "train";
+        public override string Name => "respond";
 
         public Respond()
             : base(@"^respond to (?:(?<enemyamount>[^ ]+) )??(?<enemyname>[^ ]+)(?: (?<enemytype>building|unit))?(?: from(?: player)? (?<player>[^ ]+))? with (?:(?<createamount>[^ ]+) )?(?<createname>[^ ]+)(?: (?<createtype>building|unit))?$")

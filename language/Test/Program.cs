@@ -15,10 +15,12 @@ namespace Aoe2AI
 
             var t = new Transpiler();
             Console.WriteLine(string.Join("\n", t.Transpile(@"
-respond to archer-line with skirmisher-line
-respond to 2 scout-cavalry-line with 4 spearman-line
-respond to archery-range building with 10 skirmisher-line
-respond to battle-elephant-line from target-player with 1 monastery building
+#respond to archer-line
+    train skirmisher-line
+#end respond
+#respond to 2 scout-cavalry-line from target-player
+    chat to all ""nice horse""
+#end respond
 ", new TranspilerContext { CurrentPath = @"E:\coding\GitHub\aoe2bots\bots" })));
         }
     }
