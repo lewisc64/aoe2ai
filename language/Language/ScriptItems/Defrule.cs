@@ -125,7 +125,7 @@ namespace Language.ScriptItems
         public bool CanMergeWith(Defrule rule)
         {
             return string.Join("", Conditions) == string.Join("", rule.Conditions)
-                && Length + rule.LengthOfActions <= MaxRuleSize
+                && Length + rule.LengthOfActions <= MaxRuleSize - 1 // TODO: prevent action stack from making rules overlength through loads
                 && Actions.Any(x => x.Text == "disable-self") == rule.Actions.Any(x => x.Text == "disable-self")
                 && Compressable
                 && rule.Compressable;

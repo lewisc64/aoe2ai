@@ -52,6 +52,10 @@ namespace Language.Rules
             var transpiler = new Transpiler();
             var rules = transpiler.Transpile(subroutine, subcontext);
 
+            context.Goals = subcontext.Goals;
+            context.Timers = subcontext.Timers;
+            context.Subroutines = subcontext.Subroutines;
+
             if (context.ConditionStack.Any())
             {
                 foreach (var rule in rules)

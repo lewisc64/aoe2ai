@@ -25,7 +25,7 @@ namespace Language.Rules
                 new[]
                 {
                     $"up-get-fact unit-type-count villager {gathererGoal}",
-                    $"p-modify-goal {gathererGoal} s:* sn-food-gatherer-percentage",
+                    $"up-modify-goal {gathererGoal} s:* sn-food-gatherer-percentage",
                     $"up-modify-goal {gathererGoal} c:/ 100",
                     $"up-get-fact building-type-count-total farm {farmGoal}",
                 });
@@ -38,7 +38,7 @@ namespace Language.Rules
                 },
                 new[]
                 {
-                    "build-farm"
+                    "build farm"
                 });
 
             context.AddToScript(context.ApplyStacks(infoRule));

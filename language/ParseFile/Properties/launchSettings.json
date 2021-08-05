@@ -2,7 +2,7 @@
   "profiles": {
     "ParseFile": {
       "commandName": "Project",
-      "commandLineArgs": "\"E:\\coding\\GitHub\\aoe2bots\\bots\\jotting.aoe2ai\" C:\\Users\\pc\\Desktop \"(TAP) Jotting\""
+      "commandLineArgs": "\"E:\\coding\\GitHub\\aoe2bots\\bots\\tango\\main.aoe2ai\" C:\\Users\\pc\\Desktop \"Tango\""
     }
   }
 }

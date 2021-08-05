@@ -17,16 +17,23 @@ namespace Language.Rules
         public override void Parse(string line, TranspilerContext context)
         {
             var relativePath = GetData(line)["rel"].Value;
-            var path = Path.Combine(context.CurrentPath, relativePath);
+            var path = new FileInfo(Path.Combine(context.CurrentPath, relativePath));
 
             var subcontext = context.Copy();
+            subcontext.CurrentFileName = path.Name;
+            // disabled for absolute pathing from main file.
+            // subcontext.CurrentPath = path.DirectoryName;
             subcontext.ActionStack.Clear();
             subcontext.ConditionStack.Clear();
             subcontext.DataStack.Clear();
             subcontext.Script.Clear();
 
             var transpiler = new Transpiler();
-            var rules = transpiler.Transpile(File.ReadAllText(path), subcontext);
+            var rules = transpiler.Transpile(File.ReadAllText(path.FullName), subcontext);
+
+            context.Goals = subcontext.Goals;
+            context.Timers = subcontext.Timers;
+            context.Subroutines = subcontext.Subroutines;
 
             if (context.ConditionStack.Any())
             {
