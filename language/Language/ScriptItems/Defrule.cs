@@ -10,6 +10,8 @@ namespace Language.ScriptItems
 
         public static int MaxRuleSize = 32;
 
+        public string Id = Guid.NewGuid().ToString();
+
         public bool Compressable { get; set; } = true;
 
         public bool Splittable { get; set; } = true;
@@ -34,6 +36,12 @@ namespace Language.ScriptItems
             {
                 return Actions.Select(x => x.Length).Sum();
             }
+        }
+
+        public Defrule()
+        {
+            Conditions = new List<Condition>() { new Condition("true") };
+            Actions = new List<Action>() { new Action("do-nothing") };
         }
 
         public Defrule(IEnumerable<Condition> conditions, IEnumerable<Action> actions)

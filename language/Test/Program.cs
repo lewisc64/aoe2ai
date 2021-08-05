@@ -14,29 +14,14 @@ namespace Aoe2AI
 
             var t = new Transpiler();
             Console.WriteLine(string.Join("\n", t.Transpile(@"
-#subroutine archer-response
-    #respond to archer-line
-        train 10 {unit}
-    #end respond
-#end subroutine
-
-call archer-response(unit=""monk"")
-
 chat to all ""hi""
-
-#if current-age == feudal-age
-    call archer-response(unit=""skirmisher-line"")
-    call archer-response(unit=""scout-cavalry-line"")
-#else
-    call archer-response(unit=""scorpion-line"")
-#end if
-call archer-response(unit=""mangonel-line"")
-#reply to ally taunt 5
-    chat to this-any-ally ""get outta here""
-    #delay by 5 seconds
-        chat to all ""nice""
-    #end delay
-#end reply
+resign
+#nomerge
+    chat to all ""hi""
+    resign
+#end nomerge
+chat to all ""hi""
+resign
 ", new TranspilerContext { CurrentPath = @"E:\coding\GitHub\aoe2bots\bots" })));
         }
     }
