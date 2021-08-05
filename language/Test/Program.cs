@@ -15,10 +15,7 @@ namespace Aoe2AI
             var t = new Transpiler();
             Console.WriteLine(string.Join("\n", t.Transpile(@"
 
-build farm
-build 1 barracks
-build 1 blacksmith with wood escrow
-build forward 5 watch-tower-line near lumber-camp
+research infantry blacksmith upgrades
 
 ", new TranspilerContext { CurrentPath = @"E:\coding\GitHub\aoe2bots\bots" })));
         }

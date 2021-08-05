@@ -24,6 +24,14 @@ namespace Language
 
         public string CurrentFileName { get; set; } = "unknown";
 
+        public IEnumerable<IScriptItem> ApplyStacks(IEnumerable<IScriptItem> items)
+        {
+            foreach (var item in items)
+            {
+                yield return ApplyStacks(item);
+            }
+        }
+
         public IScriptItem ApplyStacks(IScriptItem item)
         {
             if (item is Defrule)
