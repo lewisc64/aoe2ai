@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Language
 {
-    public class TranspilerContext
+    public class TranspilerContext : ICopyable<TranspilerContext>
     {
         public Stack<Condition> ConditionStack { get; set; } = new Stack<Condition>();
 
@@ -13,6 +13,10 @@ namespace Language
         public Stack<object> DataStack { get; set; } = new Stack<object>();
 
         public List<IScriptItem> Script { get; set; } = new List<IScriptItem>();
+
+        public List<string> Goals { get; set; } = new List<string>();
+
+        public List<string> Timers { get; set; } = new List<string>();
 
         public string CurrentPath { get; set; }
 
@@ -45,6 +49,16 @@ namespace Language
             }
 
             AddToScript(items);
+        }
+
+        public int CreateGoal(string name = null)
+        {
+            Goals.Add(name);
+            if (name != null)
+            {
+                Script.Insert(0, new Defconst(name, Goals.Count));
+            }
+            return Goals.Count;
         }
 
         public void AddToScript(IEnumerable<IScriptItem> items)
@@ -88,6 +102,23 @@ namespace Language
                     }
                 }
             }
+        }
+
+        public TranspilerContext Copy()
+        {
+            var result = new TranspilerContext
+            {
+                ConditionStack = new Stack<Condition>(ConditionStack.Select(x => x.Copy())),
+                ActionStack = new Stack<Action>(ActionStack.Select(x => x.Copy())),
+                DataStack = new Stack<object>(DataStack),
+                Script = new List<IScriptItem>(Script),
+                Goals = new List<string>(Goals),
+                Timers = new List<string>(Timers),
+                CurrentPath = CurrentPath,
+                CurrentFileName = CurrentFileName,
+            };
+
+            return result;
         }
     }
 }

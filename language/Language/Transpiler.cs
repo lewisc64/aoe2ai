@@ -215,7 +215,7 @@ namespace Language
 
             context.OptimizeScript();
 
-            return context.Script;
+            return new List<IScriptItem>(context.Script);
         }
     }
 }

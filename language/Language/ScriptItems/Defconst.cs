@@ -4,11 +4,11 @@
     {
         public string Name { get; set; }
 
-        public string Value { get; set; }
+        public int Value { get; set; }
 
         public bool MarkedForDeletion { get; } = false;
 
-        public Defconst(string name, string value)
+        public Defconst(string name, int value)
         {
             Name = name;
             Value = value;

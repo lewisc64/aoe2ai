@@ -16,12 +16,8 @@ namespace Aoe2AI
             var t = new Transpiler();
             Console.WriteLine(string.Join("\n", t.Transpile(@"
 
-#if current-age == feudal-age or current-age == castle-age
-    #if building-type-count-total farm == 1
-        load ""jotting.aoe2ai""
-    #end if
-#end if
-lure boars
+resign => resign => resign => resign
+
 ", new TranspilerContext { CurrentPath = @"E:\coding\GitHub\aoe2bots\bots" })));
         }
     }

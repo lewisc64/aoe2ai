@@ -20,14 +20,11 @@ namespace Language.Rules
             var relativePath = GetData(line)["rel"].Value;
             var path = Path.Combine(context.CurrentPath, relativePath);
 
+            var subcontext = context.Copy();
+            subcontext.Script.Clear();
+
             var transpiler = new Transpiler();
-            var rules = transpiler.Transpile(
-                File.ReadAllText(path),
-                new TranspilerContext
-                {
-                    ActionStack = new Stack<Action>(context.ActionStack.Select(x => x.Copy())),
-                    CurrentPath = context.CurrentPath,
-                });
+            var rules = transpiler.Transpile(File.ReadAllText(path), subcontext);
 
             context.AddToScriptWithJump(rules, Condition.JoinConditions("and", context.ConditionStack).Invert());
         }
