@@ -169,7 +169,6 @@ namespace Language
                     })
                 ));
 
-            // Rules
             Rules.AddRange(Assembly.GetExecutingAssembly()
                 .GetTypes()
                 .Where(x => x.CustomAttributes.Any(y => y.AttributeType == typeof(ActiveRule)))
@@ -182,7 +181,7 @@ namespace Language
             return string.Join("\n", Transpile(source, new TranspilerContext()));
         }
 
-        public IEnumerable<IScriptItem> Transpile(string source, TranspilerContext context)
+        public IEnumerable<IScriptItem> Transpile(string source, TranspilerContext context, bool suppressStackWarnings = false)
         {
             var withinSubroutine = false;
             string subroutineName = null;
@@ -233,6 +232,24 @@ namespace Language
                 }
 
                 lineNumber++;
+            }
+
+            if (!suppressStackWarnings)
+            {
+                if (context.ConditionStack.Any())
+                {
+                    Logger.Error($"Transpiling finished with a populated condition stack: {{ {string.Join(", ", context.ConditionStack)} }}");
+                }
+
+                if (context.ActionStack.Any())
+                {
+                    Logger.Error($"Transpiling finished with a populated action stack: {{ {string.Join(", ", context.ActionStack)} }}");
+                }
+
+                if (context.DataStack.Any())
+                {
+                    Logger.Error($"Transpiling finished with a populated internal data stack: {{ {string.Join(", ", context.DataStack)} }}");
+                }
             }
 
             context.OptimizeScript();

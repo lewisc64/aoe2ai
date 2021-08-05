@@ -31,6 +31,12 @@ chat to all ""hi""
     call archer-response(unit=""scorpion-line"")
 #end if
 call archer-response(unit=""mangonel-line"")
+#reply to ally taunt 5
+    chat to this-any-ally ""get outta here""
+    #delay by 5 seconds
+        chat to all ""nice""
+    #end delay
+#end reply
 ", new TranspilerContext { CurrentPath = @"E:\coding\GitHub\aoe2bots\bots" })));
         }
     }

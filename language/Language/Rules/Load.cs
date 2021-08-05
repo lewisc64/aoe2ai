@@ -21,6 +21,8 @@ namespace Language.Rules
             var path = Path.Combine(context.CurrentPath, relativePath);
 
             var subcontext = context.Copy();
+            subcontext.ConditionStack.Clear();
+            subcontext.DataStack.Clear();
             subcontext.Script.Clear();
 
             var transpiler = new Transpiler();
