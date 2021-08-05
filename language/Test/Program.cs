@@ -15,17 +15,7 @@ namespace Aoe2AI
             var t = new Transpiler();
             Console.WriteLine(string.Join("\n", t.Transpile(@"
 
-chat to all ""hello there""
-
-#if current-age == feudal-age
-    goal cool = 1
-#end if
-
-goal cool = 4
-#if civilian-population > 10
-    goal cool += 3
-    goal pleb = 5
-#end if
+const yurt = 712
 
 ", new TranspilerContext { CurrentPath = @"E:\coding\GitHub\aoe2bots\bots" })));
         }

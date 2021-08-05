@@ -66,7 +66,7 @@ namespace Language
             Goals.Add(name);
             if (name != null)
             {
-                Script.Insert(0, new Defconst(name, Goals.Count));
+                Script.Insert(0, new Defconst(name, Goals.Count.ToString()));
             }
             return Goals.Count;
         }
@@ -76,7 +76,7 @@ namespace Language
             Timers.Add(name);
             if (name != null)
             {
-                Script.Insert(0, new Defconst(name, Timers.Count));
+                Script.Insert(0, new Defconst(name, Timers.Count.ToString()));
             }
             return Timers.Count;
         }
