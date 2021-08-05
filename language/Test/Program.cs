@@ -15,14 +15,19 @@ namespace Aoe2AI
 
             var t = new Transpiler();
             Console.WriteLine(string.Join("\n", t.Transpile(@"
-#when
-    chat to all ""hi""
-#then always
-    #do once
-        resign
-    #end do
-#end when
+#delay by 5 seconds
+    resign
+#end delay
 
+#if current-age == dark-age
+    #delay by 5 minutes
+        resign
+    #end delay
+#end if
+
+#delay by 2 hours
+    resign
+#end delay
 ", new TranspilerContext { CurrentPath = @"E:\coding\GitHub\aoe2bots\bots" })));
         }
     }

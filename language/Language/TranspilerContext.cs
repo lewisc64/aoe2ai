@@ -61,6 +61,16 @@ namespace Language
             return Goals.Count;
         }
 
+        public int CreateTimer(string name = null)
+        {
+            Timers.Add(name);
+            if (name != null)
+            {
+                Script.Insert(0, new Defconst(name, Timers.Count));
+            }
+            return Timers.Count;
+        }
+
         public void AddToScript(IEnumerable<IScriptItem> items)
         {
             foreach (var item in items)
