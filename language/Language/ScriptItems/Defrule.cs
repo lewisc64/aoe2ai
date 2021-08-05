@@ -85,6 +85,10 @@ namespace Language.ScriptItems
                 // TODO: investigate
                 // MarkedForDeletion = true;
             }
+            while (Actions.Count(x => x.Text == "disable-self") >= 2)
+            {
+                Actions.Remove(Actions.First(x => x.Text == "disable-self"));
+            }
             if (Length > MaxRuleSize)
             {
                 throw new InvalidOperationException($"Rule is overlength. Length: {Length}, Maximum length: {MaxRuleSize}.");

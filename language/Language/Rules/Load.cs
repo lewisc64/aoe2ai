@@ -28,7 +28,14 @@ namespace Language.Rules
             var transpiler = new Transpiler();
             var rules = transpiler.Transpile(File.ReadAllText(path), subcontext);
 
-            context.AddToScriptWithJump(rules, Condition.JoinConditions("and", context.ConditionStack).Invert());
+            if (context.ConditionStack.Any())
+            {
+                context.AddToScriptWithJump(rules, Condition.JoinConditions("and", context.ConditionStack).Invert());
+            }
+            else
+            {
+                context.AddToScript(rules);
+            }
         }
     }
 }

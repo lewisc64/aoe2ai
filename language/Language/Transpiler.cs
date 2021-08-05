@@ -227,8 +227,9 @@ namespace Language
                             }
                             catch (Exception ex)
                             {
-                                Logger.Error($"Exception occurred while parsing line {lineNumber}: {ex.Message}");
+                                Logger.Error($"Exception occurred while parsing line {lineNumber} in {context.CurrentFileName}: {ex.Message}");
                             }
+                            break;
                         }
                     }
 

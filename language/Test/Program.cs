@@ -16,9 +16,9 @@ namespace Aoe2AI
             Console.WriteLine(string.Join("\n", t.Transpile(@"
 
 
-delete building archery-range
+load ""main.aoe2ai""
 
-", new TranspilerContext { CurrentPath = @"E:\coding\GitHub\aoe2bots\bots" })));
+", new TranspilerContext { CurrentPath = @"E:\coding\GitHub\aoe2bots\bots\charlotte" })));
         }
     }
 }

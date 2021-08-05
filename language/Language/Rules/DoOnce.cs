@@ -8,7 +8,7 @@ namespace Language.Rules
         public override string Name => "do once";
 
         public DoOnce()
-            : base(@"^(?:#do once|#end do)$")
+            : base(@"^(?:#do once|#end do(?: once)?)$")
         {
         }
 
