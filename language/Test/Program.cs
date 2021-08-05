@@ -14,14 +14,9 @@ namespace Aoe2AI
 
             var t = new Transpiler();
             Console.WriteLine(string.Join("\n", t.Transpile(@"
-chat to all ""hi""
-resign
-#nomerge
-    chat to all ""hi""
-    resign
-#end nomerge
-chat to all ""hi""
-resign
+
+tribute 50 wood to target-player
+
 ", new TranspilerContext { CurrentPath = @"E:\coding\GitHub\aoe2bots\bots" })));
         }
     }
