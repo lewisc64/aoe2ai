@@ -22,13 +22,14 @@ namespace Language.Rules
 
             var subcontext = context.Copy();
             subcontext.Script.Clear();
+            subcontext.CurrentFileName = $"{subcontext.CurrentFileName} -> order expression side 1";
 
             var transpiler = new Transpiler();
 
-            var firstRules = transpiler.Transpile(first, subcontext);
+            var firstRules = transpiler.Transpile(first, subcontext, suppressStackWarnings: true);
             subcontext.Script.Clear();
-
-            var secondRules = transpiler.Transpile(second, subcontext);
+            subcontext.CurrentFileName = $"{subcontext.CurrentFileName} -> order expression side 2";
+            var secondRules = transpiler.Transpile(second, subcontext, suppressStackWarnings: true);
 
             foreach (var rule in firstRules)
             {
