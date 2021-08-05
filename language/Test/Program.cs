@@ -15,9 +15,10 @@ namespace Aoe2AI
 
             var t = new Transpiler();
             Console.WriteLine(string.Join("\n", t.Transpile(@"
-#repeat every 5 seconds
-    resign
-#end repeat
+train 5 militiaman-line
+train archer-line
+train 10 skirmisher-line with food and wood escrow
+train mangonel-line with wood and gold escrow
 ", new TranspilerContext { CurrentPath = @"E:\coding\GitHub\aoe2bots\bots" })));
         }
     }
