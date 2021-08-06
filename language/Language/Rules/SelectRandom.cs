@@ -29,8 +29,6 @@ namespace Language.Rules
                 context.DataStack.Push(generateRule.Id);
                 context.DataStack.Push(goalNumber);
 
-                context.ConditionStack.Push(new Condition($"goal {goalNumber} 1"));
-
                 generateRule.Actions.Add(new Action($"set-goal {goalNumber} 0"));
                 if (persistant)
                 {
@@ -38,6 +36,8 @@ namespace Language.Rules
                 }
 
                 context.AddToScript(context.ApplyStacks(generateRule));
+
+                context.ConditionStack.Push(new Condition($"goal {goalNumber} 1"));
             }
             else if (line.StartsWith("#end"))
             {
