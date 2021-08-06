@@ -41,7 +41,7 @@ auto balance wood and food every 30 seconds";
             foreach (var resource in resources)
             {
                 var nonEscrowedAmountGoal = context.CreateGoal();
-                var resourceAmountGoal = context.CreateGoal();
+                var escrowAmountGoal = context.CreateGoal();
 
                 rules.Add(new Defrule(
                     new[]
@@ -50,9 +50,9 @@ auto balance wood and food every 30 seconds";
                     },
                     new[]
                     {
-                        $"up-get-fact escrow-amount {resource} {nonEscrowedAmountGoal}",
-                        $"up-get-fact resource-amount {resource} {resourceAmountGoal}",
-                        $"up-modify-goal {nonEscrowedAmountGoal} g:- {resourceAmountGoal}",
+                        $"up-get-fact resource-amount {resource} {nonEscrowedAmountGoal}",
+                        $"up-get-fact escrow-amount {resource} {escrowAmountGoal}",
+                        $"up-modify-goal {nonEscrowedAmountGoal} g:- {escrowAmountGoal}",
                     }));
 
                 resourceGoals.Add(nonEscrowedAmountGoal);

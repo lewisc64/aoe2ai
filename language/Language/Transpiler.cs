@@ -68,7 +68,8 @@ namespace Language
                         "set-strategic-number sn-do-not-scale-for-difficulty-level 1",
                         "set-strategic-number sn-number-build-attempts-before-skip 5",
                         "set-strategic-number sn-max-skips-per-attempt 5",
-                        "set-strategic-number sn-dropsite-separation-distance 8" }));
+                        "set-strategic-number sn-dropsite-separation-distance 8",
+                        "set-strategic-number sn-wall-targeting-mode 1"}));
 
             Rules.Add(new Snippet("target walls",
                 new[] { "true" },
