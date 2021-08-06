@@ -3,8 +3,6 @@ A fast way to write simple Age of Empires 2 AI.
 
 ## Usage
 
-Binaries for windows can be found in the `language/bin` folder.
-
 ```
 parsefile.exe -help
 ```
