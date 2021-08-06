@@ -9,6 +9,10 @@ namespace Language.Rules
     {
         public override string Name => "respond";
 
+        public override string Help => "When the AI sees the specified amount, it reacts with the specified parameters. If building/unit is unspecified, unit is assumed. If amount is unspecified, 1 is assumed.";
+
+        public override string Usage => "respond to ?AMOUNT NAME ?BUILDING/UNIT with NAME ?BUILDING/UNIT";
+
         public Respond()
             : base(@"^respond to (?:(?<enemyamount>[^ ]+) )??(?<enemyname>[^ ]+)(?: (?<enemytype>building|unit))?(?: from(?: player)? (?<player>[^ ]+))? with (?:(?<createamount>[^ ]+) )?(?<createname>[^ ]+)(?: (?<createtype>building|unit))?$")
         {

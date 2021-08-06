@@ -7,6 +7,12 @@ namespace Language.Rules
     {
         public override string Name => "reply";
 
+        public override string Help => "Body is allowed to trigger when the taunt is detected from the specified player. Taunt is acknowledged regardless of whether the body successfully triggers.";
+
+        public override string Usage => @"#reply to ENEMY/ALLY taunt TAUNT_NUMBER
+   RULES
+#end reply";
+
         public Reply()
             : base(@"^(?:#reply to (?<playertype>enemy|ally) taunt (?<tauntnumber>[^ ]+)|#end reply)$")
         {

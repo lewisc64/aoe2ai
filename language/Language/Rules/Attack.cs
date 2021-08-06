@@ -7,6 +7,10 @@ namespace Language.Rules
     {
         public override string Name => "attack";
 
+        public override string Help => "Makes use of the attack-now action.";
+
+        public override string Usage => "attack with AMOUNT units";
+
         public Attack()
             : base(@"^attack(?: with (?<amount>[^ ]+) units)?$")
         {

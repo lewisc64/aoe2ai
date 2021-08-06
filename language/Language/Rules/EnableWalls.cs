@@ -7,6 +7,10 @@ namespace Language.Rules
     {
         public override string Name => "enable walls";
 
+        public override string Help => "Sets up rule that allows the AI to build walls on the specified perimeter.";
+
+        public override string Usage => "enable walls on perimeter PERIMETER_NUMBER";
+
         public EnableWalls()
             : base(@"^enable walls (?:with|on) perimeter (?<perimeter>1|2)$")
         {

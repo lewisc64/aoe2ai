@@ -7,6 +7,8 @@ namespace Language.Rules
     {
         public override string Name => "chat to";
 
+        public override string Usage => "chat to PLAYER_TYPE \"MESSAGE\"";
+
         public ChatTo()
             : base(@"^chat to (?:(?<playerwildcard>all|self|allies)|(?<player>[^ ]+)) (?<message>.+)$")
         {

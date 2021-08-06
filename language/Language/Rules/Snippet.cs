@@ -13,6 +13,7 @@ namespace Language.Rules
             : base($@"^{trigger}$")
         {
             Name = trigger;
+            Example = trigger;
             Conditions = conditions;
             Actions = actions;
         }

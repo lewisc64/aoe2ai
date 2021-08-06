@@ -8,6 +8,12 @@ namespace Language.Rules
     {
         public override string Name => "no merge";
 
+        public override string Help => "Prevents the rules within from being merged together in compilation.";
+
+        public override string Usage => @"#nomerge
+   RULES
+#end nomerge";
+
         public NoMerge()
             : base(@"^(?:#nomerge|#end nomerge)$")
         {

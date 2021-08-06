@@ -7,6 +7,10 @@ namespace Language.Rules
     {
         public override string Name => "modify town size";
 
+        public override string Help => "Modifies the sn-maximum-town-size strategic number.";
+
+        public override string Usage => "set/increase/decrease town size by/to AMOUNT";
+
         public ModifyTownSize()
             : base(@"^(?<operation>set|increase|decrease) town size (?:to|by) (?<amount>.+)$")
         {

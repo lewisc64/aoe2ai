@@ -9,6 +9,10 @@ namespace Language.Rules
     {
         public override string Name => "load";
 
+        public override string Help => "Loads another aoe2ai file. Relative to main file if trying to load from a seperate file.";
+
+        public override string Usage => "load \"PATH\"";
+
         public Load()
             : base(@"^load ""(?<rel>[^""]+)""$")
         {

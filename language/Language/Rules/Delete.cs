@@ -7,6 +7,10 @@ namespace Language.Rules
     {
         public override string Name => "delete";
 
+        public override string Help => "Creates a rule that deletes the specified object.";
+
+        public override string Usage => "delete unit/building NAME";
+
         public Delete()
             : base(@"delete (?<type>unit|building) (?<name>.+)$")
         {

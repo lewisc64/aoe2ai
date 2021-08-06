@@ -5,7 +5,13 @@ namespace Language.Rules
     [ActiveRule]
     public class Repeat : RuleBase
     {
-        public override string Name => "do once";
+        public override string Name => "repeat";
+
+        public override string Help => "Each rule is allowed to be triggered once after the time has elapsed, the process repeats.";
+
+        public override string Usage => @"#repeat every AMOUNT TIME_UNIT
+    RULES
+#end repeat";
 
         public Repeat()
             : base(@"^(?:#repeat every (?<amount>[^ ]+) (?<unit>seconds?|minutes?|hours?)|#end repeat)$")

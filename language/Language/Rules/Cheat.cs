@@ -7,6 +7,10 @@ namespace Language.Rules
     {
         public override string Name => "cheat";
 
+        public override string Help => "Gives the AI resources";
+
+        public override string Usage => "cheat AMOUNT RESOURCE_NAME";
+
         public Cheat()
             : base(@"^cheat (?<amount>[^ ]+) (?<resource>[^ ]+)$")
         {

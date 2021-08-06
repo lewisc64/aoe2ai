@@ -7,6 +7,13 @@ namespace Language.Rules
     {
         public override string Name => "set goal";
 
+        public override string Help => "Sets a goal, and sets up the constant if it does not already exist.";
+
+        public override string Usage => "goal GOAL_NAME = VALUE";
+
+        public override string Example => @"goal advance = 1
+goal count += 1";
+
         public SetGoal()
             : base(@"^goal (?<name>[^ ]+) ?(?<mathop>\+|\-|\*|\/)?= ?(?<value>.+)$")
         {

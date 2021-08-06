@@ -15,6 +15,10 @@ namespace Language.Rules
 
         public override string Name => "target player";
 
+        public override string Help => "Sets sn-target-player-number and sn-focus-player-number.";
+
+        public override string Usage => "target winning/closest/attacking enemy/ally";
+
         public TargetPlayer()
             : base(@"^target (?<findtype>winning|closest|attacking|random) (?<playertype>enemy|ally)$")
         {

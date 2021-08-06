@@ -12,6 +12,10 @@ namespace Language.Rules
 
         public override string Name => "chat to";
 
+        public override string Help => $"Sets up rule to build houses, default headroom is {DefaultHeadroom}.";
+
+        public override string Usage => @"build houses with AMOUNT headroom";
+
         public BuildHouses()
             : base(@"^build (?<style>houses|yurts)(?: with (?<headroom>[^ ]+) headroom)?$")
         {

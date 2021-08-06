@@ -7,6 +7,12 @@ namespace Language.Rules
     {
         public override string Name => "add action";
 
+        public override string Help => "Adds an action to the action stack.";
+
+        public override string Usage => @"#add action ACTION
+    RULES
+#remove action";
+
         public AddAction()
             : base(@"^#add action (?<condition>.+)|#remove action")
         {

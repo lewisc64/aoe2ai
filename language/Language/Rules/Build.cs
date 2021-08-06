@@ -11,6 +11,14 @@ namespace Language.Rules
 
         public override string Name => "build";
 
+        public override string Help => $"Sets up the rule to build the building. If amount is unspecified, the building will be built to a maximum of {DefaultNumberBuildings}.";
+
+        public override string Usage => "build ?forward AMOUNT BUILDING_NAME with RESOURCE_NAME escrow";
+
+        public override string Example => @"build 1 barracks
+build forward castle
+build archery-range with wood escrow";
+
         public Build()
             : base(@"^build (?<forward>forward )?(?:(?<amount>[^ ]+) )?(?<building>[^ ]+)(?: near (?<near>[^ ]+))?(?: with (?<escrowlist>(?:[^ ]+(?: and )?)*) escrow)?$")
         {

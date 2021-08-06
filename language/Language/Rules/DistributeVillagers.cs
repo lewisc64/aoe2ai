@@ -7,6 +7,10 @@ namespace Language.Rules
     {
         public override string Name => "distribute villagers";
 
+        public override string Help => "Percentages must add up to 100. Makes use of the sn-TYPE-gatherer-percentage strategic number.";
+
+        public override string Usage => "distribute villagers WOOD_PERCENT FOOD_PERCENT GOLD_PERCENT STONE_PERCENT";
+
         public DistributeVillagers()
             : base(@"^distribute villagers (?<wood>[0-9]+) (?<food>[0-9]+) (?<gold>[0-9]+) (?<stone>[0-9]+)$")
         {

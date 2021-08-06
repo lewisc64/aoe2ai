@@ -8,6 +8,16 @@ namespace Language.Rules
     {
         public override string Name => "block respond";
 
+        public override string Help => "When the AI sees the specified amount, the body is allowed to trigger. If building/unit is unspecified, unit is assumed. If amount is unspecified, 1 is assumed.";
+
+        public override string Usage => @"#respond to ?AMOUNT NAME ?BUILDING/UNIT
+   RULES
+#end respond";
+
+        public override string Example => @"#respond to 3 scout-cavalry-line
+    train 4 spearman-line
+#end respond";
+
         public BlockRespond()
             : base(@"^(?:#respond to (?:(?<amount>[^ ]+) )??(?<name>[^ ]+)(?: (?<type>building|unit))?(?: from(?: player)? (?<player>[^ ]+))?|#end respond)$")
         {

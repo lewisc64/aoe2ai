@@ -7,6 +7,10 @@ namespace Language.Rules
     {
         public override string Name => "build farms";
 
+        public override string Help => "Builds farms according to how many food gatherers should exist.";
+
+        public override string Usage => "build farms";
+
         public BuildFarms()
             : base(@"^build farms$")
         {

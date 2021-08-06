@@ -7,6 +7,12 @@ namespace Language.Rules
     {
         public override string Name => "do once";
 
+        public override string Help => "Block body is only allowed to trigger after the time is up.";
+
+        public override string Usage => @"#delay by AMOUNT TIME_UNIT
+    RULES
+#end delay";
+
         public Delay()
             : base(@"^(?:#delay by (?<amount>[^ ]+) (?<unit>seconds?|minutes?|hours?)|#end delay)$")
         {

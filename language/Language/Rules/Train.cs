@@ -11,6 +11,15 @@ namespace Language.Rules
 
         public override string Name => "train";
 
+        public override string Help => "Trains a unit using the specified parameters.";
+
+        public override string Usage => @"train UNIT_NAME
+train UNIT_NAME with RESOURCE_NAME escrow
+train AMOUNT UNIT_NAME
+train AMOUNT UNIT_NAME with RESOURCE_NAME escrow";
+
+        public override string Example => "train 10 militiaman-line with food and gold escrow";
+
         public Train()
             : base(@"^train (?:(?<amount>[^ ]+) )?(?<unit>[^ ]+)(?: with (?<escrowlist>(?:[^ ]+(?: and )?)*) escrow)?$")
         {

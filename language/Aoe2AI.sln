@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ParseFile", "ParseFile\Pars
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Snippeter", "Snippeter\Snippeter.csproj", "{EB17C285-FA6D-4FA2-BC3E-0D12420E3C68}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenerateDocs", "GenerateDocs\GenerateDocs.csproj", "{66987938-B7A5-4FA9-A64E-2DB9E4313ADB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{EB17C285-FA6D-4FA2-BC3E-0D12420E3C68}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EB17C285-FA6D-4FA2-BC3E-0D12420E3C68}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EB17C285-FA6D-4FA2-BC3E-0D12420E3C68}.Release|Any CPU.Build.0 = Release|Any CPU
+		{66987938-B7A5-4FA9-A64E-2DB9E4313ADB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{66987938-B7A5-4FA9-A64E-2DB9E4313ADB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{66987938-B7A5-4FA9-A64E-2DB9E4313ADB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{66987938-B7A5-4FA9-A64E-2DB9E4313ADB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

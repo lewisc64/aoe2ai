@@ -7,6 +7,10 @@ namespace Language.Rules
     {
         public override string Name => "tribute";
 
+        public override string Help => "Gives the specified player resources.";
+
+        public override string Usage => "tribute AMOUNT RESOURCE_NAME to PLAYER_NUMBER";
+
         public Tribute()
             : base(@"^tribute (?<amount>[^ ]+) (?<resource>[^ ]+) to (?:player )?(?<player>[^ ]+)$")
         {

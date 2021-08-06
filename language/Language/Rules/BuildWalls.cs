@@ -8,6 +8,10 @@ namespace Language.Rules
     {
         public override string Name => "build walls";
 
+        public override string Help => "Wall placement must be enabled on the same perimeter to function.";
+
+        public override string Usage => "build stone/palisade walls/gates on perimeter PERIMETER_NUMBER";
+
         public BuildWalls()
             : base(@"^build (?<material>stone|palisade) (?<type>walls|gates) (?:with|on) perimeter (?<perimeter>1|2)$")
         {

@@ -8,6 +8,12 @@ namespace Language.Rules
 
         public virtual string Name { get; set; } = "rule";
 
+        public virtual string Help { get; set; } = string.Empty;
+
+        public virtual string Usage { get; set; } = string.Empty;
+
+        public virtual string Example { get; set; } = string.Empty;
+
         public RuleBase(string regex)
         {
             _regex = new Regex(regex);

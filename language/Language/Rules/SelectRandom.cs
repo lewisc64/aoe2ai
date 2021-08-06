@@ -8,6 +8,14 @@ namespace Language.Rules
     {
         public override string Name => "select random";
 
+        public override string Help => "A random block separated by randors will be allowed to execute. Using persistant mode means the randomly chosen one is picked every time, otherwise it will change.";
+
+        public override string Usage => @"#select random ?persistant
+   RULES
+#randor
+   RULES
+#end select";
+
         public SelectRandom()
             : base(@"^#select random(?<persistant> persistant)?|#randor|#end select(?: random)?$")
         {

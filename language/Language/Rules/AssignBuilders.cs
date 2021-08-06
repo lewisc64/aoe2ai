@@ -7,6 +7,10 @@ namespace Language.Rules
     {
         public override string Name => "assign builders";
 
+        public override string Help => "Sets the amount of builders that should build a building.";
+
+        public override string Usage => "assign AMOUNT builders to BUILDING_NAME";
+
         public AssignBuilders()
             : base(@"^assign (?<amount>[^ ]+) builders? to (?<building>[^ ]+)$")
         {

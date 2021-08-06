@@ -7,6 +7,15 @@ namespace Language.Rules
     {
         public override string Name => "chat to";
 
+        public override string Help => "Sets up a rule for automatically refreshing dropoff points.";
+
+        public override string Usage => "build DROPOFF_TYPE";
+
+        public override string Example => @"build lumber camps
+build gold mining camps
+build stone mining camps
+build lumber camps maintaining 4 tiles";
+
         public BuildDropoffs()
             : base(@"^build (?<dropofftype>lumber camps|(?:gold|stone) mining camps|mills)(?: maintaining (?<tiles>[^ ]+) tiles?)?$")
         {

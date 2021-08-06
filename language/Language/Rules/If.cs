@@ -8,6 +8,16 @@ namespace Language.Rules
     {
         public override string Name => "if";
 
+        public override string Help => "Adds a condition to the condition stack.";
+
+        public override string Usage => @"#if CONDITION
+    RULES
+#else if CONDITION
+    RULES
+#else
+    RULES
+#end if";
+
         public If()
             : base(@"^#if (?<ifcondition>.+)|#else if (?<elseifcondition>.+)|#else|#end if$")
         {

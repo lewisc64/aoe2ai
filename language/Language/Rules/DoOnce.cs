@@ -7,6 +7,12 @@ namespace Language.Rules
     {
         public override string Name => "do once";
 
+        public override string Help => "Adds 'disable-self' to the action stack. Makes sure each rule in the block individually runs only once.";
+
+        public override string Usage => @"#do once
+    RULES
+#end do";
+
         public DoOnce()
             : base(@"^(?:#do once|#end do(?: once)?)$")
         {

@@ -7,6 +7,10 @@ namespace Language.Rules
     {
         public override string Name => "set escrow";
 
+        public override string Help => "Creates rule that sets the escrow percentage.";
+
+        public override string Usage => "escrow PERCENTAGE RESOURCE_NAME";
+
         public SetEscrow()
             : base(@"^escrow (?<amount>[^ ]+) (?<resource>.+)$")
         {

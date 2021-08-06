@@ -12,6 +12,17 @@ namespace Language.Rules
 
         public override string Name => "call";
 
+        public override string Help => "Inserts all the rules within a subroutine. Can make replacements as a form of pre-processing.";
+
+        public override string Usage => "call SUBROUTINE_NAME";
+
+        public override string Example => @"#subroutine train-unit
+    train {unit}
+#end subroutine
+
+call train-unit(unit=""archer-line\"")
+";
+
         public Call()
             : base(@"^call (?<name>[^ ()]+)(?:\(.+\))?$")
         {

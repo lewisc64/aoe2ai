@@ -7,6 +7,12 @@ namespace Language.Rules
     {
         public override string Name => "add condition";
 
+        public override string Help => "Adds a condition to the condition stack. 'If' is preferred.";
+
+        public override string Usage => @"#add condition CONDITION
+    RULES
+#remove condition";
+
         public AddCondition()
             : base(@"^#add condition (?<condition>.+)|#remove condition$")
         {

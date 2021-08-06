@@ -7,6 +7,20 @@ namespace Language.Rules
     {
         public override string Name => "when";
 
+        public override string Help => "Rules in the 'then' block are allowed to trigger when any rule in the main 'when' block is triggered.";
+
+        public override string Usage => @"#when
+    RULE
+#then ?always
+    RULES
+#end when";
+
+        public override string Example => @"#when
+    build houses
+#then
+    chat to all ""I built a house!""
+#end when";
+
         public When()
             : base(@"^(?:#when|#then(?<always> always)?|#end when)$")
         {
