@@ -140,17 +140,16 @@ Makes use of the attack-now action.
 attack with AMOUNT units
 ```
 ## auto balance
-Redistributes villagers at a set interval around a threshold. By default it will balance around all resources except stone every 60 seconds with a threshold of 300. When getting the resource amounts, it subtracts the escrowed portion.
+Redistributes villagers at a set interval around a threshold. By default it will balance every 60 seconds with a threshold of 300. When getting the resource amounts, it subtracts the escrowed portion.
 ### Usage
 ```
 auto balance RESOURCES around THRESHOLD every AMOUNT seconds
 ```
 ### Example
 ```
-auto balance
-auto balance wood and food
+auto balance wood and food and gold
 auto balance all
-auto balance every 30 seconds
+auto balance wood and food every 30 seconds
 ```
 ## block respond
 When the AI sees the specified amount, the body is allowed to trigger. If building/unit is unspecified, unit is assumed. If amount is unspecified, 1 is assumed.
