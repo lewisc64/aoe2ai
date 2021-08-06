@@ -26,7 +26,7 @@ An AI that will stay in the dark age and pump out militia forever.
     
     distribute villagers 20 60 20 0
     
-#end do once
+#end do
 
 train 130 villager
 train militiaman-line
@@ -56,7 +56,6 @@ Translation:
     (set-strategic-number sn-enable-new-building-system 1)
     (set-strategic-number sn-percent-building-cancellation 20)
     (set-strategic-number sn-cap-civilian-builders 200)
-    (disable-self)
     (set-strategic-number sn-percent-civilian-explorers 0)
     (set-strategic-number sn-cap-civilian-explorers 0)
     (set-strategic-number sn-total-number-explorers 1)
@@ -64,13 +63,26 @@ Translation:
     (set-strategic-number sn-initial-exploration-required 0)
     (set-difficulty-parameter ability-to-maintain-distance 0)
     (set-difficulty-parameter ability-to-dodge-missiles 0)
+    (set-strategic-number sn-percent-attack-soldiers 100)
+    (set-strategic-number sn-percent-attack-boats 100)
     (set-strategic-number sn-attack-intelligence 1)
     (set-strategic-number sn-livestock-to-town-center 1)
     (set-strategic-number sn-enable-patrol-attack 1)
     (set-strategic-number sn-intelligent-gathering 1)
     (set-strategic-number sn-local-targeting-mode 1)
+    (set-strategic-number sn-retask-gather-amount 0)
+    (set-strategic-number sn-target-evaluation-siege-weapon 500)
+    (set-strategic-number sn-ttkfactor-scalar 500)
     (set-strategic-number sn-percent-enemy-sighted-response 100)
+    (set-strategic-number sn-task-ungrouped-soldiers 0)
+    (set-strategic-number sn-gather-defense-units 1)
+    (set-strategic-number sn-defer-dropsite-update 1)
+    (set-strategic-number sn-do-not-scale-for-difficulty-level 1)
+    (set-strategic-number sn-number-build-attempts-before-skip 5)
+    (set-strategic-number sn-max-skips-per-attempt 5)
+    (set-strategic-number sn-dropsite-separation-distance 8)
     (enable-timer 1 200)
+    (disable-self)
 )
 (defrule
     (timer-triggered 1)
@@ -85,11 +97,11 @@ Translation:
     (true)
 =>
     (set-strategic-number sn-task-ungrouped-soldiers 0)
-    (disable-self)
     (set-strategic-number sn-wood-gatherer-percentage 20)
     (set-strategic-number sn-food-gatherer-percentage 60)
     (set-strategic-number sn-gold-gatherer-percentage 20)
     (set-strategic-number sn-stone-gatherer-percentage 0)
+    (disable-self)
 )
 (defrule
     (can-train villager)
@@ -114,6 +126,7 @@ Translation:
 )
 (defrule
     (dropsite-min-distance wood > 2)
+    (dropsite-min-distance wood != -1)
     (resource-found wood)
     (up-pending-objects c: lumber-camp == 0)
     (can-build lumber-camp)
@@ -124,9 +137,11 @@ Translation:
     (true)
 =>
     (set-goal 1 0)
+    (disable-self)
 )
 (defrule
-    (dropsite-min-distance gold > 3)
+    (or (dropsite-min-distance gold > 3) (and (unit-type-count 579 == 0) (and (unit-type-count 581 == 0) (strategic-number sn-gold-gatherer-percentage > 0))))
+    (dropsite-min-distance gold != -1)
     (resource-found gold)
     (up-pending-objects c: mining-camp == 0)
     (can-build mining-camp)
@@ -138,6 +153,11 @@ Translation:
     (goal 1 1)
 =>
     (up-modify-sn sn-camp-max-distance c:+ 3)
+)
+(defrule
+    (true)
+=>
+    (set-goal 1 0)
 )
 (defrule
     (population-headroom != 0)
