@@ -44,7 +44,7 @@ namespace Language
             foreach (var key in research.Keys)
             {
                 research[key] = research[key]
-                    .Select(x => x.EndsWith("-age") ? x : $"ri-{x}")
+                    .Select(x => x.EndsWith("-age") || x.StartsWith("my-") ? x : $"ri-{x}")
                     .ToArray();
 
                 all.AddRange(research[key]);
