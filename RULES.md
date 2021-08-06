@@ -96,7 +96,15 @@ sell food
 sell stone
 ```
 ## set up basics
+### Usage
+```
+set up basics
+```
 ## lure boars
+### Usage
+```
+lure boars
+```
 ## order
 Executes statements in order once every rule pass. Loops back to the beginning upon reaching the end.
 ### Example

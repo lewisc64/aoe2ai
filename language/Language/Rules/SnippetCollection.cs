@@ -10,6 +10,7 @@ namespace Language.Rules
             : base($@"^{trigger}$")
         {
             Name = trigger;
+            Usage = trigger;
             Snippets = snippets;
         }
 
