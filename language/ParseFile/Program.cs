@@ -1,5 +1,7 @@
 ﻿using Language;
 using NLog;
+using NLog.Layouts;
+using NLog.Targets;
 using System;
 using System.IO;
 using System.Linq;
@@ -24,7 +26,7 @@ namespace ParseFile
             var content = File.ReadAllText(inputPath.FullName);
 
             var config = new NLog.Config.LoggingConfiguration();
-            config.AddRule(LogLevel.Debug, LogLevel.Fatal, new NLog.Targets.ColoredConsoleTarget());
+            config.AddRule(LogLevel.Debug, LogLevel.Fatal, new ColoredConsoleTarget { Layout = new SimpleLayout("${level:uppercase=true}|${logger}|${message}") });
             LogManager.Configuration = config;
 
             var transpiler = new Transpiler();
