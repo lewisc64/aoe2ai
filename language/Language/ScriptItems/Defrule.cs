@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace Language.ScriptItems
 {
@@ -9,6 +10,8 @@ namespace Language.ScriptItems
         public static string Indentation = "    ";
 
         public static int MaxRuleSize = 32;
+
+        public static int MaxLineLength = 255;
 
         public string Id = Guid.NewGuid().ToString();
 
@@ -58,7 +61,41 @@ namespace Language.ScriptItems
 
         public override string ToString()
         {
-            return $"(defrule\n{Indentation}{string.Join("\n" + Indentation, Conditions)}\n=>\n{Indentation}{string.Join("\n" + Indentation, Actions)}\n)";
+            var raw = $"(defrule\n{Indentation}{string.Join("\n" + Indentation, Conditions)}\n=>\n{Indentation}{string.Join("\n" + Indentation, Actions)}\n)";
+
+            var outputLines = new List<string>();
+            foreach (var line in raw.Split("\n"))
+            {
+                if (line.Length > MaxLineLength)
+                {
+                    var segments = new List<string>();
+                    var currentLength = 0;
+                    foreach (var segment in line.Split(" "))
+                    {
+                        if (segment.Length + 1 + currentLength > MaxLineLength)
+                        {
+                            outputLines.Add(string.Join(" ", segments));
+                            segments.Clear();
+                            segments.Add(segment);
+                            currentLength = 0;
+                        }
+                        else
+                        {
+                            segments.Add(segment);
+                            currentLength += segment.Length + 1;
+                        }
+                    }
+                    if (segments.Any())
+                    {
+                        outputLines.Add(string.Join(" ", segments));
+                    }
+                }
+                else
+                {
+                    outputLines.Add(line);
+                }
+            }
+            return string.Join("\n", outputLines);
         }
 
         public void Optimize()

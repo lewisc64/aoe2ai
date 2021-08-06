@@ -18,7 +18,7 @@ namespace Language.Rules
 
             if (data["playerwildcard"].Success)
             {
-                context.AddToScript(context.ApplyStacks(new Defrule(new[] { "true" }, new[] { $"chat-to-{data["playerwildcard"].Value} {data["message"].Value}" })));
+                context.AddToScript(context.ApplyStacks(new Defrule(new[] { "true" }, new[] { $"chat-to-{data["playerwildcard"].Value} {data["message"].Value}".Replace("to-self", "local-to-self") })));
             }
             else
             {
