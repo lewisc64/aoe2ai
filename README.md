@@ -13,20 +13,11 @@ An AI that will stay in the dark age and pump out militia forever.
 
 ```
 #do once
-
-    set up new building system
-    set up scouting
-    set up micro
-    
-    #delay by 200 seconds
-        take boar
-    #end delay
-    
-    sn-task-ungrouped-soldiers = 0
-    
+    set up basics
     distribute villagers 20 60 20 0
-    
 #end do
+
+lure boars
 
 train 130 villager
 train militiaman-line
@@ -42,10 +33,10 @@ build lumber camps
     sn-camp-max-distance += 3
 #end when
 
+build farms
+build 1 mill
 build houses
 build 2 barracks
-build 1 mill
-build 10 farm
 ```
 
 Translation:
@@ -81,27 +72,34 @@ Translation:
     (set-strategic-number sn-number-build-attempts-before-skip 5)
     (set-strategic-number sn-max-skips-per-attempt 5)
     (set-strategic-number sn-dropsite-separation-distance 8)
-    (enable-timer 1 200)
-    (disable-self)
-)
-(defrule
-    (timer-triggered 1)
-=>
-    (set-strategic-number sn-enable-boar-hunting 2)
-    (set-strategic-number sn-minimum-number-hunters 3)
-    (set-strategic-number sn-minimum-boar-lure-group-size 3)
-    (set-strategic-number sn-minimum-boar-hunt-group-size 3)
     (disable-self)
 )
 (defrule
     (true)
 =>
-    (set-strategic-number sn-task-ungrouped-soldiers 0)
     (set-strategic-number sn-wood-gatherer-percentage 20)
     (set-strategic-number sn-food-gatherer-percentage 60)
     (set-strategic-number sn-gold-gatherer-percentage 20)
     (set-strategic-number sn-stone-gatherer-percentage 0)
+    (set-strategic-number sn-enable-boar-hunting 2)
+    (set-strategic-number sn-minimum-number-hunters 1)
+    (set-strategic-number sn-minimum-boar-lure-group-size 1)
+    (set-strategic-number sn-minimum-boar-hunt-group-size 1)
+    (set-strategic-number sn-maximum-hunt-drop-distance 48)
     (disable-self)
+)
+(defrule
+    (dropsite-min-distance live-boar < 4)
+=>
+    (up-request-hunters c: 8)
+    (set-strategic-number sn-minimum-number-hunters 8)
+)
+(defrule
+    (strategic-number sn-minimum-number-hunters == 8)
+    (and (dropsite-min-distance live-boar > 4) (or (dropsite-min-distance boar-food > 4) (dropsite-min-distance boar-food == -1)))
+=>
+    (set-strategic-number sn-minimum-number-hunters 1)
+    (up-retask-gatherers food c: 255)
 )
 (defrule
     (can-train villager)
@@ -158,6 +156,22 @@ Translation:
     (true)
 =>
     (set-goal 1 0)
+    (up-get-fact unit-type-count villager 2)
+    (up-modify-goal 2 s:* sn-food-gatherer-percentage)
+    (up-modify-goal 2 c:/ 100)
+    (up-get-fact building-type-count-total farm 3)
+)
+(defrule
+    (up-compare-goal 3 g:< 2)
+    (can-build farm)
+=>
+    (build farm)
+)
+(defrule
+    (can-build mill)
+    (building-type-count-total mill < 1)
+=>
+    (build mill)
 )
 (defrule
     (population-headroom != 0)
@@ -172,17 +186,5 @@ Translation:
     (building-type-count-total barracks < 2)
 =>
     (build barracks)
-)
-(defrule
-    (can-build mill)
-    (building-type-count-total mill < 1)
-=>
-    (build mill)
-)
-(defrule
-    (can-build farm)
-    (building-type-count-total farm < 10)
-=>
-    (build farm)
 )
 ```
