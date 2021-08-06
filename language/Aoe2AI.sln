@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Language.Tests", "Language.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ParseFile", "ParseFile\ParseFile.csproj", "{4B02B1D8-4A2C-46ED-B96A-E6E11B1AB3A8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Snippetter", "Snippetter\Snippetter.csproj", "{6AA0007D-6B1F-4E40-B367-9ECB35153E23}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Snippeter", "Snippeter\Snippeter.csproj", "{EB17C285-FA6D-4FA2-BC3E-0D12420E3C68}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,10 +29,10 @@ Global
 		{4B02B1D8-4A2C-46ED-B96A-E6E11B1AB3A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4B02B1D8-4A2C-46ED-B96A-E6E11B1AB3A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4B02B1D8-4A2C-46ED-B96A-E6E11B1AB3A8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6AA0007D-6B1F-4E40-B367-9ECB35153E23}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6AA0007D-6B1F-4E40-B367-9ECB35153E23}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6AA0007D-6B1F-4E40-B367-9ECB35153E23}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6AA0007D-6B1F-4E40-B367-9ECB35153E23}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EB17C285-FA6D-4FA2-BC3E-0D12420E3C68}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB17C285-FA6D-4FA2-BC3E-0D12420E3C68}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB17C285-FA6D-4FA2-BC3E-0D12420E3C68}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EB17C285-FA6D-4FA2-BC3E-0D12420E3C68}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

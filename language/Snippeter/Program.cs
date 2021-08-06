@@ -5,7 +5,7 @@ using NLog.Targets;
 using System;
 using TextCopy;
 
-namespace Snippetter
+namespace Snippeter
 {
     static class Program
     {
@@ -15,7 +15,7 @@ namespace Snippetter
             config.AddRule(LogLevel.Debug, LogLevel.Fatal, new ColoredConsoleTarget { Layout = new SimpleLayout("${message}") });
             LogManager.Configuration = config;
 
-            Console.WriteLine("Welcome to the aoe2ai snippetter!");
+            Console.WriteLine("Welcome to the aoe2ai snippeter!");
             Console.WriteLine("Results will be automatically copied to the clipboard.\n");
 
             var clipboard = new Clipboard();
