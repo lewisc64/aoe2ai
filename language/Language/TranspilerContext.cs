@@ -103,14 +103,31 @@ namespace Language
 
         public void OptimizeScript()
         {
-            foreach (var item in Script)
+            var i = 0;
+            while (i < Script.Count)
             {
-                item.Optimize();
+                var rule = Script[i] as Defrule;
+                if (rule != null)
+                {
+                    if (rule.IsTooLong && rule.Splittable)
+                    {
+                        Script.Insert(i + 1, rule.Split());
+                    }
+                    else
+                    {
+                        rule.Optimize();
+                        i++;
+                    }
+                }
+                else
+                {
+                    i++;
+                }
             }
 
             Script.RemoveAll(x => x.MarkedForDeletion);
 
-            var i = 0;
+            i = 0;
             while (i < Script.Count - 1)
             {
                 var rule = Script[i] as Defrule;

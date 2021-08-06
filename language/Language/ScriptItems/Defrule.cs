@@ -41,6 +41,8 @@ namespace Language.ScriptItems
             }
         }
 
+        public bool IsTooLong => Length > MaxRuleSize;
+
         public Defrule()
         {
             Conditions = new List<Condition>() { new Condition("true") };
@@ -126,10 +128,35 @@ namespace Language.ScriptItems
             {
                 Actions.Remove(Actions.First(x => x.Text == "disable-self"));
             }
-            if (Length > MaxRuleSize)
+            if (IsTooLong)
             {
                 throw new InvalidOperationException($"Rule is overlength. Length: {Length}, Maximum length: {MaxRuleSize}.");
             }
+        }
+
+        public Defrule Split()
+        {
+            if (!Splittable)
+            {
+                throw new InvalidOperationException("Rule is not splittable.");
+            }
+            if (Actions.Count <= 1)
+            {
+                throw new InvalidOperationException("Not enough actions to split.");
+            }
+
+            var applyDisableSelf = Actions.RemoveAll(x => x.Text == "disable-self") >= 1;
+
+            var rule = new Defrule(Conditions.Select(x => x.Copy()), Actions.GetRange(Actions.Count / 2, Actions.Count - Actions.Count / 2));
+            Actions.RemoveRange(Actions.Count / 2, Actions.Count - Actions.Count / 2);
+
+            if (applyDisableSelf)
+            {
+                Actions.Add(new Action("disable-self"));
+                rule.Actions.Add(new Action("disable-self"));
+            }
+
+            return rule;
         }
 
         public void MergeIn(Defrule rule)
@@ -162,7 +189,7 @@ namespace Language.ScriptItems
         public bool CanMergeWith(Defrule rule)
         {
             return string.Join("", Conditions) == string.Join("", rule.Conditions)
-                && Length + rule.LengthOfActions <= MaxRuleSize - 1 // TODO: prevent action stack from making rules overlength through loads
+                && Length + rule.LengthOfActions <= MaxRuleSize
                 && Actions.Any(x => x.Text == "disable-self") == rule.Actions.Any(x => x.Text == "disable-self")
                 && Compressable
                 && rule.Compressable;
