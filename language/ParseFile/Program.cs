@@ -30,7 +30,7 @@ namespace ParseFile
             LogManager.Configuration = config;
 
             var transpiler = new Transpiler();
-            var output = transpiler.Transpile(content, new TranspilerContext { CurrentFileName = inputPath.Name, CurrentPath = inputPath.DirectoryName });
+            var output = transpiler.Transpile(content, new TranspilerContext { CurrentFileName = inputPath.Name, RootPath = inputPath.DirectoryName, CurrentPath = inputPath.DirectoryName });
 
             var aiFilePath = Path.Combine(outputPath.FullName, $"{name}.ai");
             var perFilePath = Path.Combine(outputPath.FullName, $"{name}.per");

@@ -291,7 +291,7 @@ Adds a condition to the condition stack.
 #end if
 ```
 ## load
-Loads another aoe2ai file. Relative to main file if trying to load from a seperate file.
+Loads another aoe2ai file. Tries to load an absolute path first, then relative from the root file, then relative from the current file.
 ### Usage
 ```
 load "PATH"

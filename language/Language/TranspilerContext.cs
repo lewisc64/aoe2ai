@@ -22,6 +22,8 @@ namespace Language
 
         public string CurrentPath { get; set; }
 
+        public string RootPath { get; set; }
+
         public string CurrentFileName { get; set; } = "unknown";
 
         public IEnumerable<IScriptItem> ApplyStacks(IEnumerable<IScriptItem> items)
@@ -163,6 +165,7 @@ namespace Language
                 Goals = new List<string>(Goals),
                 Timers = new List<string>(Timers),
                 Subroutines = new Dictionary<string, string>(Subroutines),
+                RootPath = RootPath,
                 CurrentPath = CurrentPath,
                 CurrentFileName = CurrentFileName,
             };

@@ -1,4 +1,5 @@
 ﻿using Language.ScriptItems;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -9,7 +10,7 @@ namespace Language.Rules
     {
         public override string Name => "load";
 
-        public override string Help => "Loads another aoe2ai file. Relative to main file if trying to load from a seperate file.";
+        public override string Help => "Loads another aoe2ai file. Tries to load an absolute path first, then relative from the root file, then relative from the current file.";
 
         public override string Usage => "load \"PATH\"";
 
@@ -20,20 +21,40 @@ namespace Language.Rules
 
         public override void Parse(string line, TranspilerContext context)
         {
-            var relativePath = GetData(line)["rel"].Value;
-            var path = new FileInfo(Path.Combine(context.CurrentPath, relativePath));
+            var inputPath = GetData(line)["rel"].Value;
+
+            FileInfo path;
+
+            if (File.Exists(inputPath))
+            {
+                path = new FileInfo(inputPath);
+            }
+            else if (context.RootPath is not null && File.Exists(Path.Combine(context.RootPath, inputPath)))
+            {
+                path = new FileInfo(Path.Combine(context.RootPath, inputPath));
+            }
+            else if (context.CurrentPath is not null && File.Exists(Path.Combine(context.CurrentPath, inputPath)))
+            {
+                path = new FileInfo(Path.Combine(context.CurrentPath, inputPath));
+            }
+            else
+            {
+                throw new System.ArgumentException($"File '{inputPath}' does not exist.");
+            }
+
+            var content = File.ReadAllText(path.FullName);
 
             var subcontext = context.Copy();
             subcontext.CurrentFileName = path.Name;
-            // disabled for absolute pathing from main file.
-            // subcontext.CurrentPath = path.DirectoryName;
+            subcontext.CurrentPath = path.DirectoryName;
+
             subcontext.ActionStack.Clear();
             subcontext.ConditionStack.Clear();
             subcontext.DataStack.Clear();
             subcontext.Script.Clear();
 
             var transpiler = new Transpiler();
-            var rules = transpiler.Transpile(File.ReadAllText(path.FullName), subcontext);
+            var rules = transpiler.Transpile(content, subcontext);
 
             context.Goals = subcontext.Goals;
             context.Timers = subcontext.Timers;
