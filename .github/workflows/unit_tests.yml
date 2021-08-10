@@ -1,0 +1,25 @@
+name: Unit Tests
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET 5.0
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.100
+    - name: Install dependencies
+      run: cd language; dotnet restore
+    - name: Build
+      run: cd language; dotnet build --configuration Release --no-restore
+    - name: Test
+      run: cd language; dotnet test --no-restore --verbosity normal
