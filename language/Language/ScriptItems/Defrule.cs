@@ -65,7 +65,7 @@ namespace Language.ScriptItems
             var raw = $"(defrule{Environment.NewLine}{Indentation}{string.Join(Environment.NewLine + Indentation, Conditions)}{Environment.NewLine}=>{Environment.NewLine}{Indentation}{string.Join(Environment.NewLine + Indentation, Actions)}{Environment.NewLine})";
 
             var outputLines = new List<string>();
-            foreach (var line in raw.Split("\n"))
+            foreach (var line in raw.Split(Environment.NewLine))
             {
                 if (line.Length > MaxLineLength)
                 {
@@ -96,7 +96,7 @@ namespace Language.ScriptItems
                     outputLines.Add(line);
                 }
             }
-            return string.Join("\n", outputLines);
+            return string.Join(Environment.NewLine, outputLines);
         }
 
         public void Optimize()
