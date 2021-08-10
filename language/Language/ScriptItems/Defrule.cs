@@ -62,7 +62,7 @@ namespace Language.ScriptItems
 
         public override string ToString()
         {
-            var raw = $"(defrule\n{Indentation}{string.Join("\n" + Indentation, Conditions)}\n=>\n{Indentation}{string.Join("\n" + Indentation, Actions)}\n)";
+            var raw = $"(defrule{Environment.NewLine}{Indentation}{string.Join(Environment.NewLine + Indentation, Conditions)}{Environment.NewLine}=>{Environment.NewLine}{Indentation}{string.Join(Environment.NewLine + Indentation, Actions)}{Environment.NewLine})";
 
             var outputLines = new List<string>();
             foreach (var line in raw.Split("\n"))
