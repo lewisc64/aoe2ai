@@ -1,5 +1,5 @@
 # aoe2ai
-[![Unit Tests](https://github.com/lewisc64/aoe2ai/actions/workflows/unit_tests.yml/badge.svg)](https://github.com/lewisc64/aoe2ai/actions/workflows/unit_tests.yml)
+[![CI](https://github.com/lewisc64/aoe2ai/actions/workflows/CI.yml/badge.svg)](https://github.com/lewisc64/aoe2ai/actions/workflows/CI.yml)
 
 A fast way to write simple Age of Empires 2 AI.
 
