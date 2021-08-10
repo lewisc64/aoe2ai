@@ -10,7 +10,7 @@ namespace Language.Rules
     {
         public override string Name => "load";
 
-        public override string Help => "Loads another aoe2ai file. Tries to load an absolute path first, then relative from the root file, then relative from the current file.";
+        public override string Help => "Loads another aoe2ai file. Tries to load relatively from the current file first, then an absolute path, then relative from the root file.";
 
         public override string Usage => "load \"PATH\"";
 
@@ -25,17 +25,17 @@ namespace Language.Rules
 
             FileInfo path;
 
-            if (File.Exists(inputPath))
+            if (context.CurrentPath is not null && File.Exists(Path.Combine(context.CurrentPath, inputPath)))
+            {
+                path = new FileInfo(Path.Combine(context.CurrentPath, inputPath));
+            }
+            else if (File.Exists(inputPath))
             {
                 path = new FileInfo(inputPath);
             }
             else if (context.RootPath is not null && File.Exists(Path.Combine(context.RootPath, inputPath)))
             {
                 path = new FileInfo(Path.Combine(context.RootPath, inputPath));
-            }
-            else if (context.CurrentPath is not null && File.Exists(Path.Combine(context.CurrentPath, inputPath)))
-            {
-                path = new FileInfo(Path.Combine(context.CurrentPath, inputPath));
             }
             else
             {
