@@ -29,13 +29,9 @@ namespace Language.Rules
             {
                 path = new FileInfo(Path.Combine(context.CurrentPath, inputPath));
             }
-            else if (File.Exists(inputPath))
+            else if (Path.IsPathFullyQualified(inputPath) && File.Exists(inputPath))
             {
                 path = new FileInfo(inputPath);
-            }
-            else if (context.RootPath is not null && File.Exists(Path.Combine(context.RootPath, inputPath)))
-            {
-                path = new FileInfo(Path.Combine(context.RootPath, inputPath));
             }
             else
             {

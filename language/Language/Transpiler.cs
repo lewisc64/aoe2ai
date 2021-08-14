@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace Language
 {
@@ -189,7 +190,7 @@ namespace Language
             string subroutine = null;
 
             var lineNumber = 1;
-            foreach (var line in source.Split(new[] { '\r', '\n' }).Select(x => x.Trim()))
+            foreach (var line in Regex.Split(source, @"\r?\n").Select(x => x.Trim()))
             {
                 var lineNoComments = line.Split("//").First().Trim();
 
