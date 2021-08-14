@@ -1,5 +1,4 @@
 ﻿using Language.ScriptItems;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -10,7 +9,7 @@ namespace Language.Rules
     {
         public override string Name => "load";
 
-        public override string Help => "Loads another aoe2ai file. Tries to load relatively from the current file first, then an absolute path, then relative from the root file.";
+        public override string Help => "Loads another aoe2ai file. Tries to load relatively from the current file first, then an absolute path.";
 
         public override string Usage => "load \"PATH\"";
 
