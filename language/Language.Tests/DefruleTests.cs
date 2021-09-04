@@ -14,6 +14,38 @@ namespace Language.Tests
         }
 
         [Fact]
+        public void Optimize_DefaultRule_NoChange()
+        {
+            Assert.Single(_rule.Conditions);
+            Assert.Equal("true", _rule.Conditions.Single().Text);
+
+            Assert.Single(_rule.Actions);
+            Assert.Equal("do-nothing", _rule.Actions.Single().Text);
+
+            _rule.Optimize();
+
+            Assert.Single(_rule.Conditions);
+            Assert.Equal("true", _rule.Conditions.Single().Text);
+
+            Assert.Single(_rule.Actions);
+            Assert.Equal("do-nothing", _rule.Actions.Single().Text);
+        }
+
+        [Fact]
+        public void Optimize_WithOthers_RemoveTrueAndDoNothing()
+        {
+            _rule.Conditions.Add(new Condition("condition"));
+            _rule.Actions.Add(new Action("action"));
+            _rule.Optimize();
+
+            Assert.Single(_rule.Conditions);
+            Assert.Equal("condition", _rule.Conditions.Single().Text);
+
+            Assert.Single(_rule.Actions);
+            Assert.Equal("action", _rule.Actions.Single().Text);
+        }
+
+        [Fact]
         public void ToString_Success()
         {
             _rule.Conditions.Add(new Condition("condition 1"));
