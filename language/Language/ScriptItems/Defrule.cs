@@ -6,7 +6,9 @@ namespace Language.ScriptItems
 {
     public class Defrule : IScriptItem
     {
-        public static string Indentation = "    ";
+        public static string Indentation = new string(' ', 4);
+
+        public static string LineSeparator = Environment.NewLine;
 
         public static int MaxRuleSize = 32;
 
@@ -62,7 +64,7 @@ namespace Language.ScriptItems
 
         public override string ToString()
         {
-            var raw = $"(defrule{Environment.NewLine}{Indentation}{string.Join(Environment.NewLine + Indentation, Conditions)}{Environment.NewLine}=>{Environment.NewLine}{Indentation}{string.Join(Environment.NewLine + Indentation, Actions)}{Environment.NewLine})";
+            var raw = $"(defrule{LineSeparator}{Indentation}{string.Join(LineSeparator + Indentation, Conditions)}{LineSeparator}=>{LineSeparator}{Indentation}{string.Join(LineSeparator + Indentation, Actions)}{LineSeparator})";
 
             var outputLines = new List<string>();
             foreach (var line in raw.Split(Environment.NewLine))
@@ -78,7 +80,7 @@ namespace Language.ScriptItems
                             outputLines.Add(string.Join(" ", segments));
                             segments.Clear();
                             segments.Add(segment);
-                            currentLength = 0;
+                            currentLength = segment.Length;
                         }
                         else
                         {
