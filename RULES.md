@@ -405,7 +405,7 @@ Sets sn-target-player-number and sn-focus-player-number.
 target winning/closest/attacking enemy/ally
 ```
 ## trade excess
-Uses the market to rebalance resources around a certain threshold.
+Uses the market to rebalance resources around a certain threshold. Ignores escrowed values.
 ### Usage
 ```
 trade excess RESOURCE_LIST at AMOUNT

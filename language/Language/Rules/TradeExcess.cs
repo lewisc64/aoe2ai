@@ -10,7 +10,7 @@ namespace Language.Rules
     {
         public override string Name => "trade excess";
 
-        public override string Help => "Uses the market to rebalance resources around a certain threshold.";
+        public override string Help => "Uses the market to rebalance resources around a certain threshold. Ignores escrowed values.";
 
         public override string Usage => "trade excess RESOURCE_LIST at AMOUNT";
 
