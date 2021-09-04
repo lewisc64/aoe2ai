@@ -1,4 +1,6 @@
-﻿using System.Text.RegularExpressions;
+﻿using Language.ScriptItems;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace Language.Rules
 {
@@ -29,6 +31,34 @@ namespace Language.Rules
         protected GroupCollection GetData(string line)
         {
             return _regex.Match(line).Groups;
+        }
+
+        protected (IEnumerable<Defrule> Rules, Dictionary<int, string> GoalToResourceMap) CreateNonEscrowedResourceGoals(TranspilerContext context, IEnumerable<string> resources)
+        {
+            var rules = new List<Defrule>();
+            var goalToResourceMap = new Dictionary<int, string>();
+
+            foreach (var resource in resources)
+            {
+                var nonEscrowedAmountGoal = context.CreateGoal();
+                var escrowAmountGoal = context.CreateGoal();
+
+                rules.Add(new Defrule(
+                    new[]
+                    {
+                        "true",
+                    },
+                    new[]
+                    {
+                        $"up-get-fact resource-amount {resource} {nonEscrowedAmountGoal}",
+                        $"up-get-fact escrow-amount {resource} {escrowAmountGoal}",
+                        $"up-modify-goal {nonEscrowedAmountGoal} g:- {escrowAmountGoal}",
+                    }));
+
+                goalToResourceMap[nonEscrowedAmountGoal] = resource;
+            }
+
+            return (rules, goalToResourceMap);
         }
     }
 }

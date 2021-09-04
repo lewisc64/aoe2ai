@@ -404,6 +404,17 @@ Sets sn-target-player-number and sn-focus-player-number.
 ```
 target winning/closest/attacking enemy/ally
 ```
+## trade excess
+Uses the market to rebalance resources around a certain threshold.
+### Usage
+```
+trade excess RESOURCE_LIST at AMOUNT
+```
+### Example
+```
+trade excess food at 2000
+trade excess wood and food and gold at 2000
+```
 ## tribute
 Gives the specified player resources.
 ### Usage

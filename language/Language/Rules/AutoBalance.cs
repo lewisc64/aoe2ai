@@ -35,35 +35,16 @@ auto balance wood and food every 30 seconds";
 
             var rules = new List<Defrule>();
 
-            var resourceGoals = new List<int>();
-            var goalToResourceMap = new Dictionary<int, string>();
 
-            foreach (var resource in resources)
-            {
-                var nonEscrowedAmountGoal = context.CreateGoal();
-                var escrowAmountGoal = context.CreateGoal();
-
-                rules.Add(new Defrule(
-                    new[]
-                    {
-                        "true",
-                    },
-                    new[]
-                    {
-                        $"up-get-fact resource-amount {resource} {nonEscrowedAmountGoal}",
-                        $"up-get-fact escrow-amount {resource} {escrowAmountGoal}",
-                        $"up-modify-goal {nonEscrowedAmountGoal} g:- {escrowAmountGoal}",
-                    }));
-
-                resourceGoals.Add(nonEscrowedAmountGoal);
-                goalToResourceMap[nonEscrowedAmountGoal] = resource;
-            }
 
             var timer = context.CreateTimer();
 
             rules.Add(new Defrule(new[] { "true" }, new[] { $"enable-timer {timer} {interval}", "disable-self" }));
 
-            foreach (var rule in GetBalanceRules(8, int.Parse(threshold), goalToResourceMap, resourceGoals.ToArray()))
+            (var escrowRules, var goalToResourceMap) = CreateNonEscrowedResourceGoals(context, resources);
+            rules.AddRange(escrowRules);
+
+            foreach (var rule in GetBalanceRules(8, int.Parse(threshold), goalToResourceMap, goalToResourceMap.Keys))
             {
                 rule.Conditions.Add(new Condition($"timer-triggered {timer}"));
                 rules.Add(rule);
