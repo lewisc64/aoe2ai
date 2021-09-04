@@ -1,4 +1,5 @@
 ﻿using Language;
+using Language.ScriptItems;
 using NLog;
 using NLog.Layouts;
 using NLog.Targets;
@@ -10,7 +11,7 @@ namespace ParseFile
 {
     class Program
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
             if (args.Length < 3 || args.Contains("-help"))
             {
@@ -30,7 +31,13 @@ namespace ParseFile
             LogManager.Configuration = config;
 
             var transpiler = new Transpiler();
-            var output = transpiler.Transpile(content, new TranspilerContext { CurrentFileName = inputPath.Name, RootPath = inputPath.DirectoryName, CurrentPath = inputPath.DirectoryName });
+            var context = new TranspilerContext
+            {
+                CurrentFileName = inputPath.Name,
+                RootPath = inputPath.DirectoryName,
+                CurrentPath = inputPath.DirectoryName
+            };
+            var output = transpiler.Transpile(content, context);
 
             var aiFilePath = Path.Combine(outputPath.FullName, $"{name}.ai");
             var perFilePath = Path.Combine(outputPath.FullName, $"{name}.per");
@@ -42,6 +49,14 @@ namespace ParseFile
             }
             File.WriteAllText(perFilePath, ";Translated by https://github.com/lewisc64/aoe2ai\n" + string.Join("\n", output));
             Console.WriteLine($"Saved to '{perFilePath}'");
+
+            Analyze(context);
+        }
+
+        private static void Analyze(TranspilerContext context)
+        {
+            Console.WriteLine($"There are {context.Script.Count(x => x is Defrule)} rules.");
+            Console.WriteLine($"{context.Goals.Count} goals and {context.Timers.Count} timers were used.");
         }
     }
 }
