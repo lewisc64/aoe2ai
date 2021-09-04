@@ -38,32 +38,7 @@ namespace Language.ScriptItems
         {
             const string boundaryRegex = @"(?<=[()\s])\b|\b(?=[()\s])";
 
-            text = text.Trim();
-
-            while (text.StartsWith("(") && text.EndsWith(")"))
-            {
-                var trimmed = string.Join("", text.Skip(1).Reverse().Skip(1).Reverse());
-                var bracketLevel = 0;
-                foreach (var c in trimmed)
-                {
-                    if (c == '(')
-                    {
-                        bracketLevel++;
-                    }
-                    else if (c == ')' && bracketLevel > 0)
-                    {
-                        bracketLevel--;
-                    }
-                }
-                if (bracketLevel == 0)
-                {
-                    text = trimmed;
-                }
-                else
-                {
-                    break;
-                }
-            }
+            text = DebracketExpression(text.Trim());
 
             var binops = new[] { "or", "nor", "xor", "and", "nand" };
             var unops = new[] { "not" };
@@ -103,6 +78,35 @@ namespace Language.ScriptItems
             }
 
             return new Condition(text);
+        }
+
+        public static string DebracketExpression(string expression)
+        {
+            while (expression.StartsWith("(") && expression.EndsWith(")"))
+            {
+                var trimmed = string.Join("", expression.Skip(1).Reverse().Skip(1).Reverse());
+                var bracketLevel = 0;
+                foreach (var c in trimmed)
+                {
+                    if (c == '(')
+                    {
+                        bracketLevel++;
+                    }
+                    else if (c == ')' && bracketLevel > 0)
+                    {
+                        bracketLevel--;
+                    }
+                }
+                if (bracketLevel == 0)
+                {
+                    expression = trimmed;
+                }
+                else
+                {
+                    break;
+                }
+            }
+            return expression;
         }
     }
 
