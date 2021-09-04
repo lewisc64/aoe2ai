@@ -68,7 +68,7 @@ namespace Language
             Goals.Add(name);
             if (name != null)
             {
-                Script.Insert(0, new Defconst(name, Goals.Count.ToString()));
+                Script.Insert(0, new Defconst<int>(name, Goals.Count));
             }
             return Goals.Count;
         }
@@ -78,7 +78,7 @@ namespace Language
             Timers.Add(name);
             if (name != null)
             {
-                Script.Insert(0, new Defconst(name, Timers.Count.ToString()));
+                Script.Insert(0, new Defconst<int>(name, Timers.Count));
             }
             return Timers.Count;
         }
@@ -93,7 +93,7 @@ namespace Language
 
         public void AddToScript(IScriptItem item)
         {
-            if (item is Defconst)
+            if (item.GetType().IsGenericType && item.GetType().GetGenericTypeDefinition() == typeof(Defconst<>))
             {
                 Script.Insert(0, item);
             }

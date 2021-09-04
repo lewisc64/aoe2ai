@@ -1,14 +1,16 @@
-﻿namespace Language.ScriptItems
+﻿using System;
+
+namespace Language.ScriptItems
 {
-    public class Defconst : IScriptItem
+    public class Defconst<T> : IScriptItem
     {
         public string Name { get; set; }
 
-        public string Value { get; set; }
+        public T Value { get; set; }
 
         public bool MarkedForDeletion { get; } = false;
 
-        public Defconst(string name, string value)
+        public Defconst(string name, T value)
         {
             Name = name;
             Value = value;
@@ -16,7 +18,14 @@
 
         public override string ToString()
         {
-            return $"(defconst {Name} {Value})";
+            if (Value is int)
+            {
+                return $"(defconst {Name} {Value})";
+            }
+            else
+            {
+                return $"(defconst {Name} \"{Value}\")";
+            }
         }
 
         public void Optimize()

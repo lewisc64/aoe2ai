@@ -20,9 +20,9 @@ namespace Language.Rules
         {
             var data = GetData(line);
             var name = data["name"].Value;
-            var value = data["value"].Value;
+            var value = int.Parse(data["value"].Value);
 
-            context.AddToScript(new Defconst(name, value));
+            context.AddToScript(new Defconst<int>(name, value));
         }
     }
 }
