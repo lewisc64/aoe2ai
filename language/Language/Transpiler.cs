@@ -51,7 +51,7 @@ namespace Language
             Rules.Add(new Snippet("set up micro",
                 new[] { "true" },
                 new[] { "set-difficulty-parameter ability-to-maintain-distance 0",
-                        "set-difficulty-parameter ability-to-dodge-missiles 0",
+                        "set-difficulty-parameter ability-to-dodge-missiles 100",
                         "set-strategic-number sn-percent-attack-soldiers 100",
                         "set-strategic-number sn-percent-attack-boats 100",
                         "set-strategic-number sn-attack-intelligence 1",
