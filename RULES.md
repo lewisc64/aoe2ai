@@ -196,21 +196,6 @@ Wall placement must be enabled on the same perimeter to function.
 ```
 build stone/palisade walls/gates on perimeter PERIMETER_NUMBER
 ```
-## call
-Inserts all the rules within a subroutine. Can make replacements as a form of pre-processing.
-### Usage
-```
-call SUBROUTINE_NAME
-```
-### Example
-```
-#subroutine train-unit
-    train {unit}
-#end subroutine
-
-call train-unit(unit="archer-line\")
-
-```
 ## chat to
 ### Usage
 ```
@@ -289,6 +274,21 @@ Adds a condition to the condition stack.
 #else
     RULES
 #end if
+```
+## insert template
+Inserts all the rules within a template. Can make replacements as a form of pre-processing.
+### Usage
+```
+insert TEMPLATE_NAME
+```
+### Example
+```
+#template train-unit
+    train {unit}
+#end template
+
+insert train-unit(unit="archer-line\")
+
 ```
 ## load
 Loads another aoe2ai file. Tries to load relatively from the current file first, then an absolute path.
@@ -414,6 +414,12 @@ trade excess RESOURCE_LIST at AMOUNT
 ```
 trade excess food at 2000
 trade excess wood and food and gold at 2000
+```
+## train villagers with trade
+Trains the specified amount of villagers, with a portion of that being trade carts if it is a team game.
+### Usage
+```
+train NUMBER villagers with NUMBER trade
 ```
 ## tribute
 Gives the specified player resources.
