@@ -6,25 +6,25 @@ using System.Text.RegularExpressions;
 namespace Language.Rules
 {
     [ActiveRule]
-    public class Call : RuleBase
+    public class InsertTemplate : RuleBase
     {
         private static readonly Regex ParamRegex = new Regex(@"(?<name>[^\s(,]+)\s*=\s*(?<value>(?:""(?:\\""|[^""])+""|[0-9]+))\s*");
 
-        public override string Name => "call";
+        public override string Name => "insert template";
 
-        public override string Help => "Inserts all the rules within a subroutine. Can make replacements as a form of pre-processing.";
+        public override string Help => "Inserts all the rules within a template. Can make replacements as a form of pre-processing.";
 
-        public override string Usage => "call SUBROUTINE_NAME";
+        public override string Usage => "insert TEMPLATE_NAME";
 
-        public override string Example => @"#subroutine train-unit
+        public override string Example => @"#template train-unit
     train {unit}
-#end subroutine
+#end template
 
-call train-unit(unit=""archer-line\"")
+insert train-unit(unit=""archer-line\"")
 ";
 
-        public Call()
-            : base(@"^call (?<name>[^ ()]+)(?:\(.+\))?$")
+        public InsertTemplate()
+            : base(@"^insert (?<name>[^ ()]+)(?:\(.+\))?$")
         {
         }
 
@@ -46,7 +46,7 @@ call train-unit(unit=""archer-line\"")
                 parameters[name] = value.Replace("\\\"", "\"");
             }
 
-            var subroutine = context.Subroutines[subroutineName];
+            var subroutine = context.Templates[subroutineName];
 
             foreach ((string key, string value) in parameters)
             {
@@ -65,7 +65,7 @@ call train-unit(unit=""archer-line\"")
 
             context.Goals = subcontext.Goals;
             context.Timers = subcontext.Timers;
-            context.Subroutines = subcontext.Subroutines;
+            context.Templates = subcontext.Templates;
 
             if (context.ConditionStack.Any())
             {

@@ -18,7 +18,7 @@ namespace Language
 
         public List<string> Timers { get; set; } = new List<string>();
 
-        public Dictionary<string, string> Subroutines { get; set; } = new Dictionary<string, string>();
+        public Dictionary<string, string> Templates { get; set; } = new Dictionary<string, string>();
 
         public string CurrentPath { get; set; }
 
@@ -164,7 +164,7 @@ namespace Language
                 Script = new List<IScriptItem>(Script),
                 Goals = new List<string>(Goals),
                 Timers = new List<string>(Timers),
-                Subroutines = new Dictionary<string, string>(Subroutines),
+                Templates = new Dictionary<string, string>(Templates),
                 RootPath = RootPath,
                 CurrentPath = CurrentPath,
                 CurrentFileName = CurrentFileName,

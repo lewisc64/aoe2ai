@@ -185,9 +185,9 @@ namespace Language
 
         public IEnumerable<IScriptItem> Transpile(string source, TranspilerContext context, bool suppressStackWarnings = false)
         {
-            var withinSubroutine = false;
-            string subroutineName = null;
-            string subroutine = null;
+            var withinTemplate = false;
+            string templateName = null;
+            string template = null;
 
             var lineNumber = 1;
             foreach (var line in Regex.Split(source, @"\r?\n").Select(x => x.Trim()))
@@ -200,20 +200,20 @@ namespace Language
                     continue;
                 }
 
-                if (line.StartsWith("#subroutine "))
+                if (line.StartsWith("#template "))
                 {
-                    withinSubroutine = true;
-                    subroutineName = line.Split(' ').Last();
-                    subroutine = "";
+                    withinTemplate = true;
+                    templateName = line.Split(' ').Last();
+                    template = "";
                 }
-                else if (withinSubroutine && line.StartsWith("#end subroutine"))
+                else if (withinTemplate && line.StartsWith("#end template"))
                 {
-                    context.Subroutines[subroutineName] = subroutine;
-                    withinSubroutine = false;
+                    context.Templates[templateName] = template;
+                    withinTemplate = false;
                 }
-                else if (withinSubroutine)
+                else if (withinTemplate)
                 {
-                    subroutine += line + "\n";
+                    template += line + "\n";
                 }
                 else
                 {

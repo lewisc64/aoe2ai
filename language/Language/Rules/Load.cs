@@ -53,7 +53,7 @@ namespace Language.Rules
 
             context.Goals = subcontext.Goals;
             context.Timers = subcontext.Timers;
-            context.Subroutines = subcontext.Subroutines;
+            context.Templates = subcontext.Templates;
 
             if (context.ConditionStack.Any())
             {
