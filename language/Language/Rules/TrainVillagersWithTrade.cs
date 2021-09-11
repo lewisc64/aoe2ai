@@ -14,7 +14,7 @@ namespace Language.Rules
         public override string Usage => @"train NUMBER villagers with NUMBER trade";
 
         public TrainVillagersWithTrade()
-            : base(@"^train (?<villamount>[^ ]+) villagers with (?<tradeamount>[^ ]+) trade(?<useescrow> using escrow)?$")
+            : base(@"^train (?<villamount>[^ ]+) villagers? with (?<tradeamount>[^ ]+) trade(?<useescrow> using escrow for caravan)?$")
         {
         }
 
