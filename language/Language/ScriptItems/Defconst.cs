@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Language.ScriptItems
+﻿namespace Language.ScriptItems
 {
     public class Defconst<T> : IScriptItem
     {
