@@ -2,12 +2,12 @@
 
 namespace Language.Rules
 {
-    public class SnippetCollection : RuleBase
+    public class SnippetCollection : Snippet
     {
-        private IEnumerable<Snippet> Snippets { get; }
+        public IEnumerable<Snippet> Snippets { get; }
 
         public SnippetCollection(string trigger, params Snippet[] snippets)
-            : base($@"^{trigger}$")
+            : base($@"^{trigger}$", null, null)
         {
             Name = trigger;
             Usage = trigger;

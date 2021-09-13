@@ -40,13 +40,24 @@ namespace Language
                         "set-strategic-number sn-percent-building-cancellation 20",
                         "set-strategic-number sn-cap-civilian-builders 200" }));
 
-            Rules.Add(new Snippet("set up scouting",
-                new[] { "true" },
-                new[] { "set-strategic-number sn-percent-civilian-explorers 0",
-                        "set-strategic-number sn-cap-civilian-explorers 0",
-                        "set-strategic-number sn-total-number-explorers 1",
-                        "set-strategic-number sn-number-explore-groups 1",
-                        "set-strategic-number sn-initial-exploration-required 0" }));
+            Rules.Add(new SnippetCollection("set up scouting",
+                new Snippet(null,
+                    new[] { "true" },
+                    new[] { "set-strategic-number sn-percent-civilian-explorers 0",
+                            "set-strategic-number sn-cap-civilian-explorers 0",
+                            "set-strategic-number sn-total-number-explorers 1",
+                            "set-strategic-number sn-number-explore-groups 1",
+                            "set-strategic-number sn-initial-exploration-required 0" }),
+                new Snippet(null,
+                    new[] { "military-population == 0",
+                            "game-time < 60" },
+                    new[] { "set-strategic-number sn-percent-civilian-explorers 100",
+                            "set-strategic-number sn-cap-civilian-explorers 1"}),
+                new Snippet(null,
+                    new[] { "game-time >= 360",
+                            "strategic-number sn-cap-civilian-explorers == 1" },
+                    new[] { "set-strategic-number sn-percent-civilian-explorers 0",
+                            "set-strategic-number sn-cap-civilian-explorers 0" })));
 
             Rules.Add(new Snippet("set up micro",
                 new[] { "true" },
@@ -136,8 +147,8 @@ namespace Language
             Rules.Add(new SnippetCollection(
                 "set up basics",
                 (Snippet)Rules.First(x => x.Name == "set up new building system"),
-                (Snippet)Rules.First(x => x.Name == "set up scouting"),
-                (Snippet)Rules.First(x => x.Name == "set up micro")));
+                (Snippet)Rules.First(x => x.Name == "set up micro"),
+                (SnippetCollection)Rules.First(x => x.Name == "set up scouting")));
 
             Rules.Add(new SnippetCollection(
                 "lure boars",
