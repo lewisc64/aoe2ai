@@ -165,7 +165,8 @@ namespace Language
                     }),
                 new Snippet(
                     null,
-                    new[] { "dropsite-min-distance live-boar < 4" },
+                    new[] { "dropsite-min-distance live-boar < 4",
+                            "strategic-number sn-minimum-number-hunters != 8" },
                     new[] {
                         "up-request-hunters c: 8",
                         "set-strategic-number sn-minimum-number-hunters 8",
