@@ -21,9 +21,13 @@ take boar and deer
 set up new building system
 ```
 ## set up scouting
-### Example
+### Usage
 ```
 set up scouting
+```
+### Example
+```
+^set up scouting$
 ```
 ## set up micro
 ### Example
@@ -100,10 +104,18 @@ sell stone
 ```
 set up basics
 ```
+### Example
+```
+^set up basics$
+```
 ## lure boars
 ### Usage
 ```
 lure boars
+```
+### Example
+```
+^lure boars$
 ```
 ## order
 Executes statements in order once every rule pass. Loops back to the beginning upon reaching the end.
@@ -397,6 +409,16 @@ STRATEGIC_NUMBER_NAME = VALUE
 ```
 sn-maximum-gold-drop-distance = 8
 sn-maximum-town-size += 5
+```
+## stages
+Blocks out rules having them advance into each other switching by a goal.
+### Usage
+```
+#stages
+    RULES
+#advance when CONDITION
+    RULES
+#end stages
 ```
 ## target player
 Sets sn-target-player-number and sn-focus-player-number.

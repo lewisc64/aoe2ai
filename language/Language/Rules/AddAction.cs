@@ -14,7 +14,7 @@ namespace Language.Rules
 #remove action";
 
         public AddAction()
-            : base(@"^#add action (?<condition>.+)|#remove action")
+            : base(@"^(?:#add action (?<condition>.+)|#remove action)")
         {
         }
 

@@ -14,7 +14,7 @@ namespace Language.Rules
 #remove condition";
 
         public AddCondition()
-            : base(@"^#add condition (?<condition>.+)|#remove condition$")
+            : base(@"^(?:#add condition (?<condition>.+)|#remove condition)$")
         {
         }
 

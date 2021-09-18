@@ -94,6 +94,7 @@ namespace Language
             Rules.Add(new Snippet("resign",
                 new[] { "true" },
                 new[] { "resign" }));
+
             Rules.Add(new Snippet("drop off food",
                 new[] { "true" },
                 new[] { "up-drop-resources sheep-food c: 5",

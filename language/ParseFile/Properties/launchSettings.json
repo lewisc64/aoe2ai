@@ -2,7 +2,7 @@
   "profiles": {
     "ParseFile": {
       "commandName": "Project",
-      "commandLineArgs": "\"E:\\coding\\GitHub\\aoe2bots\\bots\\charlotte\\main.aoe2ai\" E:\\coding\\GitHub\\aoe2bots\\bots\\charlotte\\build \"Charlotte\""
+      "commandLineArgs": "\"E:\\coding\\GitHub\\aoe2bots\\bots\\test.aoe2ai\" \".\" \"test\""
     }
   }
 }
