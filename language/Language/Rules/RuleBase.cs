@@ -1,5 +1,8 @@
 ﻿using Language.ScriptItems;
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using System.Text.RegularExpressions;
 
 namespace Language.Rules
@@ -59,6 +62,26 @@ namespace Language.Rules
             }
 
             return (rules, goalToResourceMap);
+        }
+
+        [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
+        public class ActiveRule : Attribute
+        {
+            public int Priority { get; set; }
+
+            public ActiveRule(int priority = 0)
+            {
+                Priority = priority;
+            }
+        }
+
+        public static IEnumerable<IRule> GetRules()
+        {
+            return Assembly.GetExecutingAssembly()
+                .GetTypes()
+                .Where(x => x.CustomAttributes.Any(y => y.AttributeType == typeof(ActiveRule)))
+                .OrderByDescending(x => (int)x.GetCustomAttributesData().First(x => x.AttributeType == typeof(ActiveRule)).ConstructorArguments.First().Value)
+                .Select(x => (IRule)Activator.CreateInstance(x));
         }
     }
 }

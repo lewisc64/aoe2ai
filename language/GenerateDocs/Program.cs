@@ -1,6 +1,6 @@
 ﻿using Language;
-using System.IO;
 using System.Collections.Generic;
+using System.IO;
 
 namespace GenerateDocs
 {

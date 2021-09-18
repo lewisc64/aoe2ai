@@ -16,15 +16,4 @@ namespace Language.Rules
 
         void Parse(string line, TranspilerContext context);
     }
-
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
-    public class ActiveRule : Attribute
-    {
-        public int Priority { get; set; }
-
-        public ActiveRule(int priority = 0)
-        {
-            Priority = priority;
-        }
-    }
 }
