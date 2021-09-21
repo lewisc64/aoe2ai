@@ -7,11 +7,11 @@ namespace Language.Rules
     [ActiveRule(-1)]
     public class Build : RuleBase
     {
-        private const int DefaultNumberBuildings = 100; // prevent build queue getting flooded
+        private const int MaxConcurrentBuilds = 5;
 
         public override string Name => "build";
 
-        public override string Help => $"Sets up the rule to build the building. If amount is unspecified, the building will be built to a maximum of {DefaultNumberBuildings}.";
+        public override string Help => $"Sets up the rule to build the building. Can only build {MaxConcurrentBuilds} buildings at a time to prevent accidental build queue flooding.";
 
         public override string Usage => "build ?forward AMOUNT BUILDING_NAME with RESOURCE_NAME escrow";
 
@@ -28,7 +28,7 @@ build archery-range with wood escrow";
         {
             var data = GetData(line);
             var forward = data["forward"].Success;
-            var amount = data["amount"].Value.ReplaceIfNullOrEmpty(DefaultNumberBuildings.ToString());
+            var amount = data["amount"].Value;
             var building = data["building"].Value;
             var near = data["near"].Value;
             var escrowList = data["escrowlist"].Value;
@@ -51,6 +51,7 @@ build archery-range with wood escrow";
 
             var compressable = true;
 
+            conditions.Add($"up-pending-objects c: {building} < {MaxConcurrentBuilds}");
             if (!string.IsNullOrEmpty(amount))
             {
                 conditions.Add($"building-type-count-total {building} < {amount}");
