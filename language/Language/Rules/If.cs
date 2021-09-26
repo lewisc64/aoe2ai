@@ -19,7 +19,7 @@ namespace Language.Rules
 #end if";
 
         public If()
-            : base(@"^#if (?<ifcondition>.+)|#else if (?<elseifcondition>.+)|#else|#end if$")
+            : base(@"^(#if (?<ifcondition>.+)|#else if (?<elseifcondition>.+)|#else|#end if)$")
         {
         }
 
