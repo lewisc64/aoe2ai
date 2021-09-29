@@ -163,6 +163,19 @@ auto balance wood and food and gold
 auto balance all
 auto balance wood and food every 30 seconds
 ```
+## auto expand town size
+Automatically expands the town size based on if a building is meant to be built but there are no villagers to build it.
+Can be used in conjunction with town size attacks modifying only sn-maximum-town-size. Upon activation it will shrink the town size to a minimum once and expand from there.
+
+Affects the following sn's:
+ - sn-maximum-town-size
+ - sn-minimum-town-size
+ - sn-safe-town-size
+ - sn-maximum-food-drop-distance
+### Usage
+```
+auto expand town size
+```
 ## block respond
 When the AI sees the specified amount, the body is allowed to trigger. If building/unit is unspecified, unit is assumed. If amount is unspecified, 1 is assumed.
 ### Usage
@@ -260,6 +273,12 @@ distribute PERCENTAGE villagers from RESOURCE_NAME to RESOURCE_NAME
 distibute 5 villagers from wood to stone
 distribute 10 villagers from wood and food to gold
 distribute 8 villagers from food to gold and stone using modifiers
+```
+## do basic diplomacy
+Includes rules to manage open diplomacy games. Neutrals everyone, makes one ally, makes one enemy. Will set an attacking player to enemy.
+### Usage
+```
+do basic diplomacy
 ```
 ## do once
 Adds 'disable-self' to the action stack. Makes sure each rule in the block individually runs only once.
@@ -468,7 +487,7 @@ Rules in the 'then' block are allowed to trigger when any rule in the main 'when
 #end when
 ```
 ## build
-Sets up the rule to build the building. If amount is unspecified, the building will be built to a maximum of 100.
+Sets up the rule to build the building. Can only build 5 buildings at a time to prevent accidental build queue flooding.
 ### Usage
 ```
 build ?forward AMOUNT BUILDING_NAME with RESOURCE_NAME escrow
