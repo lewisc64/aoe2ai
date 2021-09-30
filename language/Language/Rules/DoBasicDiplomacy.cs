@@ -83,12 +83,27 @@ namespace Language.Rules
                     {
                         $"random-number == {player}",
                         "not (player-in-game any-enemy)",
-                        $"not (stance-toward {player} enemy)",
-                        $"stance-toward {player} ally",
+                        "not (player-in-game any-neutral)",
                     },
                     new[]
                     {
                         $"set-stance {player} enemy",
+                    }));
+            }
+
+            // if we have an enemy, ally neutral players who ally us.
+            for (var player = 1; player <= 8; player++)
+            {
+                rules.Add(new Defrule(
+                    new[]
+                    {
+                        "player-in-game any-enemy",
+                        $"players-stance {player} ally",
+                        $"stance-toward {player} neutral",
+                    },
+                    new[]
+                    {
+                        $"set-stance {player} ally",
                     }));
             }
 
@@ -119,22 +134,6 @@ namespace Language.Rules
                         $"random-number == {player}",
                         "not (player-in-game any-ally)",
                         "players-stance any-neutral neutral",
-                        $"stance-toward {player} neutral",
-                    },
-                    new[]
-                    {
-                        $"set-stance {player} ally",
-                    }));
-            }
-
-            // if we have an enemy, ally neutral players who ally us.
-            for (var player = 1; player <= 8; player++)
-            {
-                rules.Add(new Defrule(
-                    new[]
-                    {
-                        "player-in-game any-enemy",
-                        $"players-stance {player} ally",
                         $"stance-toward {player} neutral",
                     },
                     new[]
