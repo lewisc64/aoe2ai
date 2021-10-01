@@ -32,6 +32,10 @@ namespace Language.Rules
                     "disable-self",
                 }));
 
+            var allyCountGoal = context.CreateGoal();
+            var neutralCountGoal = context.CreateGoal();
+            var enemyCountGoal = context.CreateGoal();
+
             rules.Add(new Defrule(
                 new[]
                 {
@@ -40,16 +44,32 @@ namespace Language.Rules
                 new[]
                 {
                     "generate-random-number 8",
+                    $"set-goal {allyCountGoal} 0",
+                    $"set-goal {neutralCountGoal} 0",
+                    $"set-goal {enemyCountGoal} 0",
                 }));
+
+            for (var player = 1; player <= 8; player++)
+            {
+                rules.Add(new Defrule(new[] { $"stance-toward {player} ally" }, new[] { $"up-modify-goal {allyCountGoal} c:+ 1" }));
+                rules.Add(new Defrule(new[] { $"stance-toward {player} neutral" }, new[] { $"up-modify-goal {neutralCountGoal} c:+ 1" }));
+                rules.Add(new Defrule(new[] { $"stance-toward {player} enemy" }, new[] { $"up-modify-goal {enemyCountGoal} c:+ 1" }));
+            }
+
+            rules.Add(new Defrule(new[] { $"stance-toward my-player-number ally" }, new[] { $"up-modify-goal {allyCountGoal} c:- 1" }));
+            rules.Add(new Defrule(new[] { $"stance-toward my-player-number neutral" }, new[] { $"up-modify-goal {neutralCountGoal} c:- 1" }));
+            rules.Add(new Defrule(new[] { $"stance-toward my-player-number enemy" }, new[] { $"up-modify-goal {enemyCountGoal} c:- 1" }));
+
+            var stanceChangeRules = new List<Defrule>();
 
             // no enemies, make a neutral player our enemy.
             for (var player = 1; player <= 8; player++)
             {
-                rules.Add(new Defrule(
+                stanceChangeRules.Add(new Defrule(
                     new[]
                     {
                         $"random-number == {player}",
-                        "not (player-in-game any-enemy)",
+                        $"goal {enemyCountGoal} 0",
                         $"stance-toward {player} neutral",
                         $"not (players-stance {player} ally)",
                     },
@@ -62,11 +82,11 @@ namespace Language.Rules
             // still no enemies, make a neutral player our enemy even if they've allied us.
             for (var player = 1; player <= 8; player++)
             {
-                rules.Add(new Defrule(
+                stanceChangeRules.Add(new Defrule(
                     new[]
                     {
                         $"random-number == {player}",
-                        "not (player-in-game any-enemy)",
+                        $"goal {enemyCountGoal} 0",
                         $"stance-toward {player} neutral",
                     },
                     new[]
@@ -78,12 +98,12 @@ namespace Language.Rules
             // still no enemies, backstab an ally.
             for (var player = 1; player <= 8; player++)
             {
-                rules.Add(new Defrule(
+                stanceChangeRules.Add(new Defrule(
                     new[]
                     {
                         $"random-number == {player}",
-                        "not (player-in-game any-enemy)",
-                        "not (player-in-game any-neutral)",
+                        $"goal {enemyCountGoal} 0",
+                        $"goal {neutralCountGoal} 0",
                     },
                     new[]
                     {
@@ -94,10 +114,10 @@ namespace Language.Rules
             // if we have an enemy, ally neutral players who ally us.
             for (var player = 1; player <= 8; player++)
             {
-                rules.Add(new Defrule(
+                stanceChangeRules.Add(new Defrule(
                     new[]
                     {
-                        "player-in-game any-enemy",
+                        $"not (goal {enemyCountGoal} 0)",
                         $"players-stance {player} ally",
                         $"stance-toward {player} neutral",
                     },
@@ -110,11 +130,11 @@ namespace Language.Rules
             // no allies, ally somone who has allied us.
             for (var player = 1; player <= 8; player++)
             {
-                rules.Add(new Defrule(
+                stanceChangeRules.Add(new Defrule(
                     new[]
                     {
                         $"random-number == {player}",
-                        "not (player-in-game any-ally)",
+                        $"goal {allyCountGoal} 0",
                         "players-stance any-neutral ally",
                         $"not (stance-toward {player} ally)",
                         $"players-stance {player} ally",
@@ -128,11 +148,11 @@ namespace Language.Rules
             // still no allies, ally a neutral
             for (var player = 1; player <= 8; player++)
             {
-                rules.Add(new Defrule(
+                stanceChangeRules.Add(new Defrule(
                     new[]
                     {
                         $"random-number == {player}",
-                        "not (player-in-game any-ally)",
+                        $"goal {allyCountGoal} 0",
                         "players-stance any-neutral neutral",
                         $"stance-toward {player} neutral",
                     },
@@ -141,6 +161,13 @@ namespace Language.Rules
                         $"set-stance {player} ally",
                     }));
             }
+
+            for (var i = 0; i < stanceChangeRules.Count - 1; i++)
+            {
+                stanceChangeRules[i].Actions.Add(new Action($"up-jump-rule {stanceChangeRules.Count - i - 1}"));
+            }
+
+            rules.AddRange(stanceChangeRules);
 
             var threatPlayerGoal = context.CreateGoal();
 
