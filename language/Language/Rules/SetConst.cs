@@ -20,9 +20,16 @@ namespace Language.Rules
         {
             var data = GetData(line);
             var name = data["name"].Value;
-            var value = int.Parse(data["value"].Value);
+            var value = data["value"].Value;
 
-            context.AddToScript(new Defconst<int>(name, value));
+            if (value.StartsWith("\"") && value.EndsWith("\""))
+            {
+                context.AddToScript(context.CreateConstant(name, value.Substring(1, value.Length - 2).Replace("\\\"", "\"").Replace("\\\\", "\\")));
+            }
+            else
+            {
+                context.AddToScript(context.CreateConstant(name, int.Parse(value)));
+            }
         }
     }
 }

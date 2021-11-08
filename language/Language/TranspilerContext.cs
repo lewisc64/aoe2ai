@@ -18,6 +18,8 @@ namespace Language
 
         public List<string> Timers { get; set; } = new List<string>();
 
+        public List<string> Constants { get; set; } = new List<string>();
+
         public Dictionary<string, string> Templates { get; set; } = new Dictionary<string, string>();
 
         public string CurrentPath { get; set; }
@@ -68,7 +70,7 @@ namespace Language
             Goals.Add(name);
             if (name != null)
             {
-                Script.Insert(0, new Defconst<int>(name, Goals.Count));
+                Script.Insert(0, CreateConstant(name, Goals.Count));
             }
             return Goals.Count;
         }
@@ -78,9 +80,19 @@ namespace Language
             Timers.Add(name);
             if (name != null)
             {
-                Script.Insert(0, new Defconst<int>(name, Timers.Count));
+                Script.Insert(0, CreateConstant(name, Timers.Count));
             }
             return Timers.Count;
+        }
+
+        public Defconst<T> CreateConstant<T>(string name, T value)
+        {
+            if (Constants.Contains(name))
+            {
+                throw new System.InvalidOperationException($"Constant '{name}' has already been defined.");
+            }
+            Constants.Add(name);
+            return new Defconst<T>(name, value);
         }
 
         public void AddToScript(IEnumerable<IScriptItem> items)
@@ -164,6 +176,7 @@ namespace Language
                 Script = new List<IScriptItem>(Script),
                 Goals = new List<string>(Goals),
                 Timers = new List<string>(Timers),
+                Constants = new List<string>(Constants),
                 Templates = new Dictionary<string, string>(Templates),
                 RootPath = RootPath,
                 CurrentPath = CurrentPath,
