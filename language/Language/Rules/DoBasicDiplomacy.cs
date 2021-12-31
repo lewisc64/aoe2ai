@@ -10,15 +10,18 @@ namespace Language.Rules
 
         public override string Help => "Includes rules to manage open diplomacy games. Neutrals everyone, makes one ally, makes one enemy. Will set an attacking player to enemy.";
 
-        public override string Usage => "do basic diplomacy";
+        public override string Usage => @"do basic diplomacy
+do basic diplomacy without backstabbing";
 
         public DoBasicDiplomacy()
-            : base(@"^do basic diplomacy$")
+            : base(@"^do basic diplomacy(?<nobackstab> without backstabbing)?$")
         {
         }
 
         public override void Parse(string line, TranspilerContext context)
         {
+            var doBackstabbing = string.IsNullOrEmpty(GetData(line)["nobackstab"].Value);
+
             var rules = new List<Defrule>();
 
             rules.Add(new Defrule(
@@ -96,19 +99,22 @@ namespace Language.Rules
             }
 
             // still no enemies, backstab an ally.
-            for (var player = 1; player <= 8; player++)
+            if (doBackstabbing)
             {
-                stanceChangeRules.Add(new Defrule(
-                    new[]
-                    {
-                        $"random-number == {player}",
-                        $"goal {enemyCountGoal} 0",
-                        $"goal {neutralCountGoal} 0",
-                    },
-                    new[]
-                    {
-                        $"set-stance {player} enemy",
-                    }));
+                for (var player = 1; player <= 8; player++)
+                {
+                    stanceChangeRules.Add(new Defrule(
+                        new[]
+                        {
+                            $"random-number == {player}",
+                            $"goal {enemyCountGoal} 0",
+                            $"goal {neutralCountGoal} 0",
+                        },
+                        new[]
+                        {
+                            $"set-stance {player} enemy",
+                        }));
+                }
             }
 
             // if we have an enemy, ally neutral players who ally us.
