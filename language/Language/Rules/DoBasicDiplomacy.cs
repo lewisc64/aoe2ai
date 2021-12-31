@@ -51,9 +51,9 @@ namespace Language.Rules
 
             for (var player = 1; player <= 8; player++)
             {
-                rules.Add(new Defrule(new[] { $"stance-toward {player} ally" }, new[] { $"up-modify-goal {allyCountGoal} c:+ 1" }));
-                rules.Add(new Defrule(new[] { $"stance-toward {player} neutral" }, new[] { $"up-modify-goal {neutralCountGoal} c:+ 1" }));
-                rules.Add(new Defrule(new[] { $"stance-toward {player} enemy" }, new[] { $"up-modify-goal {enemyCountGoal} c:+ 1" }));
+                rules.Add(new Defrule(new[] { $"player-in-game {player}", $"stance-toward {player} ally" }, new[] { $"up-modify-goal {allyCountGoal} c:+ 1" }));
+                rules.Add(new Defrule(new[] { $"player-in-game {player}", $"stance-toward {player} neutral" }, new[] { $"up-modify-goal {neutralCountGoal} c:+ 1" }));
+                rules.Add(new Defrule(new[] { $"player-in-game {player}", $"stance-toward {player} enemy" }, new[] { $"up-modify-goal {enemyCountGoal} c:+ 1" }));
             }
 
             rules.Add(new Defrule(new[] { $"stance-toward my-player-number ally" }, new[] { $"up-modify-goal {allyCountGoal} c:- 1" }));
