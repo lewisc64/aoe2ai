@@ -58,7 +58,7 @@ insert train-unit(unit=""archer-line\"")
             subcontext.ConditionStack.Clear();
             subcontext.ActionStack.Clear();
             subcontext.DataStack.Clear();
-            subcontext.CurrentFileName = $"subroutine '{subroutineName}'";
+            subcontext.CurrentFileName = $"template '{subroutineName}'";
 
             var transpiler = new Transpiler();
             var rules = transpiler.Transpile(subroutine, subcontext);
