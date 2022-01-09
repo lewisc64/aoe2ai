@@ -75,6 +75,7 @@ do basic diplomacy without backstabbing";
                         $"goal {enemyCountGoal} 0",
                         $"stance-toward {player} neutral",
                         $"not (players-stance {player} ally)",
+                        $"player-in-game {player}",
                     },
                     new[]
                     {
@@ -91,6 +92,7 @@ do basic diplomacy without backstabbing";
                         $"random-number == {player}",
                         $"goal {enemyCountGoal} 0",
                         $"stance-toward {player} neutral",
+                        $"player-in-game {player}",
                     },
                     new[]
                     {
@@ -98,9 +100,10 @@ do basic diplomacy without backstabbing";
                     }));
             }
 
-            // still no enemies, backstab an ally.
+            // don't make more than one ally if we aren't backstabbing
             if (doBackstabbing)
             {
+                // still no enemies, backstab an ally.
                 for (var player = 1; player <= 8; player++)
                 {
                     stanceChangeRules.Add(new Defrule(
@@ -109,28 +112,30 @@ do basic diplomacy without backstabbing";
                             $"random-number == {player}",
                             $"goal {enemyCountGoal} 0",
                             $"goal {neutralCountGoal} 0",
+                            $"player-in-game {player}",
                         },
                         new[]
                         {
                             $"set-stance {player} enemy",
                         }));
                 }
-            }
 
-            // if we have an enemy, ally neutral players who ally us.
-            for (var player = 1; player <= 8; player++)
-            {
-                stanceChangeRules.Add(new Defrule(
-                    new[]
-                    {
-                        $"not (goal {enemyCountGoal} 0)",
-                        $"players-stance {player} ally",
-                        $"stance-toward {player} neutral",
-                    },
-                    new[]
-                    {
-                        $"set-stance {player} ally",
-                    }));
+                // if we have an enemy, ally neutral players who ally us.
+                for (var player = 1; player <= 8; player++)
+                {
+                    stanceChangeRules.Add(new Defrule(
+                        new[]
+                        {
+                            $"not (goal {enemyCountGoal} 0)",
+                            $"players-stance {player} ally",
+                            $"stance-toward {player} neutral",
+                            $"player-in-game {player}",
+                        },
+                        new[]
+                        {
+                            $"set-stance {player} ally",
+                        }));
+                }
             }
 
             // no allies, ally somone who has allied us.
@@ -144,6 +149,7 @@ do basic diplomacy without backstabbing";
                         "players-stance any-neutral ally",
                         $"not (stance-toward {player} ally)",
                         $"players-stance {player} ally",
+                        $"player-in-game {player}",
                     },
                     new[]
                     {
@@ -161,6 +167,7 @@ do basic diplomacy without backstabbing";
                         $"goal {allyCountGoal} 0",
                         "players-stance any-neutral neutral",
                         $"stance-toward {player} neutral",
+                        $"player-in-game {player}",
                     },
                     new[]
                     {
@@ -175,6 +182,36 @@ do basic diplomacy without backstabbing";
 
             rules.AddRange(stanceChangeRules);
 
+            // ally everyone upon resigning
+            rules.Add(new Defrule(
+                new[]
+                {
+                    "game-time >= 1200",
+                    "population < 10",
+                },
+                new[]
+                {
+                    "set-stance every-enemy ally",
+                    "set-stance every-neutral ally",
+                    "resign",
+                }));
+
+            // ally those who have resigned and allied us
+            for (var player = 1; player <= 8; player++)
+            {
+                rules.Add(new Defrule(
+                    new[]
+                    {
+                        $"players-stance {player} ally",
+                        $"not (stance-toward {player} ally)",
+                        $"not (player-in-game {player})",
+                    },
+                    new[]
+                    {
+                        $"set-stance {player} ally",
+                    }));
+            }
+
             var threatPlayerGoal = context.CreateGoal();
 
             rules.Add(new Defrule(
@@ -187,13 +224,14 @@ do basic diplomacy without backstabbing";
                     $"up-get-threat-data -1 {threatPlayerGoal} -1 -1",
                 }));
 
+            // enemy those who attack us
             for (var player = 1; player <= 8; player++)
             {
                 rules.Add(new Defrule(
                     new[]
                     {
                         $"goal {threatPlayerGoal} {player}",
-                        $"not (stance-toward {player} enemy)"
+                        $"not (stance-toward {player} enemy)",
                     },
                     new[]
                     {
