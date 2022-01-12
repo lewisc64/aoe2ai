@@ -49,13 +49,8 @@ Translation:
     (set-strategic-number sn-enable-new-building-system 1)
     (set-strategic-number sn-percent-building-cancellation 20)
     (set-strategic-number sn-cap-civilian-builders 200)
-    (set-strategic-number sn-percent-civilian-explorers 0)
-    (set-strategic-number sn-cap-civilian-explorers 0)
-    (set-strategic-number sn-total-number-explorers 1)
-    (set-strategic-number sn-number-explore-groups 1)
-    (set-strategic-number sn-initial-exploration-required 0)
     (set-difficulty-parameter ability-to-maintain-distance 0)
-    (set-difficulty-parameter ability-to-dodge-missiles 0)
+    (set-difficulty-parameter ability-to-dodge-missiles 100)
     (set-strategic-number sn-percent-attack-soldiers 100)
     (set-strategic-number sn-percent-attack-boats 100)
     (set-strategic-number sn-attack-intelligence 1)
@@ -74,6 +69,33 @@ Translation:
     (set-strategic-number sn-number-build-attempts-before-skip 5)
     (set-strategic-number sn-max-skips-per-attempt 5)
     (set-strategic-number sn-dropsite-separation-distance 8)
+    (set-strategic-number sn-wall-targeting-mode 1)
+    (disable-self)
+)
+(defrule
+    (true)
+=>
+    (set-strategic-number sn-percent-civilian-explorers 0)
+    (set-strategic-number sn-cap-civilian-explorers 0)
+    (set-strategic-number sn-total-number-explorers 1)
+    (set-strategic-number sn-number-explore-groups 1)
+    (set-strategic-number sn-initial-exploration-required 0)
+    (disable-self)
+)
+(defrule
+    (military-population == 0)
+    (game-time < 60)
+=>
+    (set-strategic-number sn-percent-civilian-explorers 100)
+    (set-strategic-number sn-cap-civilian-explorers 1)
+    (disable-self)
+)
+(defrule
+    (game-time >= 600)
+    (strategic-number sn-cap-civilian-explorers == 1)
+=>
+    (set-strategic-number sn-percent-civilian-explorers 0)
+    (set-strategic-number sn-cap-civilian-explorers 0)
     (disable-self)
 )
 (defrule
@@ -92,6 +114,7 @@ Translation:
 )
 (defrule
     (dropsite-min-distance live-boar < 4)
+    (strategic-number sn-minimum-number-hunters != 8)
 =>
     (up-request-hunters c: 8)
     (set-strategic-number sn-minimum-number-hunters 8)
@@ -140,7 +163,16 @@ Translation:
     (disable-self)
 )
 (defrule
-    (or (dropsite-min-distance gold > 3) (and (unit-type-count 579 == 0) (and (unit-type-count 581 == 0) (strategic-number sn-gold-gatherer-percentage > 0))))
+    (or
+      (dropsite-min-distance gold > 3)
+      (and
+        (unit-type-count 579 == 0)
+        (and
+          (unit-type-count 581 == 0)
+          (strategic-number sn-gold-gatherer-percentage > 0)
+        )
+      )
+    )
     (dropsite-min-distance gold != -1)
     (resource-found gold)
     (up-pending-objects c: mining-camp == 0)
@@ -171,6 +203,7 @@ Translation:
 )
 (defrule
     (can-build mill)
+    (up-pending-objects c: mill < 5)
     (building-type-count-total mill < 1)
 =>
     (build mill)
@@ -185,6 +218,7 @@ Translation:
 )
 (defrule
     (can-build barracks)
+    (up-pending-objects c: barracks < 5)
     (building-type-count-total barracks < 2)
 =>
     (build barracks)
