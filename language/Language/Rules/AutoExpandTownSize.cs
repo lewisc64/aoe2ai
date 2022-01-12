@@ -119,8 +119,8 @@ auto expand town size to 30";
                 new[]
                 {
                     $"goal {buildingInQueueGoal} 1",
-                    "unit-type-count 118 == 0",
-                    "unit-type-count 212 == 0",
+                    $"unit-type-count {Game.MaleBuilderId} == 0",
+                    $"unit-type-count {Game.FemaleBuilderId} == 0",
                     "civilian-population >= 2",
                     $"strategic-number sn-maximum-town-size < {maximum}",
                 },

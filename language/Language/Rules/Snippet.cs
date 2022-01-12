@@ -136,8 +136,8 @@ namespace Language.Rules
             rules.Add(new Snippet("delete walls",
                 new[] { "true" },
                 new[] { "delete-building stone-wall-line",
-                        "delete-building palisade-wall",
-                        "delete-building gate" }));
+                        "delete-building palisade-wall" }
+                    .Concat(Game.AllClosedGateIds.Select(x => $"delete-building {x}"))));
 
             rules.Add(new Snippet("buy wood",
                 new[] { "can-buy-commodity wood" },

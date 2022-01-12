@@ -5,6 +5,22 @@ namespace Language
 {
     public static class Game
     {
+        public static readonly int MaleBuilderId = 118;
+
+        public static readonly int FemaleBuilderId = 212;
+
+        public static readonly int MaleGoldMinerId = 579;
+
+        public static readonly int FemaleGoldMinerId = 581;
+
+        public static readonly int DeadTradeCartId = 178;
+
+        public static readonly int DeadLoadedTradeCartId = 205;
+
+        public static readonly int YurtId = 712;
+
+        public static readonly int[] AllClosedGateIds = new int[] { 789, 793, 797, 801, 64, 88, 659, 667, 63, 85, 660, 668 };
+
         public static Dictionary<string, string[]> GetResearches()
         {
             var research = new Dictionary<string, string[]>() {

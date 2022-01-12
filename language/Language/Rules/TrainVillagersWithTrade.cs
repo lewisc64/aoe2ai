@@ -92,10 +92,11 @@ namespace Language.Rules
                     }));
             }
 
-
             rules.Add(new Defrule(
                 new[] {
                     "players-building-type-count any-ally market >= 1",
+                    $"unit-type-count {Game.DeadTradeCartId} == 0",
+                    $"unit-type-count {Game.DeadLoadedTradeCartId} == 0",
                     "can-train trade-cart",
                     $"unit-type-count-total trade-cart < {tradeAmount}",
                 },

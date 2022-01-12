@@ -80,7 +80,7 @@ build lumber camps maintaining 4 tiles";
 
             if (building == "mining-camp" && resource == "gold")
             {
-                conditions[0] = Condition.Parse($"{conditions[0]} or unit-type-count 579 == 0 and unit-type-count 581 == 0 and strategic-number sn-gold-gatherer-percentage > 0");
+                conditions[0] = Condition.Parse($"{conditions[0]} or unit-type-count {Game.MaleGoldMinerId} == 0 and unit-type-count {Game.FemaleGoldMinerId} == 0 and strategic-number sn-gold-gatherer-percentage > 0");
             }
 
             var rule = new Defrule(conditions, new[] { new Action($"build {building}") });

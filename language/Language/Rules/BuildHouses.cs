@@ -8,8 +8,6 @@ namespace Language.Rules
     {
         private const int DefaultHeadroom = 5;
 
-        private const int YurtBuildingId = 712;
-
         public override string Name => "chat to";
 
         public override string Help => $"Sets up rule to build houses, default headroom is {DefaultHeadroom}.";
@@ -27,7 +25,7 @@ namespace Language.Rules
             var style = data["style"].Value;
             var headroom = data["headroom"].Value.ReplaceIfNullOrEmpty(DefaultHeadroom.ToString());
 
-            var building = style == "houses" ? "house" : YurtBuildingId.ToString();
+            var building = style == "houses" ? "house" : Game.YurtId.ToString();
 
             var conditions = new[]
             {
