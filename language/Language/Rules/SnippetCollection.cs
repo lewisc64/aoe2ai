@@ -7,7 +7,7 @@ namespace Language.Rules
         public IEnumerable<Snippet> Snippets { get; }
 
         public SnippetCollection(string trigger, params Snippet[] snippets)
-            : base($@"^{trigger}$", null, null)
+            : base($@"^{trigger}$", new string[0], new string[0])
         {
             Name = trigger;
             Usage = trigger;

@@ -6,11 +6,16 @@ namespace Language.Rules
 {
     public class Snippet : RuleBase
     {
-        protected virtual IEnumerable<string> Conditions { get; }
+        protected virtual IEnumerable<Condition> Conditions { get; }
 
-        protected virtual IEnumerable<string> Actions { get; }
+        protected virtual IEnumerable<Action> Actions { get; }
 
         public Snippet(string trigger, IEnumerable<string> conditions, IEnumerable<string> actions)
+            : this(trigger, conditions.Select(x => new Condition(x)), actions.Select(x => new Action(x)))
+        {
+        }
+
+        public Snippet(string trigger, IEnumerable<Condition> conditions, IEnumerable<Action> actions)
             : base($@"^{trigger}$")
         {
             Name = trigger;
@@ -188,12 +193,24 @@ namespace Language.Rules
                 new Snippet(
                     null,
                     new[] {
-                        "strategic-number sn-minimum-number-hunters == 8",
-                        "and (dropsite-min-distance live-boar > 4) (or (dropsite-min-distance boar-food > 4) (dropsite-min-distance boar-food == -1))",
+                        new Condition("strategic-number sn-minimum-number-hunters == 8"),
+                        new CombinatoryCondition(
+                            "and",
+                            new[]
+                            {
+                                new Condition("dropsite-min-distance live-boar > 4"),
+                                new CombinatoryCondition(
+                                    "or",
+                                    new[]
+                                    {
+                                        new Condition("dropsite-min-distance boar-food > 4"),
+                                        new Condition("dropsite-min-distance boar-food == -1"),
+                                    }),
+                            }),
                     },
                     new[] {
-                        "set-strategic-number sn-minimum-number-hunters 1",
-                        "up-retask-gatherers food c: 255",
+                        new Action("set-strategic-number sn-minimum-number-hunters 1"),
+                        new Action("up-retask-gatherers food c: 255"),
                     })
                 ));
 
