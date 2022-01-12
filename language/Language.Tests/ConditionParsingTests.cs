@@ -5,6 +5,16 @@ namespace Language.Tests
 {
     public class ConditionParsingTests
     {
+        ICombinatoryConditionFormat _format;
+
+        public ConditionParsingTests()
+        {
+            _format = new OneLineCondition
+            {
+                Spacing = " ",
+            };
+        }
+
         [Theory]
         [InlineData("a", "(a)")]
         [InlineData("a or b", "(or (a) (b))")]
@@ -19,7 +29,7 @@ namespace Language.Tests
         [InlineData("goal gl-or 1 or goal gl-and 1", "(or (goal gl-or 1) (goal gl-and 1))")]
         public void Parse_Success(string text, string expected)
         {
-            Assert.Equal(expected, Condition.Parse(text).ToString());
+            Assert.Equal(expected, Condition.Parse(text, _format).ToString());
         }
 
         [Theory]

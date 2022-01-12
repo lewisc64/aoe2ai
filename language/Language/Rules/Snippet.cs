@@ -66,7 +66,7 @@ namespace Language.Rules
                     new[] { "set-strategic-number sn-percent-civilian-explorers 100",
                             "set-strategic-number sn-cap-civilian-explorers 1"}),
                 new Snippet(null,
-                    new[] { "game-time >= 360",
+                    new[] { "game-time >= 600",
                             "strategic-number sn-cap-civilian-explorers == 1" },
                     new[] { "set-strategic-number sn-percent-civilian-explorers 0",
                             "set-strategic-number sn-cap-civilian-explorers 0" })));
@@ -84,6 +84,7 @@ namespace Language.Rules
                         "set-strategic-number sn-local-targeting-mode 1",
                         "set-strategic-number sn-retask-gather-amount 0",
                         "set-strategic-number sn-target-evaluation-siege-weapon 500",
+                        "set-strategic-number sn-target-evaluation-boat 500",
                         "set-strategic-number sn-ttkfactor-scalar 500",
                         "set-strategic-number sn-percent-enemy-sighted-response 100",
                         "set-strategic-number sn-task-ungrouped-soldiers 0",
@@ -159,8 +160,8 @@ namespace Language.Rules
 
             rules.Add(new SnippetCollection(
                 "set up basics",
-                (Snippet)rules.First(x => x.Name == "set up new building system"),
-                (Snippet)rules.First(x => x.Name == "set up micro"),
+                rules.First(x => x.Name == "set up new building system"),
+                rules.First(x => x.Name == "set up micro"),
                 (SnippetCollection)rules.First(x => x.Name == "set up scouting")));
 
             rules.Add(new SnippetCollection(

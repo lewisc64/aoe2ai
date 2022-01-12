@@ -62,25 +62,11 @@ namespace Language.Rules
                     if (rule != null && rule.Id == generateRuleId)
                     {
                         rule.Actions.Add(new Action($"generate-random-number {numberOfBlocks}"));
-
-                        for (var goalValue = 1; goalValue <= numberOfBlocks; goalValue++)
+                        rule.Actions.Add(new Action($"up-get-fact random-number 0 {goalNumber}"));
+                        if (persistant)
                         {
-                            var conditions = new List<string>();
-                            var actions = new List<string>();
-
-                            conditions.Add($"random-number == {goalValue}");
-                            conditions.Add($"goal {goalNumber} 0");
-
-                            actions.Add($"set-goal {goalNumber} {goalValue}");
-                            if (persistant)
-                            {
-                                actions.Add("disable-self");
-                            }
-
-                            var goalSetRule = new Defrule(conditions, actions);
-                            context.Script.Insert(i + goalValue, context.ApplyStacks(goalSetRule));
+                            rule.Actions.Add(new Action("disable-self"));
                         }
-                        break;
                     }
                 }
             }

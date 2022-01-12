@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Language.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -6,13 +7,11 @@ namespace Language.ScriptItems
 {
     public class Defrule : IScriptItem
     {
-        public static string Indentation = new string(' ', 4);
-
-        public static string LineSeparator = Environment.NewLine;
-
         public static int MaxRuleSize = 32;
 
         public static int MaxLineLength = 255;
+
+        public static readonly IDefruleFormat DefaultFormat = new IndentedDefrule();
 
         public string Id = Guid.NewGuid().ToString();
 
@@ -25,6 +24,8 @@ namespace Language.ScriptItems
         public List<Condition> Conditions { get; }
 
         public List<Action> Actions { get; }
+
+        public IDefruleFormat Format { get; set; } = DefaultFormat;
 
         public int Length
         {
@@ -64,41 +65,7 @@ namespace Language.ScriptItems
 
         public override string ToString()
         {
-            var raw = $"(defrule{LineSeparator}{Indentation}{string.Join(LineSeparator + Indentation, Conditions)}{LineSeparator}=>{LineSeparator}{Indentation}{string.Join(LineSeparator + Indentation, Actions)}{LineSeparator})";
-
-            var outputLines = new List<string>();
-            foreach (var line in raw.Split(Environment.NewLine))
-            {
-                if (line.Length > MaxLineLength)
-                {
-                    var segments = new List<string>();
-                    var currentLength = 0;
-                    foreach (var segment in line.Split(" "))
-                    {
-                        if (segment.Length + 1 + currentLength > MaxLineLength)
-                        {
-                            outputLines.Add(string.Join(" ", segments));
-                            segments.Clear();
-                            segments.Add(segment);
-                            currentLength = segment.Length;
-                        }
-                        else
-                        {
-                            segments.Add(segment);
-                            currentLength += segment.Length + 1;
-                        }
-                    }
-                    if (segments.Any())
-                    {
-                        outputLines.Add(string.Join(" ", segments));
-                    }
-                }
-                else
-                {
-                    outputLines.Add(line);
-                }
-            }
-            return string.Join(Environment.NewLine, outputLines);
+            return Format.Format(Conditions, Actions).Wrap(MaxLineLength);
         }
 
         public void Optimize()

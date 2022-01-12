@@ -5,9 +5,13 @@ namespace Language.ScriptItems
 {
     public class CombinatoryCondition : Condition
     {
-        IEnumerable<Condition> Conditions { get; }
+        public static readonly ICombinatoryConditionFormat DefaultFormat = new IndentedCondition();
+
+        public IEnumerable<Condition> Conditions { get; }
 
         public override int Length => Conditions.Select(x => x.Length).Sum();
+
+        public ICombinatoryConditionFormat Format { get; set; } = DefaultFormat;
 
         public CombinatoryCondition(string text, IEnumerable<Condition> conditions)
             : base(text)
@@ -17,7 +21,7 @@ namespace Language.ScriptItems
 
         public override string ToString()
         {
-            return $"({Text} {string.Join(" ", Conditions)})";
+            return Format.Format(Text, Conditions);
         }
 
         public override CombinatoryCondition Copy()

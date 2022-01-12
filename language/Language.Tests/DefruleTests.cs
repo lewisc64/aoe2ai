@@ -46,26 +46,6 @@ namespace Language.Tests
         }
 
         [Fact]
-        public void ToString_Success()
-        {
-            _rule.Conditions.Add(new Condition("condition 1"));
-            _rule.Conditions.Add(new Condition("condition 2"));
-            _rule.Actions.Add(new Action("action 1"));
-            _rule.Actions.Add(new Action("action 2"));
-            _rule.Optimize();
-
-            string expected = @"(defrule
-    (condition 1)
-    (condition 2)
-=>
-    (action 1)
-    (action 2)
-)";
-
-            Assert.Equal(expected, _rule.ToString());
-        }
-
-        [Fact]
         public void Split_Success()
         {
             _rule.Conditions.Add(new Condition("cond"));
