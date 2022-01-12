@@ -121,7 +121,13 @@ Translation:
 )
 (defrule
     (strategic-number sn-minimum-number-hunters == 8)
-    (and (dropsite-min-distance live-boar > 4) (or (dropsite-min-distance boar-food > 4) (dropsite-min-distance boar-food == -1)))
+    (and
+      (dropsite-min-distance live-boar > 4)
+      (or
+        (dropsite-min-distance boar-food > 4)
+        (dropsite-min-distance boar-food == -1)
+      )
+    )
 =>
     (set-strategic-number sn-minimum-number-hunters 1)
     (up-retask-gatherers food c: 255)
