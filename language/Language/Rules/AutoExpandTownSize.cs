@@ -61,7 +61,7 @@ auto expand town size to 30";
         {
             var maximum = GetData(line)["maximum"].Value.ReplaceIfNullOrEmpty(DefaultMaximum.ToString());
 
-            var buildingInQueueGoal = context.CreateGoal();
+            var buildingsInQueueGoal = context.CreateGoal();
 
             var shrinkTimer = context.CreateTimer();
 
@@ -80,7 +80,7 @@ auto expand town size to 30";
                         $"enable-timer {shrinkTimer} {ShrinkInterval}",
                         "disable-self"
                     }),
-                new Defrule(new[] { "true" }, new[] { $"set-goal {buildingInQueueGoal} 0" }),
+                new Defrule(new[] { "true" }, new[] { $"set-goal {buildingsInQueueGoal} 0" }),
             };
 
             foreach (var building in Buildings)
@@ -88,19 +88,19 @@ auto expand town size to 30";
                 rules.Add(new Defrule(
                     new[]
                     {
-                        $"goal {buildingInQueueGoal} 0",
+                        $"goal {buildingsInQueueGoal} 0",
                         $"up-pending-objects c: {building} > 0"
                     },
                     new[]
                     {
-                        $"set-goal {buildingInQueueGoal} 1"
+                        $"up-modify-goal {buildingsInQueueGoal} c:+ 1"
                     }));
             }
 
             rules.Add(new Defrule(
                 new[]
                 {
-                    $"goal {buildingInQueueGoal} 0",
+                    $"goal {buildingsInQueueGoal} 0",
                     $"strategic-number sn-maximum-town-size < {maximum}",
                     $"strategic-number sn-minimum-town-size > {MinimumTownSize}",
                     $"timer-triggered {shrinkTimer}",
@@ -115,12 +115,26 @@ auto expand town size to 30";
                     $"enable-timer {shrinkTimer} {ShrinkInterval}",
                 }));
 
+            var builderCountGoal = context.CreateGoal();
+            var femaleBuilderCountGoal = context.CreateGoal();
+
             rules.Add(new Defrule(
                 new[]
                 {
-                    $"goal {buildingInQueueGoal} 1",
-                    $"unit-type-count {Game.MaleBuilderId} == 0",
-                    $"unit-type-count {Game.FemaleBuilderId} == 0",
+                    "true",
+                },
+                new[]
+                {
+                    $"up-get-fact unit-type-count {Game.MaleBuilderId} {builderCountGoal}",
+                    $"up-get-fact unit-type-count {Game.FemaleBuilderId} {femaleBuilderCountGoal}",
+                    $"up-modify-goal {builderCountGoal} g:+ {femaleBuilderCountGoal}",
+                }));
+
+            rules.Add(new Defrule(
+                new[]
+                {
+                    $"goal {buildingsInQueueGoal} 1",
+                    $"up-compare-goal {builderCountGoal} g:< {buildingsInQueueGoal}",
                     "civilian-population >= 2",
                     $"strategic-number sn-maximum-town-size < {maximum}",
                 },
