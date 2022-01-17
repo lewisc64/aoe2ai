@@ -1,6 +1,6 @@
 ﻿namespace Language.ScriptItems.Formats
 {
-    public interface IScriptItemFormat
+    public interface IFormatter
     {
         bool CanBeAppliedTo(IScriptItem scriptItem);
     }

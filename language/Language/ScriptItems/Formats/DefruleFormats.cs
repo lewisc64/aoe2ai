@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Language.ScriptItems.Formats
 {
-    public interface IDefruleFormat : IScriptItemFormat
+    public interface IDefruleFormat : IFormatter
     {
         string Format(Defrule rule, IConditionFormat conditionFormat);
     }

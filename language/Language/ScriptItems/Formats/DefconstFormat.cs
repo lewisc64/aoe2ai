@@ -1,6 +1,6 @@
 ﻿namespace Language.ScriptItems.Formats
 {
-    public class DefconstFormat : IScriptItemFormat
+    public class DefconstFormat : IFormatter
     {
         public bool CanBeAppliedTo(IScriptItem scriptItem)
         {

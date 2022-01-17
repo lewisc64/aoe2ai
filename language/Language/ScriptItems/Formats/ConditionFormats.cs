@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Language.ScriptItems.Formats
 {
-    public interface IConditionFormat : IScriptItemFormat
+    public interface IConditionFormat : IFormatter
     {
         string Format(Condition condition);
     }

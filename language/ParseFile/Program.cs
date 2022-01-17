@@ -51,7 +51,7 @@ namespace ParseFile
             if (minify)
             {
                 output.InsertLineBreaks = false;
-                outputContent = output.Render(new IScriptItemFormat[] { new OneLineCondition(), new OneLineDefrule() });
+                outputContent = output.Render(new IFormatter[] { new OneLineCondition(), new OneLineDefrule() });
             }
             else
             {

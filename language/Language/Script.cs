@@ -28,13 +28,13 @@ namespace Language
 
         public string Render()
         {
-            return Render(new IScriptItemFormat[0]);
+            return Render(new IFormatter[0]);
         }
 
-        public string Render(IEnumerable<IScriptItemFormat> scriptItemFormats)
+        public string Render(IEnumerable<IFormatter> scriptItemFormats)
         {
-            IEnumerable<IScriptItemFormat> formats = scriptItemFormats
-                .Concat(new IScriptItemFormat[]
+            IEnumerable<IFormatter> formats = scriptItemFormats
+                .Concat(new IFormatter[]
                 {
                     new IndentedCondition(),
                     new IndentedDefrule(),
