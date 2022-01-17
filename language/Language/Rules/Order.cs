@@ -24,17 +24,20 @@ namespace Language.Rules
             var first = data["first"].Value;
             var second = data["second"].Value;
 
+            var transpiler = new Transpiler();
+
             var goalNumber = context.CreateGoal();
 
             var subcontext = context.Copy();
             subcontext.Script.Items.Clear();
             subcontext.CurrentFileName = $"{subcontext.CurrentFileName} -> order expression side 1";
 
-            var transpiler = new Transpiler();
-
             var firstRules = transpiler.Transpile(first, subcontext, suppressStackWarnings: true);
+
+            subcontext = context.Copy();
             subcontext.Script.Items.Clear();
             subcontext.CurrentFileName = $"{subcontext.CurrentFileName} -> order expression side 2";
+
             var secondRules = transpiler.Transpile(second, subcontext, suppressStackWarnings: true);
 
             foreach (var rule in firstRules)
