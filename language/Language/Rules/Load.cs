@@ -51,6 +51,7 @@ namespace Language.Rules
             var transpiler = new Transpiler();
             var rules = transpiler.Transpile(content, subcontext);
 
+            context.Constants = subcontext.Constants;
             context.Goals = subcontext.Goals;
             context.Timers = subcontext.Timers;
             context.Templates = subcontext.Templates;

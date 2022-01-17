@@ -1,4 +1,5 @@
 using Language;
+using Language.ScriptItems.Formats;
 using NLog;
 using NLog.Layouts;
 using NLog.Targets;
@@ -26,7 +27,7 @@ namespace Snippeter
                 Console.Write(">");
                 var content = Console.ReadLine();
 
-                var result = transpiler.Transpile(content);
+                var result = transpiler.Transpile(content).Render(new IFormatter[] { new IndentedDefrule(), new IndentedCondition() });
                 if (!string.IsNullOrWhiteSpace(result))
                 {
                     clipboard.SetText(result);

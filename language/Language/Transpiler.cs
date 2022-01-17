@@ -18,9 +18,9 @@ namespace Language
             Rules.AddRange(RuleBase.GetRules());
         }
 
-        public string Transpile(string source)
+        public Script Transpile(string source)
         {
-            return Transpile(source, new TranspilerContext()).ToString();
+            return Transpile(source, new TranspilerContext());
         }
 
         public Script Transpile(string source, TranspilerContext context, bool suppressStackWarnings = false)
