@@ -1,6 +1,4 @@
-﻿using Language.ScriptItems;
-
-namespace Language.Rules
+﻿namespace Language.Rules
 {
     [ActiveRule]
     public class SetConst : RuleBase

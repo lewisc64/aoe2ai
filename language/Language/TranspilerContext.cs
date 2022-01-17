@@ -12,7 +12,7 @@ namespace Language
 
         public Stack<object> DataStack { get; set; } = new Stack<object>();
 
-        public List<IScriptItem> Script { get; set; } = new List<IScriptItem>();
+        public Script Script { get; set; } = new Script();
 
         public List<string> Goals { get; set; } = new List<string>();
 
@@ -70,7 +70,7 @@ namespace Language
             Goals.Add(name);
             if (name != null)
             {
-                Script.Insert(0, CreateConstant(name, Goals.Count));
+                Script.Items.Insert(0, CreateConstant(name, Goals.Count));
             }
             return Goals.Count;
         }
@@ -80,7 +80,7 @@ namespace Language
             Timers.Add(name);
             if (name != null)
             {
-                Script.Insert(0, CreateConstant(name, Timers.Count));
+                Script.Items.Insert(0, CreateConstant(name, Timers.Count));
             }
             return Timers.Count;
         }
@@ -107,25 +107,25 @@ namespace Language
         {
             if (item.GetType().IsGenericType && item.GetType().GetGenericTypeDefinition() == typeof(Defconst<>))
             {
-                Script.Insert(0, item);
+                Script.Items.Insert(0, item);
             }
             else
             {
-                Script.Add(item);
+                Script.Items.Add(item);
             }
         }
 
         public void OptimizeScript()
         {
             var i = 0;
-            while (i < Script.Count)
+            while (i < Script.Items.Count)
             {
-                var rule = Script[i] as Defrule;
+                var rule = Script.Items[i] as Defrule;
                 if (rule != null)
                 {
                     if (rule.IsTooLong && rule.Splittable)
                     {
-                        Script.Insert(i + 1, rule.Split());
+                        Script.Items.Insert(i + 1, rule.Split());
                     }
                     else
                     {
@@ -139,20 +139,20 @@ namespace Language
                 }
             }
 
-            Script.RemoveAll(x => x.MarkedForDeletion);
+            Script.Items.RemoveAll(x => x.MarkedForDeletion);
 
             i = 0;
-            while (i < Script.Count - 1)
+            while (i < Script.Items.Count - 1)
             {
-                var rule = Script[i] as Defrule;
-                var otherRule = Script[i + 1] as Defrule;
+                var rule = Script.Items[i] as Defrule;
+                var otherRule = Script.Items[i + 1] as Defrule;
                 if (rule != null && otherRule != null)
                 {
                     if (rule.CanMergeWith(otherRule))
                     {
                         rule.MergeIn(otherRule);
                         rule.Optimize();
-                        Script.RemoveAt(i + 1);
+                        Script.Items.RemoveAt(i + 1);
                     }
                     else
                     {
@@ -173,7 +173,7 @@ namespace Language
                 ConditionStack = new Stack<Condition>(ConditionStack.Select(x => x.Copy())),
                 ActionStack = new Stack<Action>(ActionStack.Select(x => x.Copy())),
                 DataStack = new Stack<object>(DataStack),
-                Script = new List<IScriptItem>(Script),
+                Script = Script.Copy(),
                 Goals = new List<string>(Goals),
                 Timers = new List<string>(Timers),
                 Constants = new List<string>(Constants),

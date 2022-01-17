@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Language.Rules
+﻿namespace Language.Rules
 {
     public interface IRule
     {

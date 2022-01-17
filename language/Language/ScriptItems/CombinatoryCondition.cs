@@ -1,17 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using Language.ScriptItems.Formats;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Language.ScriptItems
 {
     public class CombinatoryCondition : Condition
     {
-        public static readonly ICombinatoryConditionFormat DefaultFormat = new IndentedCondition();
-
         public IEnumerable<Condition> Conditions { get; }
 
         public override int Length => Conditions.Select(x => x.Length).Sum();
-
-        public ICombinatoryConditionFormat Format { get; set; } = DefaultFormat;
 
         public CombinatoryCondition(string text, IEnumerable<Condition> conditions)
             : base(text)
@@ -21,7 +18,7 @@ namespace Language.ScriptItems
 
         public override string ToString()
         {
-            return Format.Format(Text, Conditions);
+            return new OneLineCondition().Format(this);
         }
 
         public override CombinatoryCondition Copy()

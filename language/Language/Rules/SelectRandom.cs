@@ -1,5 +1,4 @@
 ﻿using Language.ScriptItems;
-using System.Collections.Generic;
 
 namespace Language.Rules
 {
@@ -56,9 +55,9 @@ namespace Language.Rules
                 var numberOfBlocks = (int)context.DataStack.Pop() - 1;
                 var persistant = (bool)context.DataStack.Pop();
 
-                for (var i = 0; i < context.Script.Count; i++)
+                for (var i = 0; i < context.Script.Items.Count; i++)
                 {
-                    var rule = context.Script[i] as Defrule;
+                    var rule = context.Script.Items[i] as Defrule;
                     if (rule != null && rule.Id == generateRuleId)
                     {
                         rule.Actions.Add(new Action($"generate-random-number {numberOfBlocks}"));

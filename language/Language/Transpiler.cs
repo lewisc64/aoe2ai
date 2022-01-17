@@ -1,5 +1,4 @@
 ﻿using Language.Rules;
-using Language.ScriptItems;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,10 +20,10 @@ namespace Language
 
         public string Transpile(string source)
         {
-            return string.Join("\n", Transpile(source, new TranspilerContext()));
+            return Transpile(source, new TranspilerContext()).ToString();
         }
 
-        public IEnumerable<IScriptItem> Transpile(string source, TranspilerContext context, bool suppressStackWarnings = false)
+        public Script Transpile(string source, TranspilerContext context, bool suppressStackWarnings = false)
         {
             var withinTemplate = false;
             string templateName = null;
@@ -104,8 +103,7 @@ namespace Language
             }
 
             context.OptimizeScript();
-
-            return new List<IScriptItem>(context.Script);
+            return context.Script;
         }
     }
 }

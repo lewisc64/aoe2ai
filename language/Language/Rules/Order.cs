@@ -27,13 +27,13 @@ namespace Language.Rules
             var goalNumber = context.CreateGoal();
 
             var subcontext = context.Copy();
-            subcontext.Script.Clear();
+            subcontext.Script.Items.Clear();
             subcontext.CurrentFileName = $"{subcontext.CurrentFileName} -> order expression side 1";
 
             var transpiler = new Transpiler();
 
             var firstRules = transpiler.Transpile(first, subcontext, suppressStackWarnings: true);
-            subcontext.Script.Clear();
+            subcontext.Script.Items.Clear();
             subcontext.CurrentFileName = $"{subcontext.CurrentFileName} -> order expression side 2";
             var secondRules = transpiler.Transpile(second, subcontext, suppressStackWarnings: true);
 

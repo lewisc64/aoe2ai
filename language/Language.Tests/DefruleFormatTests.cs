@@ -1,4 +1,5 @@
 ﻿using Language.ScriptItems;
+using Language.ScriptItems.Formats;
 using Xunit;
 
 namespace Language.Tests
@@ -37,7 +38,7 @@ namespace Language.Tests
     (action 2)
 )";
 
-            Assert.Equal(expected, _indented.Format(conditions, actions));
+            Assert.Equal(expected, _indented.Format(new Defrule(conditions, actions), new OneLineCondition()));
         }
 
         [Fact]
@@ -57,7 +58,7 @@ namespace Language.Tests
 
             string expected = @"(defrule(condition 1)(condition 2)=>(action 1)(action 2))";
 
-            Assert.Equal(expected, _oneLine.Format(conditions, actions));
+            Assert.Equal(expected, _oneLine.Format(new Defrule(conditions, actions), new OneLineCondition()));
         }
     }
 }

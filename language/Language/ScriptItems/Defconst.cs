@@ -1,4 +1,6 @@
-﻿namespace Language.ScriptItems
+﻿using Language.ScriptItems.Formats;
+
+namespace Language.ScriptItems
 {
     public class Defconst<T> : IScriptItem
     {
@@ -16,14 +18,7 @@
 
         public override string ToString()
         {
-            if (Value is int)
-            {
-                return $"(defconst {Name} {Value})";
-            }
-            else
-            {
-                return $"(defconst {Name} \"{Value}\")";
-            }
+            return new DefconstFormat().Format(this);
         }
 
         public void Optimize()

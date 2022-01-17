@@ -24,18 +24,18 @@ namespace Language.Rules
             if (line.StartsWith("#end"))
             {
                 var trackerRuleId = (string)context.DataStack.Pop();
-                var trackerRulePosition = context.Script.IndexOf(context.Script.First(x => (x as Defrule)?.Id == trackerRuleId));
+                var trackerRulePosition = context.Script.Items.IndexOf(context.Script.First(x => (x as Defrule)?.Id == trackerRuleId));
 
-                for (var i = trackerRulePosition + 1; i < context.Script.Count; i++)
+                for (var i = trackerRulePosition + 1; i < context.Script.Items.Count; i++)
                 {
-                    var item = context.Script[i];
+                    var item = context.Script.Items[i];
                     if (item is Defrule)
                     {
                         ((Defrule)item).Compressable = false;
                     }
                 }
 
-                context.Script.RemoveAt(trackerRulePosition);
+                context.Script.Items.RemoveAt(trackerRulePosition);
             }
             else
             {

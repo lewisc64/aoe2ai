@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Language.ScriptItems.Formats;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -17,7 +18,7 @@ namespace Language.ScriptItems
 
         public override string ToString()
         {
-            return $"({Text})";
+            return new OneLineCondition().Format(this);
         }
 
         public virtual Condition Copy()
@@ -34,13 +35,8 @@ namespace Language.ScriptItems
             return new CombinatoryCondition(operation, new[] { conditions.First(), JoinConditions(operation, conditions.Skip(1)) });
         }
 
-        public static Condition Parse(string text, ICombinatoryConditionFormat format = null)
+        public static Condition Parse(string text)
         {
-            if (format == null)
-            {
-                format = CombinatoryCondition.DefaultFormat;
-            }
-
             const string boundaryRegex = @"(?<=[()\s])\b|\b(?=[()\s])";
 
             text = DebracketExpression(text.Trim());
@@ -68,10 +64,7 @@ namespace Language.ScriptItems
                     {
                         var left = string.Join("", segments.Take(i));
                         var right = string.Join("", segments.Skip(i + 1));
-                        return new CombinatoryCondition(binop, new[] { Parse(left, format), Parse(right, format) })
-                        {
-                            Format = format,
-                        };
+                        return new CombinatoryCondition(binop, new[] { Parse(left), Parse(right) });
                     }
                 }
             }
@@ -81,10 +74,7 @@ namespace Language.ScriptItems
                 var segments = Regex.Split(text, boundaryRegex);
                 if (segments.First().Trim() == unop)
                 {
-                    return new CombinatoryCondition(unop, new[] { Parse(string.Join("", segments.Skip(1)), format) })
-                    {
-                        Format = format,
-                    };
+                    return new CombinatoryCondition(unop, new[] { Parse(string.Join("", segments.Skip(1))) });
                 }
             }
 

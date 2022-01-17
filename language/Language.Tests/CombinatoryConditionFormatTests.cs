@@ -1,12 +1,13 @@
 ﻿using Language.ScriptItems;
+using Language.ScriptItems.Formats;
 using Xunit;
 
 namespace Language.Tests
 {
     public class CombinatoryConditionFormatTests
     {
-        private ICombinatoryConditionFormat _oneLine;
-        private ICombinatoryConditionFormat _indented;
+        private IConditionFormat _oneLine;
+        private IConditionFormat _indented;
 
         public CombinatoryConditionFormatTests()
         {
@@ -28,7 +29,7 @@ namespace Language.Tests
   (condition 2)
 )";
 
-            Assert.Equal(expected, _indented.Format("op", conditions));
+            Assert.Equal(expected, _indented.Format(new CombinatoryCondition("op", conditions)));
         }
 
         [Fact]
@@ -42,7 +43,7 @@ namespace Language.Tests
 
             string expected = @"(op(condition 1)(condition 2))";
 
-            Assert.Equal(expected, _oneLine.Format("op", conditions));
+            Assert.Equal(expected, _oneLine.Format(new CombinatoryCondition("op", conditions)));
         }
     }
 }

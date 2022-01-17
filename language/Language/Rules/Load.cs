@@ -46,7 +46,7 @@ namespace Language.Rules
             subcontext.ActionStack.Clear();
             subcontext.ConditionStack.Clear();
             subcontext.DataStack.Clear();
-            subcontext.Script.Clear();
+            subcontext.Script.Items.Clear();
 
             var transpiler = new Transpiler();
             var rules = transpiler.Transpile(content, subcontext);

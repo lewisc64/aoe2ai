@@ -1,4 +1,4 @@
-﻿using Language.Extensions;
+﻿using Language.ScriptItems.Formats;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,11 +9,7 @@ namespace Language.ScriptItems
     {
         public static int MaxRuleSize = 32;
 
-        public static int MaxLineLength = 255;
-
-        public static readonly IDefruleFormat DefaultFormat = new IndentedDefrule();
-
-        public string Id = Guid.NewGuid().ToString();
+        public string Id { get; } = Guid.NewGuid().ToString();
 
         public bool Compressable { get; set; } = true;
 
@@ -24,8 +20,6 @@ namespace Language.ScriptItems
         public List<Condition> Conditions { get; }
 
         public List<Action> Actions { get; }
-
-        public IDefruleFormat Format { get; set; } = DefaultFormat;
 
         public int Length
         {
@@ -65,7 +59,7 @@ namespace Language.ScriptItems
 
         public override string ToString()
         {
-            return Format.Format(Conditions, Actions).Wrap(MaxLineLength);
+            return new OneLineDefrule().Format(this, new OneLineCondition());
         }
 
         public void Optimize()

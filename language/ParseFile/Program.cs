@@ -1,5 +1,6 @@
 ﻿using Language;
 using Language.ScriptItems;
+using Language.ScriptItems.Formats;
 using NLog;
 using NLog.Layouts;
 using NLog.Targets;
@@ -13,16 +14,22 @@ namespace ParseFile
     {
         public static void Main(string[] args)
         {
-            if (args.Length < 3 || args.Contains("-help"))
+            var parsedArgs = new ArgParser(args);
+
+            if (parsedArgs.PositionalArguments.Count != 3 || parsedArgs.PositionalArguments.Contains("help"))
             {
                 Console.WriteLine("Usage:");
-                Console.WriteLine("parsefile.exe INPUT_PATH OUTPUT_FOLDER_PATH AI_NAME");
+                Console.WriteLine("  parsefile.exe INPUT_PATH OUTPUT_FOLDER_PATH AI_NAME");
+                Console.WriteLine("Flags:");
+                Console.WriteLine("  --minify");
                 return;
             }
 
-            var inputPath = new FileInfo(args[0]);
-            var outputPath = new DirectoryInfo(args[1]);
-            var name = args[2];
+            var inputPath = new FileInfo(parsedArgs.PositionalArguments[0]);
+            var outputPath = new DirectoryInfo(parsedArgs.PositionalArguments[1]);
+            var name = parsedArgs.PositionalArguments[2];
+
+            var minify = parsedArgs.Flags.Contains("--minify");
 
             var content = File.ReadAllText(inputPath.FullName);
 
@@ -35,9 +42,21 @@ namespace ParseFile
             {
                 CurrentFileName = inputPath.Name,
                 RootPath = inputPath.DirectoryName,
-                CurrentPath = inputPath.DirectoryName
+                CurrentPath = inputPath.DirectoryName,
             };
+
             var output = transpiler.Transpile(content, context);
+            string outputContent;
+
+            if (minify)
+            {
+                output.InsertLineBreaks = false;
+                outputContent = output.Render(new IScriptItemFormat[] { new OneLineCondition(), new OneLineDefrule() });
+            }
+            else
+            {
+                outputContent = output.Render();
+            }
 
             var aiFilePath = Path.Combine(outputPath.FullName, $"{name}.ai");
             var perFilePath = Path.Combine(outputPath.FullName, $"{name}.per");
@@ -47,7 +66,7 @@ namespace ParseFile
                 File.Create(aiFilePath);
                 Console.WriteLine($"Saved to '{aiFilePath}'");
             }
-            File.WriteAllText(perFilePath, ";Translated by https://github.com/lewisc64/aoe2ai\n" + string.Join("\n", output));
+            File.WriteAllText(perFilePath, $";Translated by https://github.com/lewisc64/aoe2ai{Environment.NewLine}{outputContent}");
             Console.WriteLine($"Saved to '{perFilePath}'");
 
             Analyze(context);

@@ -1,11 +1,12 @@
 ﻿using Language.ScriptItems;
+using Language.ScriptItems.Formats;
 using Xunit;
 
 namespace Language.Tests
 {
     public class ConditionParsingTests
     {
-        ICombinatoryConditionFormat _format;
+        IConditionFormat _format;
 
         public ConditionParsingTests()
         {
@@ -29,7 +30,7 @@ namespace Language.Tests
         [InlineData("goal gl-or 1 or goal gl-and 1", "(or (goal gl-or 1) (goal gl-and 1))")]
         public void Parse_Success(string text, string expected)
         {
-            Assert.Equal(expected, Condition.Parse(text, _format).ToString());
+            Assert.Equal(expected, _format.Format(Condition.Parse(text)));
         }
 
         [Theory]

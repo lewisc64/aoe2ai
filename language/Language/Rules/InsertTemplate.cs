@@ -54,7 +54,7 @@ insert train-unit(unit=""archer-line\"")
             }
 
             var subcontext = context.Copy();
-            subcontext.Script.Clear();
+            subcontext.Script.Items.Clear();
             subcontext.ConditionStack.Clear();
             subcontext.ActionStack.Clear();
             subcontext.DataStack.Clear();
