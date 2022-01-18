@@ -58,18 +58,22 @@ namespace ParseFile
                 outputContent = output.Render();
             }
 
-            var aiFilePath = Path.Combine(outputPath.FullName, $"{name}.ai");
-            var perFilePath = Path.Combine(outputPath.FullName, $"{name}.per");
+            Save(name, outputPath, outputContent);
+            Analyze(context);
+        }
+
+        private static void Save(string name, DirectoryInfo path, string content)
+        {
+            var aiFilePath = Path.Combine(path.FullName, $"{name}.ai");
+            var perFilePath = Path.Combine(path.FullName, $"{name}.per");
 
             if (!File.Exists(aiFilePath))
             {
                 File.Create(aiFilePath);
                 Console.WriteLine($"Saved to '{aiFilePath}'");
             }
-            File.WriteAllText(perFilePath, $";Translated by https://github.com/lewisc64/aoe2ai{Environment.NewLine}{outputContent}");
+            File.WriteAllText(perFilePath, $";Translated by https://github.com/lewisc64/aoe2ai{Environment.NewLine}{content}");
             Console.WriteLine($"Saved to '{perFilePath}'");
-
-            Analyze(context);
         }
 
         private static void Analyze(TranspilerContext context)
