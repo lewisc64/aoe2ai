@@ -1,10 +1,11 @@
 ﻿using Language.ScriptItems;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Language.Rules
 {
     [ActiveRule(10)]
-    public class Order : RuleBase // TODO: prevent two being executed on the same rule pass.
+    public class Order : RuleBase
     {
         public override string Name => "order";
 
@@ -13,52 +14,54 @@ namespace Language.Rules
         public override string Example => "train archer-line => train skirmisher-line";
 
         public Order()
-            : base(@"^(?<first>.+?) *=> *(?<second>.+)$")
+            : base(@"^.+?( *=> *.+)+$")
         {
         }
 
         public override void Parse(string line, TranspilerContext context)
         {
-            var data = GetData(line);
-
-            var first = data["first"].Value;
-            var second = data["second"].Value;
-
+            var segments = line.Split("=>");
             var transpiler = new Transpiler();
-
             var goalNumber = context.CreateGoal();
 
-            var subcontext = context.Copy();
-            subcontext.Script.Items.Clear();
-            subcontext.CurrentFileName = $"{subcontext.CurrentFileName} -> order expression side 1";
+            var items = new List<IScriptItem>();
 
-            var firstRules = transpiler.Transpile(first, subcontext, suppressStackWarnings: true);
-
-            subcontext = context.Copy();
-            subcontext.Script.Items.Clear();
-            subcontext.CurrentFileName = $"{subcontext.CurrentFileName} -> order expression side 2";
-
-            var secondRules = transpiler.Transpile(second, subcontext, suppressStackWarnings: true);
-
-            foreach (var rule in firstRules)
+            for (var i = 0; i < segments.Length; i++)
             {
-                if (rule is Defrule)
+                var segment = segments[i];
+
+                var subcontext = context.Copy();
+                subcontext.Script.Items.Clear();
+                subcontext.CurrentFileName = $"{subcontext.CurrentFileName} -> order expression component '{segment}'";
+
+                var segmentItems = transpiler.Transpile(segment, subcontext);
+
+                context.Goals = subcontext.Goals;
+                context.Constants = subcontext.Constants;
+                context.Timers = subcontext.Timers;
+                context.Templates = subcontext.Templates;
+
+                if (segmentItems.Count(x => x is Defrule) >= 2)
                 {
-                    ((Defrule)rule).Conditions.Add(new Condition($"goal {goalNumber} 0"));
+                    throw new System.InvalidOperationException($"'{segment}' transpiles to more than one defrule, which order does not support.");
+                }
+                else if (segmentItems.Count(x => x is Defrule) == 0)
+                {
+                    throw new System.InvalidOperationException($"'{segment}' does not transpile to any defrules.");
+                }
+
+                foreach (var segmentItem in segmentItems)
+                {
+                    (segmentItem as Defrule)?.Conditions.Add(new Condition($"goal {goalNumber} {i}"));
+                    (segmentItem as Defrule)?.Actions.Add(new Action($"set-goal {goalNumber} {(i + 1) % segments.Length}"));
+                    items.Add(segmentItem);
                 }
             }
-            ((Defrule)firstRules.Last()).Actions.Add(new Action($"set-goal {goalNumber} 1"));
 
-            foreach (var rule in secondRules)
-            {
-                if (rule is Defrule)
-                {
-                    ((Defrule)rule).Conditions.Add(new Condition($"goal {goalNumber} 1"));
-                }
-            }
-            ((Defrule)secondRules.Last()).Actions.Add(new Action($"set-goal {goalNumber} 0"));
+            items.Reverse();
+            items.Insert(0, new Defrule(new[] { "true" }, new[] { $"set-goal {goalNumber} 0", "disable-self" }));
 
-            context.AddToScript(new[] { new Defrule(new[] { "true" }, new[] { $"set-goal {goalNumber} 0", "disable-self" }) }.Concat(secondRules).Concat(firstRules));
+            context.AddToScript(context.ApplyStacks(items));
         }
     }
 }
