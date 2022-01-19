@@ -30,9 +30,9 @@ namespace Language
             string template = null;
 
             var lineNumber = 1;
-            foreach (var line in Regex.Split(source, @"\r?\n").Select(x => x.Trim()))
+            foreach (var line in SplitStatements(source))
             {
-                var lineNoComments = line.Split("//").First().Trim();
+                var lineNoComments = RemoveComments(line);
 
                 if (string.IsNullOrEmpty(lineNoComments))
                 {
@@ -104,6 +104,16 @@ namespace Language
 
             context.OptimizeScript();
             return context.Script;
+        }
+
+        private IEnumerable<string> SplitStatements(string source)
+        {
+            return Regex.Split(source, @"\r?\n|;(?=(?:[^""]*""[^""]*"")*[^""]*$)").Select(x => x.Trim());
+        }
+
+        private string RemoveComments(string line)
+        {
+            return line.Split("//").First().Trim();
         }
     }
 }
