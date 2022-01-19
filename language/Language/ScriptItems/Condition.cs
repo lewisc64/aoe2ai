@@ -110,16 +110,4 @@ namespace Language.ScriptItems
             return expression;
         }
     }
-
-    public static class ConditionExtensions
-    {
-        public static Condition Invert(this Condition condition)
-        {
-            if ((condition as CombinatoryCondition)?.Text == "not")
-            {
-                return ((CombinatoryCondition)condition).Conditions.Single();
-            }
-            return new CombinatoryCondition("not", new[] { condition });
-        }
-    }
 }
