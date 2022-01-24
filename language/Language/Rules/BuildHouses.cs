@@ -30,7 +30,7 @@ namespace Language.Rules
             var conditions = new[]
             {
                 "population-headroom != 0",
-                $"up-pending-objects c: {building} == 0",
+                $"up-pending-objects c: {building} < 2",
                 $"can-build {building}",
                 $"housing-headroom < {headroom}",
             };

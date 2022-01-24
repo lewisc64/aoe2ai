@@ -22,6 +22,8 @@ namespace ParseFile
                 Console.WriteLine("  parsefile.exe INPUT_PATH OUTPUT_FOLDER_PATH AI_NAME");
                 Console.WriteLine("Flags:");
                 Console.WriteLine("  --minify");
+                Console.WriteLine("  --rule-length=16");
+                Console.WriteLine("  --rule-length=32");
                 return;
             }
 
@@ -30,6 +32,11 @@ namespace ParseFile
             var name = parsedArgs.PositionalArguments[2];
 
             var minify = parsedArgs.Flags.Contains("--minify");
+
+            if (parsedArgs.Flags.Any(x => x.StartsWith("--rule-length=")))
+            {
+                Defrule.MaxRuleSize = int.Parse(parsedArgs.Flags.Last(x => x.StartsWith("--rule-length=")).Split("=").Last());
+            }
 
             var content = File.ReadAllText(inputPath.FullName);
 

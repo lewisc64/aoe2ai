@@ -164,8 +164,8 @@ auto balance all
 auto balance wood and food every 30 seconds
 ```
 ## auto expand town size
-Automatically expands the town size based on if a building is meant to be built but there are no villagers to build it.
-Can be used in conjunction with town size attacks modifying only sn-maximum-town-size. Upon activation it will shrink the town size to a minimum once and expand from there.
+Automatically expands town size heuristically based on the number of buildings.
+Can be used in conjunction with town size attacks modifying only sn-maximum-town-size above the maximum supplied.
 
 Affects the following sn's:
  - sn-maximum-town-size
@@ -175,6 +175,7 @@ Affects the following sn's:
 ### Usage
 ```
 auto expand town size
+auto expand town size to 30
 ```
 ## block respond
 When the AI sees the specified amount, the body is allowed to trigger. If building/unit is unspecified, unit is assumed. If amount is unspecified, 1 is assumed.
@@ -279,6 +280,7 @@ Includes rules to manage open diplomacy games. Neutrals everyone, makes one ally
 ### Usage
 ```
 do basic diplomacy
+do basic diplomacy without backstabbing
 ```
 ## do once
 Adds 'disable-self' to the action stack. Makes sure each rule in the block individually runs only once.

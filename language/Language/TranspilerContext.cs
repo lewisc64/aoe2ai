@@ -38,10 +38,10 @@ namespace Language
 
         public IScriptItem ApplyStacks(IScriptItem item)
         {
-            if (item is Defrule)
+            if (item is Defrule defrule)
             {
-                ((Defrule)item).Conditions.AddRange(ConditionStack.Select(x => x.Copy()));
-                ((Defrule)item).Actions.AddRange(ActionStack.Select(x => x.Copy()));
+                defrule.Conditions.AddRange(ConditionStack.Select(x => x.Copy()));
+                defrule.Actions.AddRange(ActionStack.Select(x => x.Copy()));
             }
             return item;
         }
@@ -53,12 +53,12 @@ namespace Language
                 new[] { new Action($"up-jump-rule {items.Count(x => x is Defrule)}") })
             { Compressable = false, Splittable = false });
 
-            foreach (var rule in items)
+            foreach (var item in items)
             {
-                if (rule is Defrule)
+                if (item is Defrule defrule)
                 {
-                    ((Defrule)rule).Compressable = false;
-                    ((Defrule)rule).Splittable = false;
+                    defrule.Compressable = false;
+                    defrule.Splittable = false;
                 }
             }
 
@@ -120,12 +120,20 @@ namespace Language
             var i = 0;
             while (i < Script.Items.Count)
             {
-                var rule = Script.Items[i] as Defrule;
-                if (rule != null)
+                if (Script.Items[i] is Defrule rule)
                 {
                     if (rule.IsTooLong && rule.Splittable)
                     {
-                        Script.Items.Insert(i + 1, rule.Split());
+                        if (rule.Conditions.Count > rule.Actions.Count)
+                        {
+                            Script.Items.RemoveAt(i);
+                            Script.Items.InsertRange(i, rule.SplitByConditions(CreateGoal()));
+                        }
+                        else
+                        {
+                            Script.Items.RemoveAt(i);
+                            Script.Items.InsertRange(i, rule.SplitByActions());
+                        }
                     }
                     else
                     {
@@ -144,9 +152,7 @@ namespace Language
             i = 0;
             while (i < Script.Items.Count - 1)
             {
-                var rule = Script.Items[i] as Defrule;
-                var otherRule = Script.Items[i + 1] as Defrule;
-                if (rule != null && otherRule != null)
+                if (Script.Items[i] is Defrule rule && Script.Items[i + 1] is Defrule otherRule)
                 {
                     if (rule.CanMergeWith(otherRule))
                     {
@@ -168,7 +174,7 @@ namespace Language
 
         public TranspilerContext Copy()
         {
-            var result = new TranspilerContext
+            return new TranspilerContext
             {
                 ConditionStack = new Stack<Condition>(ConditionStack.Select(x => x.Copy())),
                 ActionStack = new Stack<Action>(ActionStack.Select(x => x.Copy())),
@@ -182,8 +188,6 @@ namespace Language
                 CurrentPath = CurrentPath,
                 CurrentFileName = CurrentFileName,
             };
-
-            return result;
         }
     }
 }

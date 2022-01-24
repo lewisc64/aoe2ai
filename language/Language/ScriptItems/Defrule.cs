@@ -1,4 +1,5 @@
-﻿using Language.ScriptItems.Formats;
+﻿using Language.Extensions;
+using Language.ScriptItems.Formats;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,7 +26,15 @@ namespace Language.ScriptItems
         {
             get
             {
-                return Conditions.Select(x => x.Length).Sum() + LengthOfActions;
+                return LengthOfConditions + LengthOfActions;
+            }
+        }
+
+        public int LengthOfConditions
+        {
+            get
+            {
+                return Conditions.Select(x => x.Length).Sum();
             }
         }
 
@@ -64,6 +73,19 @@ namespace Language.ScriptItems
 
         public void Optimize()
         {
+            var i = 0;
+            while (i < Conditions.Count)
+            {
+                if (Conditions[i] is CombinatoryCondition combCondition && combCondition.Text == "and")
+                {
+                    Conditions.RemoveAt(i);
+                    Conditions.InsertRange(i, combCondition.Conditions);
+                }
+                else
+                {
+                    i++;
+                }
+            }
             if (Conditions.Count > 1)
             {
                 Conditions.RemoveAll(x => x.Text == "true");
@@ -80,12 +102,6 @@ namespace Language.ScriptItems
                     Actions.Add(new Action("do-nothing"));
                 }
             }
-            if (Conditions.Any(x => x.Text == "false"))
-            {
-                // might not be able to do this due to some conditions changing the state of goals
-                // TODO: investigate
-                // MarkedForDeletion = true;
-            }
             while (Actions.Count(x => x.Text == "disable-self") >= 2)
             {
                 Actions.Remove(Actions.First(x => x.Text == "disable-self"));
@@ -96,29 +112,77 @@ namespace Language.ScriptItems
             }
         }
 
-        public Defrule Split()
+        public IEnumerable<Defrule> SplitByActions()
         {
             if (!Splittable)
             {
                 throw new InvalidOperationException("Rule is not splittable.");
             }
-            if (Actions.Count <= 1)
+
+            var filteredActions = Actions
+                .Where(x => x.Text != "disable-self" && x.Text != "do-nothing")
+                .ToList();
+
+            if (filteredActions.Count <= 1)
             {
                 throw new InvalidOperationException("Not enough actions to split.");
             }
 
-            var applyDisableSelf = Actions.RemoveAll(x => x.Text == "disable-self") >= 1;
-
-            var rule = new Defrule(Conditions.Select(x => x.Copy()), Actions.GetRange(Actions.Count / 2, Actions.Count - Actions.Count / 2));
-            Actions.RemoveRange(Actions.Count / 2, Actions.Count - Actions.Count / 2);
-
-            if (applyDisableSelf)
+            var rule1 = new Defrule(Conditions.Select(x => x.Copy()), filteredActions.GetRange(0, filteredActions.Count / 2))
             {
-                Actions.Add(new Action("disable-self"));
-                rule.Actions.Add(new Action("disable-self"));
+                Compressable = false,
+            };
+            var rule2 = new Defrule(Conditions.Select(x => x.Copy()), filteredActions.GetRange(filteredActions.Count / 2, filteredActions.Count - filteredActions.Count / 2))
+            {
+                Compressable = false,
+            };
+
+            if (Actions.Any(x => x.Text == "disable-self"))
+            {
+                rule1.Actions.Add(new Action("disable-self"));
+                rule2.Actions.Add(new Action("disable-self"));
             }
 
-            return rule;
+            return new[] { rule1, rule2 };
+        }
+
+        public IEnumerable<Defrule> SplitByConditions(int goalNumber)
+        {
+            if (!Splittable)
+            {
+                throw new InvalidOperationException("Rule is not splittable.");
+            }
+
+            var filteredConditions = Conditions
+                .Where(x => x.Text != "true" && x.Text != "false")
+                .ToList();
+
+            if (filteredConditions.Count <= 1)
+            {
+                throw new InvalidOperationException("Not enough top-level conditions to split.");
+            }
+
+            var firstHalf = filteredConditions.GetRange(0, filteredConditions.Count / 2 + 1);
+            var secondHalf = filteredConditions.GetRange(filteredConditions.Count / 2 + 1, filteredConditions.Count - filteredConditions.Count / 2 - 1);
+
+            return new[]
+            {
+                new Defrule(new[] { "true" }, new[] { $"set-goal {goalNumber} 0" })
+                {
+                    Compressable = false,
+                    Splittable = false,
+                },
+                new Defrule(firstHalf.Select(x => x.Copy()), new[] { new Action($"set-goal {goalNumber} 1") })
+                {
+                    Compressable = false,
+                    Splittable = false,
+                },
+                new Defrule(new[] { new Condition($"goal {goalNumber} 1") }.Concat(secondHalf), Actions.Select(x => x.Copy()))
+                {
+                    Compressable = false,
+                    Splittable = false,
+                },
+            };
         }
 
         public void MergeIn(Defrule rule)

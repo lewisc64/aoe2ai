@@ -34,7 +34,7 @@ namespace Language.Rules
                 subcontext.Script.Items.Clear();
                 subcontext.CurrentFileName = $"{subcontext.CurrentFileName} -> order expression component '{segment}'";
 
-                var segmentItems = transpiler.Transpile(segment, subcontext);
+                var segmentItems = transpiler.Transpile(segment, subcontext, suppressStackWarnings: true);
 
                 context.Goals = subcontext.Goals;
                 context.Constants = subcontext.Constants;
