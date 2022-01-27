@@ -34,9 +34,6 @@ auto balance wood and food every 30 seconds";
             var interval = data["time"].Value.ReplaceIfNullOrEmpty("60");
 
             var rules = new List<Defrule>();
-
-
-
             var timer = context.CreateTimer();
 
             rules.Add(new Defrule(new[] { "true" }, new[] { $"enable-timer {timer} {interval}", "disable-self" }));
@@ -76,8 +73,17 @@ auto balance wood and food every 30 seconds";
             {
                 var rule = new Defrule();
 
-                var aboveModAmount = amount / 2 / aboveThreshold.Count();
-                var belowModAmount = amount / 2 / belowThreshold.Count();
+                var halfAmount = amount / 2;
+                var above = aboveThreshold.Count();
+                var below = belowThreshold.Count();
+
+                var aboveModAmount = halfAmount / above - halfAmount % below;
+                var belowModAmount = halfAmount / below - halfAmount % above;
+
+                if (aboveModAmount * above != belowModAmount * below)
+                {
+                    throw new System.InvalidOperationException("Failed to split resources evenly.");
+                }
 
                 foreach (var goalNumber in aboveThreshold)
                 {

@@ -99,7 +99,7 @@ auto expand town size to 30";
                 new[]
                 {
                     $"up-modify-goal {desiredSizeGoal} c:/ 3",
-                    $"up-modify-goal {desiredSizeGoal} c:+ 5",
+                    $"up-modify-goal {desiredSizeGoal} c:+ 8",
                     $"up-modify-goal {desiredSizeGoal} c:max {MinimumTownSize}",
                     $"up-modify-goal {desiredSizeGoal} c:min {maximum}",
                     $"up-modify-sn sn-minimum-town-size g:= {desiredSizeGoal}",
