@@ -239,6 +239,17 @@ do basic diplomacy without backstabbing";
                     }));
             }
 
+            // always ally self
+            rules.Add(new Defrule(
+                new[]
+                {
+                    "true",
+                },
+                new[]
+                {
+                    "set-stance my-player-number ally",
+                }));
+
             context.AddToScript(context.ApplyStacks(rules));
         }
     }
