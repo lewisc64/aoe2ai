@@ -54,16 +54,6 @@ resign
 ```
 drop off food
 ```
-## build safety mill
-### Example
-```
-build safety mill
-```
-## build safety mill
-### Example
-```
-build safety mill
-```
 ## delete walls
 ### Example
 ```

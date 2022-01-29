@@ -62,7 +62,7 @@ build archery-range with wood escrow";
             }
             else
             {
-                actions.Add($"up-set-placement-data {(forward ? "any-enemy" : "my-player-number")} {near} c: 0");
+                actions.Add($"up-set-placement-data {(forward ? "any-enemy" : "my-player-number")} {near} c: 4");
                 actions.Add($"up-build place-{(forward ? "forward" : "control")} 0 c: {building}");
                 compressable = false;
             }

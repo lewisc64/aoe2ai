@@ -121,18 +121,6 @@ namespace Language.Rules
                         "up-drop-resources deer-food c: 20",
                         "up-drop-resources boar-food c: 10" }));
 
-            rules.Add(new Snippet("build safety mill",
-                new[] { "can-build mill",
-                        "building-type-count-total mill == 0",
-                        "game-time >= 360" },
-                new[] { "build mill" }));
-
-            rules.Add(new Snippet("build safety mill",
-                new[] { "can-build mill",
-                        "building-type-count-total mill == 0",
-                        "game-time >= 360" },
-                new[] { "build mill" }));
-
             rules.Add(new Snippet("delete walls",
                 new[] { "true" },
                 new[] { "delete-building stone-wall-line",

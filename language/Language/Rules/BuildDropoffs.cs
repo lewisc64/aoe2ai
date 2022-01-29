@@ -1,4 +1,6 @@
 ﻿using Language.ScriptItems;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Language.Rules
 {
@@ -69,10 +71,9 @@ build lumber camps maintaining 4 tiles";
                 throw new System.InvalidOperationException("Unknown dropoff type.");
             }
 
-            var conditions = new[]
+            var conditions = new List<Condition>
             {
                 new Condition($"dropsite-min-distance {resource} > {tiles}"),
-                new Condition($"dropsite-min-distance {resource} != -1"),
                 new Condition($"resource-found {resource}"),
                 new Condition($"up-pending-objects c: {building} == 0"),
                 new Condition($"can-build {building}"),
@@ -80,7 +81,26 @@ build lumber camps maintaining 4 tiles";
 
             if (building == "mining-camp" && resource == "gold")
             {
-                conditions[0] = Condition.Parse($"{conditions[0]} or unit-type-count {Game.MaleGoldMinerId} == 0 and unit-type-count {Game.FemaleGoldMinerId} == 0 and strategic-number sn-gold-gatherer-percentage > 0");
+                conditions[0] = new CombinatoryCondition(
+                    "or",
+                    new[]
+                    {
+                        conditions.First(),
+                        Condition.Parse($"unit-type-count {Game.MaleGoldMinerId} == 0 and unit-type-count {Game.FemaleGoldMinerId} == 0 and strategic-number sn-gold-gatherer-percentage > 0"),
+                    });
+            }
+
+            if (building == "mill" || building == "lumber-camp")
+            {
+                conditions[0] = Condition.JoinConditions("and", conditions.GetRange(0, 2));
+                conditions.RemoveAt(1);
+                conditions[0] = new CombinatoryCondition(
+                    "or",
+                    new[]
+                    {
+                        conditions.First(),
+                        Condition.Parse($"game-time >= 360 and building-type-count-total {building} == 0"),
+                    });
             }
 
             var rule = new Defrule(conditions, new[] { new Action($"build {building}") });
