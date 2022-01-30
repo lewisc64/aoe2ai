@@ -89,8 +89,6 @@ namespace Language.Rules
                         "set-strategic-number sn-local-targeting-mode 1",
                         "set-strategic-number sn-retask-gather-amount 0",
                         "set-strategic-number sn-target-evaluation-siege-weapon 500",
-                        "set-strategic-number sn-target-evaluation-boat 500",
-                        "set-strategic-number sn-ttkfactor-scalar 500",
                         "set-strategic-number sn-percent-enemy-sighted-response 100",
                         "set-strategic-number sn-task-ungrouped-soldiers 0",
                         "set-strategic-number sn-gather-defense-units 1",
@@ -175,9 +173,16 @@ namespace Language.Rules
                     new[] { "dropsite-min-distance live-boar < 4",
                             "strategic-number sn-minimum-number-hunters != 8" },
                     new[] {
+                        "up-drop-resources c: sheep-food 0",
                         "up-request-hunters c: 8",
                         "set-strategic-number sn-minimum-number-hunters 8",
                     }),
+                new Snippet(
+                    null,
+                    new[] { "food-amount < 50",
+                            "up-pending-objects c: villager <= 1",
+                            "strategic-number sn-minimum-number-hunters == 8" },
+                    new[] { "up-drop-resources c: boar-food 10" }),
                 new Snippet(
                     null,
                     new[] {

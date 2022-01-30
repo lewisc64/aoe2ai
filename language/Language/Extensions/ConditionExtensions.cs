@@ -1,15 +1,29 @@
 ﻿using Language.ScriptItems;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Language.Extensions
 {
     public static class ConditionExtensions
     {
+        private static readonly Dictionary<string, string> InvertMappings = new Dictionary<string, string>
+        {
+            { "and", "nand" },
+            { "nand", "and" },
+            { "or", "nor" },
+            { "nor", "or" },
+        };
+
         public static Condition Invert(this Condition condition)
         {
-            if ((condition as CombinatoryCondition)?.Text == "not")
+            var combCondition = condition as CombinatoryCondition;
+            if (combCondition?.Text == "not")
             {
                 return ((CombinatoryCondition)condition).Conditions.Single();
+            }
+            else if (combCondition != null && InvertMappings.ContainsKey(combCondition?.Text))
+            {
+                return new CombinatoryCondition(InvertMappings[combCondition.Text], combCondition.Conditions);
             }
             return new CombinatoryCondition("not", new[] { condition });
         }

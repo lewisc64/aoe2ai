@@ -11,7 +11,7 @@ namespace Language.Rules
 
         private const int DefaultMaximum = 30;
 
-        private static readonly IEnumerable<string> TownBuildings = new[]
+        private static readonly IEnumerable<string> RelevantBuildings = new[]
         {
             "farm",
             "archery-range",
@@ -77,7 +77,7 @@ auto expand town size to 30";
                 new Defrule(new[] { "true" }, new[] { $"set-goal {desiredSizeGoal} 0" }),
             };
 
-            foreach (var building in TownBuildings)
+            foreach (var building in RelevantBuildings)
             {
                 rules.Add(new Defrule(
                     new[]

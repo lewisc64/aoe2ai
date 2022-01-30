@@ -49,7 +49,14 @@ namespace Language.Rules
 
                 foreach (var condition in conditions)
                 {
-                    context.ConditionStack.Push(condition.Invert());
+                    if (condition is CombinatoryCondition combCondition && combCondition.Text == "or")
+                    {
+                         context.ConditionStack.Push(condition.DeMorgans().Invert());
+                    }
+                    else
+                    {
+                        context.ConditionStack.Push(condition.Invert());
+                    }
                     context.DataStack.Push(condition);
                 }
 

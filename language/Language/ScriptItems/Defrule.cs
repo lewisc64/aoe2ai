@@ -107,7 +107,7 @@ namespace Language.ScriptItems
             }
             if (IsTooLong)
             {
-                throw new InvalidOperationException($"Rule is overlength. Length: {Length}, Maximum length: {MaxRuleSize}.");
+                throw new InvalidOperationException($"Rule is overlength. Length: {Length}, Maximum length: {MaxRuleSize}: {this}");
             }
         }
 

@@ -8,7 +8,7 @@ namespace Language.ScriptItems
     {
         public IEnumerable<Condition> Conditions { get; }
 
-        public override int Length => Conditions.Select(x => x.Length).Sum();
+        public override int Length => Conditions.Select(x => x.Length).Sum() + 1;
 
         public CombinatoryCondition(string text, IEnumerable<Condition> conditions)
             : base(text)
