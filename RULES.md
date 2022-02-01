@@ -154,8 +154,7 @@ auto balance all
 auto balance wood and food every 30 seconds
 ```
 ## auto expand town size
-Automatically expands town size heuristically based on the number of buildings.
-Can be used in conjunction with town size attacks modifying only sn-maximum-town-size above the maximum supplied.
+Automatically expands town size. Must be below any builds that it needs to affect. Any build rules below this will be placed at the given maximum.
 
 Affects the following sn's:
  - sn-maximum-town-size

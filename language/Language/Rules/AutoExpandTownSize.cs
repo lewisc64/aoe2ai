@@ -1,43 +1,31 @@
 ﻿using Language.Extensions;
 using Language.ScriptItems;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Language.Rules
 {
     [ActiveRule]
     public class AutoExpandTownSize : RuleBase
     {
+        private static readonly string[] IgnoredBuildings = new[]
+        {
+            "farm",
+            "lumber-camp",
+            "mining-camp",
+            "mill",
+            "dock",
+        };
+
         private const int MinimumTownSize = 8;
 
         private const int DefaultMaximum = 30;
 
-        private static readonly IEnumerable<string> RelevantBuildings = new[]
-        {
-            "farm",
-            "archery-range",
-            "barracks",
-            "blacksmith",
-            "bombard-tower",
-            "castle",
-            "guard-tower",
-            "house",
-            "keep",
-            "market",
-            "monastery",
-            "outpost",
-            "siege-workshop",
-            "stable",
-            "town-center",
-            "university",
-            "watch-tower",
-            "watch-tower-line",
-            "wonder",
-        };
+        private const int Increment = 4;
 
         public override string Name => "auto expand town size";
 
-        public override string Help => @"Automatically expands town size heuristically based on the number of buildings.
-Can be used in conjunction with town size attacks modifying only sn-maximum-town-size above the maximum supplied.
+        public override string Help => @"Automatically expands town size. Must be below any builds that it needs to affect. Any build rules below this will be placed at the given maximum.
 
 Affects the following sn's:
  - sn-maximum-town-size
@@ -57,8 +45,15 @@ auto expand town size to 30";
         {
             var maximum = GetData(line)["maximum"].Value.ReplaceIfNullOrEmpty(DefaultMaximum.ToString());
 
-            var buildingCountGoal = context.CreateGoal();
-            var desiredSizeGoal = context.CreateGoal();
+            var hasBuiltBuildingGoal = context.CreateGoal();
+
+            foreach (var item in context.Script)
+            {
+                if (item is Defrule rule && rule.Actions.Any(x => x.Text.StartsWith("build ") && !IgnoredBuildings.Any(y => x.Text.EndsWith($" {y}"))))
+                {
+                    rule.Actions.Add(new Action($"set-goal {hasBuiltBuildingGoal} 1"));
+                }
+            }
 
             var rules = new List<Defrule>()
             {
@@ -68,46 +63,37 @@ auto expand town size to 30";
                     },
                     new[]
                     {
+                        $"set-strategic-number sn-maximum-town-size {maximum}",
                         $"set-strategic-number sn-minimum-town-size {MinimumTownSize}",
-                        $"set-strategic-number sn-maximum-town-size {MinimumTownSize}",
-                        $"set-strategic-number sn-safe-town-size {MinimumTownSize}",
-                        $"set-strategic-number sn-maximum-food-drop-distance {MinimumTownSize}",
+                        $"set-strategic-number sn-safe-town-size {maximum}",
+                        $"set-strategic-number sn-maximum-food-drop-distance {maximum}",
                         "disable-self"
                     }),
-                new Defrule(new[] { "true" }, new[] { $"set-goal {desiredSizeGoal} 0" }),
-            };
-
-            foreach (var building in RelevantBuildings)
-            {
-                rules.Add(new Defrule(
+                new Defrule(
                     new[]
                     {
-                        "true"
+                        $"strategic-number sn-maximum-town-size < {maximum}",
                     },
                     new[]
                     {
-                        $"up-get-fact building-type-count {building} {buildingCountGoal}",
-                        $"up-modify-goal {desiredSizeGoal} g:+ {buildingCountGoal}",
-                    }));
-            }
-
-            rules.Add(new Defrule(
-                new[]
-                {
-                    $"strategic-number sn-maximum-town-size <= {maximum}",
-                },
-                new[]
-                {
-                    $"up-modify-goal {desiredSizeGoal} c:/ 3",
-                    $"up-modify-goal {desiredSizeGoal} c:+ 8",
-                    $"up-modify-goal {desiredSizeGoal} c:max {MinimumTownSize}",
-                    $"up-modify-goal {desiredSizeGoal} c:min {maximum}",
-                    $"up-modify-sn sn-minimum-town-size g:= {desiredSizeGoal}",
-                    $"up-modify-sn sn-minimum-town-size c:min {maximum}",
-                    "up-modify-sn sn-maximum-town-size s:= sn-minimum-town-size",
-                    "up-modify-sn sn-safe-town-size s:= sn-minimum-town-size",
-                    "up-modify-sn sn-maximum-food-drop-distance s:= sn-minimum-town-size",
-                }));
+                        $"up-modify-sn sn-maximum-town-size c:+ {Increment}",
+                        $"up-modify-sn sn-maximum-town-size c:min {maximum}",
+                        $"set-strategic-number sn-minimum-town-size {MinimumTownSize}",
+                        $"set-strategic-number sn-safe-town-size {maximum}",
+                        $"set-strategic-number sn-maximum-food-drop-distance {maximum}",
+                    }),
+                new Defrule(
+                    new[]
+                    {
+                        $"strategic-number sn-maximum-town-size <= {maximum}",
+                        $"goal {hasBuiltBuildingGoal} 1",
+                    },
+                    new[]
+                    {
+                        "up-modify-sn sn-maximum-town-size s:= sn-minimum-town-size",
+                        $"set-goal {hasBuiltBuildingGoal} 0",
+                    }),
+            };
 
             context.AddToScript(context.ApplyStacks(rules));
         }
