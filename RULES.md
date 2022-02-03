@@ -161,6 +161,8 @@ Affects the following sn's:
  - sn-minimum-town-size
  - sn-safe-town-size
  - sn-maximum-food-drop-distance
+
+This will disturb any town size attacks because it takes absolute control over the town size. Disable this during TSA.
 ### Usage
 ```
 auto expand town size

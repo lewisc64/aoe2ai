@@ -31,7 +31,9 @@ Affects the following sn's:
  - sn-maximum-town-size
  - sn-minimum-town-size
  - sn-safe-town-size
- - sn-maximum-food-drop-distance";
+ - sn-maximum-food-drop-distance
+
+This will disturb any town size attacks because it takes absolute control over the town size. Disable this during TSA.";
 
         public override string Usage => @"auto expand town size
 auto expand town size to 30";
@@ -46,6 +48,7 @@ auto expand town size to 30";
             var maximum = GetData(line)["maximum"].Value.ReplaceIfNullOrEmpty(DefaultMaximum.ToString());
 
             var hasBuiltBuildingGoal = context.CreateGoal();
+            var didResetGoal = context.CreateGoal();
 
             foreach (var item in context.Script)
             {
@@ -67,12 +70,13 @@ auto expand town size to 30";
                         $"set-strategic-number sn-minimum-town-size {MinimumTownSize}",
                         $"set-strategic-number sn-safe-town-size {maximum}",
                         $"set-strategic-number sn-maximum-food-drop-distance {maximum}",
+                        $"set-goal {didResetGoal} 0",
                         "disable-self"
                     }),
                 new Defrule(
                     new[]
                     {
-                        $"strategic-number sn-maximum-town-size < {maximum}",
+                        "true",
                     },
                     new[]
                     {
@@ -85,12 +89,30 @@ auto expand town size to 30";
                 new Defrule(
                     new[]
                     {
-                        $"strategic-number sn-maximum-town-size <= {maximum}",
+                        $"goal {hasBuiltBuildingGoal} 0",
+                    },
+                    new[]
+                    {
+                        $"set-goal {didResetGoal} 0",
+                    }),
+                new Defrule(
+                    new[]
+                    {
                         $"goal {hasBuiltBuildingGoal} 1",
+                        $"goal {didResetGoal} 0",
                     },
                     new[]
                     {
                         "up-modify-sn sn-maximum-town-size s:= sn-minimum-town-size",
+                        $"set-goal {didResetGoal} 1",
+                    }),
+                new Defrule(
+                    new[]
+                    {
+                        "true",
+                    },
+                    new[]
+                    {
                         $"set-goal {hasBuiltBuildingGoal} 0",
                     }),
             };
