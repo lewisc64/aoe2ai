@@ -61,7 +61,7 @@ namespace Language.Rules
                 new[] {
                     "players-building-type-count any-ally market >= 1",
                     "can-build market",
-                    "building-type-count-total market < 1",
+                    "building-type-count-total market < 2",
                 },
                 new[] {
                     "build market",

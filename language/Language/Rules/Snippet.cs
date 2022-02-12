@@ -173,9 +173,8 @@ namespace Language.Rules
                     new[] { "dropsite-min-distance live-boar < 4",
                             "strategic-number sn-minimum-number-hunters != 8" },
                     new[] {
-                        "up-drop-resources c: sheep-food 0",
-                        "up-request-hunters c: 8",
                         "set-strategic-number sn-minimum-number-hunters 8",
+                        "up-drop-resources c: sheep-food 0",
                     }),
                 new Snippet(
                     null,
@@ -187,18 +186,13 @@ namespace Language.Rules
                     null,
                     new[] {
                         new Condition("strategic-number sn-minimum-number-hunters == 8"),
+                        new Condition("dropsite-min-distance live-boar > 4"),
                         new CombinatoryCondition(
-                            "and",
+                            "or",
                             new[]
                             {
-                                new Condition("dropsite-min-distance live-boar > 4"),
-                                new CombinatoryCondition(
-                                    "or",
-                                    new[]
-                                    {
-                                        new Condition("dropsite-min-distance boar-food > 4"),
-                                        new Condition("dropsite-min-distance boar-food == -1"),
-                                    }),
+                                new Condition("dropsite-min-distance boar-food > 4"),
+                                new Condition("dropsite-min-distance boar-food == -1"),
                             }),
                     },
                     new[] {
