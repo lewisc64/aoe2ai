@@ -8,7 +8,7 @@ namespace Language.Rules
     {
         public override string Name => "do basic diplomacy";
 
-        public override string Help => "Includes rules to manage open diplomacy games. Neutrals everyone, makes one ally, makes one enemy. Will set an attacking player to enemy.";
+        public override string Help => "Includes rules to manage open diplomacy games. Tries to maintain one enemy.";
 
         public override string Usage => @"do basic diplomacy
 do basic diplomacy without backstabbing";
@@ -92,6 +92,7 @@ do basic diplomacy without backstabbing";
                         $"random-number == {player}",
                         $"goal {enemyCountGoal} 0",
                         $"stance-toward {player} neutral",
+                        $"players-stance {player} ally",
                         $"player-in-game {player}",
                     },
                     new[]
@@ -100,7 +101,6 @@ do basic diplomacy without backstabbing";
                     }));
             }
 
-            // don't make more than one ally if we aren't backstabbing
             if (doBackstabbing)
             {
                 // still no enemies, backstab an ally.
@@ -119,34 +119,74 @@ do basic diplomacy without backstabbing";
                             $"set-stance {player} enemy",
                         }));
                 }
-
-                // if we have an enemy, ally neutral players who ally us.
+            }
+            else
+            {
+                // still no enemies, backstab an ally, but do not betray our last ally.
                 for (var player = 1; player <= 8; player++)
                 {
                     stanceChangeRules.Add(new Defrule(
                         new[]
                         {
-                            $"not (goal {enemyCountGoal} 0)",
-                            $"players-stance {player} ally",
-                            $"stance-toward {player} neutral",
+                            $"random-number == {player}",
+                            $"goal {enemyCountGoal} 0",
+                            $"goal {neutralCountGoal} 0",
+                            $"up-compare-goal {allyCountGoal} >= 2",
                             $"player-in-game {player}",
                         },
                         new[]
                         {
-                            $"set-stance {player} ally",
+                            $"set-stance {player} enemy",
                         }));
                 }
             }
 
-            // no allies, ally somone who has allied us.
+            // if we have an enemy, ally all non-hostile neutrals.
             for (var player = 1; player <= 8; player++)
             {
                 stanceChangeRules.Add(new Defrule(
                     new[]
                     {
                         $"random-number == {player}",
-                        $"goal {allyCountGoal} 0",
-                        "players-stance any-neutral ally",
+                        $"not (goal {enemyCountGoal} 0)",
+                        $"stance-toward {player} neutral",
+                        $"not (players-stance {player} enemy)",
+                        $"player-in-game {player}",
+                    },
+                    new[]
+                    {
+                        $"set-stance {player} ally",
+                    }));
+            }
+
+            // try to ally enemies if we have more than one enemy (but only once per player).
+            // threat-player checks below will set them back to enemy if they decline.
+            for (var player = 1; player <= 8; player++)
+            {
+                stanceChangeRules.Add(new Defrule(
+                    new[]
+                    {
+                        $"random-number == {player}",
+                        $"up-compare-goal {enemyCountGoal} >= 2",
+                        $"stance-toward {player} enemy",
+                        $"players-stance {player} enemy",
+                        $"player-in-game {player}",
+                    },
+                    new[]
+                    {
+                        $"set-stance {player} ally",
+                        "disable-self",
+                    }));
+            }
+
+            // accept enemy alliance requests if we have more than one enemy
+            for (var player = 1; player <= 8; player++)
+            {
+                stanceChangeRules.Add(new Defrule(
+                    new[]
+                    {
+                        $"random-number == {player}",
+                        $"up-compare-goal {enemyCountGoal} >= 2",
                         $"not (stance-toward {player} ally)",
                         $"players-stance {player} ally",
                         $"player-in-game {player}",
@@ -157,21 +197,20 @@ do basic diplomacy without backstabbing";
                     }));
             }
 
-            // still no allies, ally a neutral
+            // enemy neutrals who enemy us.
             for (var player = 1; player <= 8; player++)
             {
                 stanceChangeRules.Add(new Defrule(
                     new[]
                     {
                         $"random-number == {player}",
-                        $"goal {allyCountGoal} 0",
-                        "players-stance any-neutral neutral",
                         $"stance-toward {player} neutral",
+                        $"players-stance {player} enemy",
                         $"player-in-game {player}",
                     },
                     new[]
                     {
-                        $"set-stance {player} ally",
+                        $"set-stance {player} enemy",
                     }));
             }
 
@@ -212,6 +251,7 @@ do basic diplomacy without backstabbing";
                     }));
             }
 
+            var threatTimeGoal = context.CreateGoal();
             var threatPlayerGoal = context.CreateGoal();
 
             rules.Add(new Defrule(
@@ -221,7 +261,7 @@ do basic diplomacy without backstabbing";
                 },
                 new[]
                 {
-                    $"up-get-threat-data -1 {threatPlayerGoal} -1 -1",
+                    $"up-get-threat-data {threatTimeGoal} {threatPlayerGoal} -1 -1",
                 }));
 
             // enemy those who attack us
@@ -231,6 +271,7 @@ do basic diplomacy without backstabbing";
                     new[]
                     {
                         $"goal {threatPlayerGoal} {player}",
+                        $"up-compare-goal {threatTimeGoal} c:< 1000",
                         $"not (stance-toward {player} enemy)",
                     },
                     new[]

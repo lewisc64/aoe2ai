@@ -37,12 +37,10 @@ namespace Language.Rules
                 var goalNumber = context.CreateGoal();
                 rule.Actions.Add(new Action($"up-find-player {playerType} find-{FindTypes[findType]} {goalNumber}"));
                 rule.Actions.Add(new Action($"up-modify-sn sn-target-player-number g:= {goalNumber}"));
-                rule.Actions.Add(new Action($"up-modify-sn sn-focus-player-number g:= {goalNumber}"));
             }
             else
             {
                 rule.Actions.Add(new Action("set-strategic-number sn-target-player-number 0"));
-                rule.Actions.Add(new Action("set-strategic-number sn-focus-player-number 0"));
             }
 
             context.AddToScript(context.ApplyStacks(rule));

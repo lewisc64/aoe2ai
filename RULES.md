@@ -267,7 +267,7 @@ distribute 10 villagers from wood and food to gold
 distribute 8 villagers from food to gold and stone using modifiers
 ```
 ## do basic diplomacy
-Includes rules to manage open diplomacy games. Neutrals everyone, makes one ally, makes one enemy. Will set an attacking player to enemy.
+Includes rules to manage open diplomacy games. Tries to maintain one enemy.
 ### Usage
 ```
 do basic diplomacy
