@@ -1,4 +1,5 @@
-﻿using Language.ScriptItems;
+﻿using Language.Extensions;
+using Language.ScriptItems;
 using System.Collections.Generic;
 
 namespace Language.Rules
@@ -71,15 +72,15 @@ do basic diplomacy without backstabbing";
                 stanceChangeRules.Add(new Defrule(
                     new[]
                     {
-                        $"random-number == {player}",
-                        $"goal {enemyCountGoal} 0",
-                        $"stance-toward {player} neutral",
-                        $"not (players-stance {player} ally)",
-                        $"player-in-game {player}",
+                        new Condition($"random-number == {player}"),
+                        new Condition($"goal {enemyCountGoal} 0"),
+                        new Condition($"stance-toward {player} neutral"),
+                        new Condition($"players-stance {player} ally").Invert(),
+                        new Condition($"player-in-game {player}"),
                     },
                     new[]
                     {
-                        $"set-stance {player} enemy",
+                        new Action($"set-stance {player} enemy"),
                     }));
             }
 
@@ -147,15 +148,15 @@ do basic diplomacy without backstabbing";
                 stanceChangeRules.Add(new Defrule(
                     new[]
                     {
-                        $"random-number == {player}",
-                        $"not (goal {enemyCountGoal} 0)",
-                        $"stance-toward {player} neutral",
-                        $"not (players-stance {player} enemy)",
-                        $"player-in-game {player}",
+                        new Condition($"random-number == {player}"),
+                        new Condition($"goal {enemyCountGoal} 0").Invert(),
+                        new Condition($"stance-toward {player} neutral"),
+                        new Condition($"players-stance {player} enemy").Invert(),
+                        new Condition($"player-in-game {player}"),
                     },
                     new[]
                     {
-                        $"set-stance {player} ally",
+                        new Action($"set-stance {player} ally"),
                     }));
             }
 
@@ -185,15 +186,15 @@ do basic diplomacy without backstabbing";
                 stanceChangeRules.Add(new Defrule(
                     new[]
                     {
-                        $"random-number == {player}",
-                        $"up-compare-goal {enemyCountGoal} >= 2",
-                        $"not (stance-toward {player} ally)",
-                        $"players-stance {player} ally",
-                        $"player-in-game {player}",
+                        new Condition($"random-number == {player}"),
+                        new Condition($"up-compare-goal {enemyCountGoal} >= 2"),
+                        new Condition($"stance-toward {player} ally").Invert(),
+                        new Condition($"players-stance {player} ally"),
+                        new Condition($"player-in-game {player}"),
                     },
                     new[]
                     {
-                        $"set-stance {player} ally",
+                        new Action($"set-stance {player} ally"),
                     }));
             }
 
@@ -241,13 +242,13 @@ do basic diplomacy without backstabbing";
                 rules.Add(new Defrule(
                     new[]
                     {
-                        $"players-stance {player} ally",
-                        $"not (stance-toward {player} ally)",
-                        $"not (player-in-game {player})",
+                        new Condition($"players-stance {player} ally"),
+                        new Condition($"stance-toward {player} ally").Invert(),
+                        new Condition($"player-in-game {player}").Invert(),
                     },
                     new[]
                     {
-                        $"set-stance {player} ally",
+                        new Action($"set-stance {player} ally"),
                     }));
             }
 
@@ -270,13 +271,13 @@ do basic diplomacy without backstabbing";
                 rules.Add(new Defrule(
                     new[]
                     {
-                        $"goal {threatPlayerGoal} {player}",
-                        $"up-compare-goal {threatTimeGoal} c:< 1000",
-                        $"not (stance-toward {player} enemy)",
+                        new Condition($"goal {threatPlayerGoal} {player}"),
+                        new Condition($"up-compare-goal {threatTimeGoal} c:< 1000"),
+                        new Condition($"stance-toward {player} enemy").Invert(),
                     },
                     new[]
                     {
-                        $"set-stance {player} enemy",
+                        new Action($"set-stance {player} enemy"),
                     }));
             }
 
