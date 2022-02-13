@@ -23,7 +23,7 @@ namespace Language
 
         public static Dictionary<string, string[]> GetResearches()
         {
-            var research = new Dictionary<string, string[]>() {
+            var research = new Dictionary<string, string[]> {
                 { "blacksmith ranged", new[] { "fletching", "bodkin-arrow", "bracer", "padded-archer-armor", "leather-archer-armor", "ring-archer-armor" } },
                 { "blacksmith infantry", new[] { "forging", "iron-casting", "blast-furnace", "scale-mail", "chain-mail", "plate-mail" } },
                 { "blacksmith cavalry", new[] { "forging", "iron-casting", "blast-furnace", "scale-barding", "chain-barding", "plate-barding" } },
@@ -41,7 +41,7 @@ namespace Language
                 { "monastery", new[] { "redemption", "atonement", "herbal-medicine", "heresy", "sanctity", "fervor", "faith", "illumination", "block-printing", "theocracy" } },
                 { "castle", new[] { "my-unique-unit-upgrade", "my-unique-research", "hoardings", "sappers", "conscription", "spies" } },
                 { "town center", new[] { "feudal-age", "castle-age", "imperial-age", "loom", "town-watch", "wheel-barrow", "town-patrol", "hand-cart" } },
-                { "university", new[] { "masonry", "fortified-wall", "ballistics", "guard-tower", "heated-shot", "murder-holes", "treadmill-crane", "architecture", "chemistry", "siege-engineers", "keep", "arrowslits", "bombard-tower" } },
+                { "university", new[] { "masonry", "fortified-wall", "ballistics", "guard-tower", "heated-shot", "murder-holes", "stonecutting", "architecture", "chemistry", "siege-engineers", "keep", "arrowslits", "bombard-tower" } },
             };
 
             research["blacksmith"] = research["blacksmith ranged"]
@@ -51,7 +51,6 @@ namespace Language
                 .ToArray();
 
             // research that is not present in the ai engine.
-            research["university"] = research["university"].Where(x => x != "treadmill-crane").ToArray();
             research["monastery"] = research["monastery"].Where(x => x != "herbal-medicine").ToArray();
             research["castle"] = research["castle"].Where(x => x != "spies").ToArray();
 
