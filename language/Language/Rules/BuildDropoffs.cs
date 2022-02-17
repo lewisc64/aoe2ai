@@ -99,7 +99,7 @@ build lumber camps maintaining 4 tiles";
                     new[]
                     {
                         conditions.First(),
-                        Condition.Parse($"game-time >= 360 and building-type-count-total {building} == 0"),
+                        Condition.Parse($"game-time >= 60 and building-type-count-total {building} == 0"),
                     });
             }
 
