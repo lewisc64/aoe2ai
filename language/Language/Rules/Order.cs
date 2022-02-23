@@ -30,16 +30,13 @@ namespace Language.Rules
             {
                 var segment = segments[i];
 
-                var subcontext = context.Copy();
-                subcontext.Script.Items.Clear();
-                subcontext.CurrentFileName = $"{subcontext.CurrentFileName} -> order expression component '{segment}'";
+                Script segmentItems = null;
 
-                var segmentItems = transpiler.Transpile(segment, subcontext, suppressStackWarnings: true);
-
-                context.Goals = subcontext.Goals;
-                context.Constants = subcontext.Constants;
-                context.Timers = subcontext.Timers;
-                context.Templates = subcontext.Templates;
+                context.UsingSubcontext(subcontext =>
+                {
+                    subcontext.CurrentFileName = $"{subcontext.CurrentFileName} -> order expression component '{segment}'";
+                    segmentItems = transpiler.Transpile(segment, subcontext, suppressStackWarnings: true);
+                });
 
                 if (segmentItems.Count(x => x is Defrule) >= 2)
                 {

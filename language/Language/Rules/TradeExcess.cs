@@ -71,6 +71,8 @@ trade excess wood and food and gold at 2000";
             rules.InsertRange(0, escrowRules);
 
             context.AddToScript(context.ApplyStacks(rules));
+
+            context.FreeVolatileGoals(goalToResourceMap.Keys);
         }
     }
 }

@@ -34,9 +34,11 @@ namespace Language.Rules
 
             if (findType != "winning")
             {
-                var goalNumber = context.CreateGoal();
-                rule.Actions.Add(new Action($"up-find-player {playerType} find-{FindTypes[findType]} {goalNumber}"));
-                rule.Actions.Add(new Action($"up-modify-sn sn-target-player-number g:= {goalNumber}"));
+                context.UsingVolatileGoal(goal =>
+                {
+                    rule.Actions.Add(new Action($"up-find-player {playerType} find-{FindTypes[findType]} {goal}"));
+                    rule.Actions.Add(new Action($"up-modify-sn sn-target-player-number g:= {goal}"));
+                });
             }
             else
             {

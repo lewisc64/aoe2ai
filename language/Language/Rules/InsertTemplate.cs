@@ -31,7 +31,12 @@ insert train-unit(unit=""archer-line\"")
 
         public override void Parse(string line, TranspilerContext context)
         {
-            var subroutineName = GetData(line)["name"].Value;
+            var templateName = GetData(line)["name"].Value;
+
+            if (!context.Templates.ContainsKey(templateName))
+            {
+                throw new System.InvalidOperationException($"Template '{templateName}' is not defined.");
+            }
 
             var parameters = new Dictionary<string, string>();
 
@@ -47,26 +52,22 @@ insert train-unit(unit=""archer-line\"")
                 parameters[name] = value.Replace("\\\"", "\"");
             }
 
-            var subroutine = context.Templates[subroutineName];
+            var template = context.Templates[templateName];
 
             foreach ((string key, string value) in parameters)
             {
-                subroutine = subroutine.Replace($"{{{key}}}", value);
+                template = template.Replace($"{{{key}}}", value);
             }
 
-            var subcontext = context.Copy();
-            subcontext.Script.Items.Clear();
-            subcontext.ConditionStack.Clear();
-            subcontext.ActionStack.Clear();
-            subcontext.DataStack.Clear();
-            subcontext.CurrentFileName = $"template '{subroutineName}'";
+            Script rules = null;
 
-            var transpiler = new Transpiler();
-            var rules = transpiler.Transpile(subroutine, subcontext);
+            context.UsingSubcontext(subcontext =>
+            {
+                subcontext.CurrentFileName = $"template '{templateName}'";
 
-            context.Goals = subcontext.Goals;
-            context.Timers = subcontext.Timers;
-            context.Templates = subcontext.Templates;
+                var transpiler = new Transpiler();
+                rules = transpiler.Transpile(template, subcontext);
+            });
 
             if (context.ConditionStack.Any())
             {

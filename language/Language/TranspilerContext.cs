@@ -16,6 +16,8 @@ namespace Language
 
         public List<string> Goals { get; set; } = new List<string>();
 
+        public Stack<int> VolatileGoalNumbers { get; set; } = new Stack<int>();
+
         public List<string> Timers { get; set; } = new List<string>();
 
         public List<string> Constants { get; set; } = new List<string>();
@@ -73,6 +75,37 @@ namespace Language
                 Script.Items.Insert(0, CreateConstant(name, Goals.Count));
             }
             return Goals.Count;
+        }
+
+        public int CreateVolatileGoal()
+        {
+            return VolatileGoalNumbers.Any() ? VolatileGoalNumbers.Pop() : CreateGoal();
+        }
+
+        public void FreeVolatileGoal(int goalNumber)
+        {
+            VolatileGoalNumbers.Push(goalNumber);
+        }
+
+        public void FreeVolatileGoals(IEnumerable<int> goalNumbers)
+        {
+            foreach (var goalNumber in goalNumbers)
+            {
+                FreeVolatileGoal(goalNumber);
+            }
+        }
+
+        public void UsingVolatileGoal(System.Action<int> callback)
+        {
+            int goal = CreateVolatileGoal();
+            try
+            {
+                callback(goal);
+            }
+            finally
+            {
+                FreeVolatileGoal(goal);
+            }
         }
 
         public int CreateTimer(string name = null)
@@ -172,6 +205,24 @@ namespace Language
             }
         }
 
+        public void UsingSubcontext(System.Action<TranspilerContext> callback)
+        {
+            var subcontext = Copy();
+
+            subcontext.ActionStack.Clear();
+            subcontext.ConditionStack.Clear();
+            subcontext.DataStack.Clear();
+            subcontext.Script.Items.Clear();
+
+            callback(subcontext);
+
+            Constants = subcontext.Constants;
+            Goals = subcontext.Goals;
+            VolatileGoalNumbers = subcontext.VolatileGoalNumbers;
+            Timers = subcontext.Timers;
+            Templates = subcontext.Templates;
+        }
+
         public TranspilerContext Copy()
         {
             return new TranspilerContext
@@ -181,6 +232,7 @@ namespace Language
                 DataStack = new Stack<object>(DataStack),
                 Script = Script.Copy(),
                 Goals = new List<string>(Goals),
+                VolatileGoalNumbers = new Stack<int>(VolatileGoalNumbers),
                 Timers = new List<string>(Timers),
                 Constants = new List<string>(Constants),
                 Templates = new Dictionary<string, string>(Templates),

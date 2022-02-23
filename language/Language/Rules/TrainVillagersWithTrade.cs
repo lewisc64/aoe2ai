@@ -26,10 +26,10 @@ namespace Language.Rules
 
             var rules = new List<Defrule>();
 
-            var villagerTargetGoal = context.CreateGoal();
-            var currentVillagersGoal = context.CreateGoal();
-            var currentPopulationGoal = context.CreateGoal();
-            var populationRemainingGoal = context.CreateGoal();
+            var villagerTargetGoal = context.CreateVolatileGoal();
+            var currentVillagersGoal = context.CreateVolatileGoal();
+            var currentPopulationGoal = context.CreateVolatileGoal();
+            var populationRemainingGoal = context.CreateVolatileGoal();
 
             rules.Add(new Defrule(
                 new[] {
@@ -124,6 +124,8 @@ namespace Language.Rules
                 }));
 
             context.AddToScript(context.ApplyStacks(rules));
+
+            context.FreeVolatileGoals(new[] { villagerTargetGoal, currentVillagersGoal, currentPopulationGoal, populationRemainingGoal });
         }
     }
 }

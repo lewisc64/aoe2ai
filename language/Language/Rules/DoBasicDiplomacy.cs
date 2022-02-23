@@ -36,9 +36,9 @@ do basic diplomacy without backstabbing";
                     "disable-self",
                 }));
 
-            var allyCountGoal = context.CreateGoal();
-            var neutralCountGoal = context.CreateGoal();
-            var enemyCountGoal = context.CreateGoal();
+            var allyCountGoal = context.CreateVolatileGoal();
+            var neutralCountGoal = context.CreateVolatileGoal();
+            var enemyCountGoal = context.CreateVolatileGoal();
 
             rules.Add(new Defrule(
                 new[]
@@ -215,6 +215,10 @@ do basic diplomacy without backstabbing";
                     }));
             }
 
+            context.FreeVolatileGoal(allyCountGoal);
+            context.FreeVolatileGoal(neutralCountGoal);
+            context.FreeVolatileGoal(enemyCountGoal);
+
             for (var i = 0; i < stanceChangeRules.Count - 1; i++)
             {
                 stanceChangeRules[i].Actions.Add(new Action($"up-jump-rule {stanceChangeRules.Count - i - 1}"));
@@ -252,8 +256,8 @@ do basic diplomacy without backstabbing";
                     }));
             }
 
-            var threatTimeGoal = context.CreateGoal();
-            var threatPlayerGoal = context.CreateGoal();
+            var threatTimeGoal = context.CreateVolatileGoal();
+            var threatPlayerGoal = context.CreateVolatileGoal();
 
             rules.Add(new Defrule(
                 new[]
@@ -280,6 +284,9 @@ do basic diplomacy without backstabbing";
                         new Action($"set-stance {player} enemy"),
                     }));
             }
+
+            context.FreeVolatileGoal(threatTimeGoal);
+            context.FreeVolatileGoal(threatPlayerGoal);
 
             // always ally self
             rules.Add(new Defrule(

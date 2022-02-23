@@ -50,6 +50,8 @@ auto balance wood and food every 30 seconds";
             rules.Add(new Defrule(new[] { $"timer-triggered {timer}" }, new[] { $"disable-timer {timer}", $"enable-timer {timer} {interval}" }));
 
             context.AddToScript(context.ApplyStacks(rules));
+
+            context.FreeVolatileGoals(goalToResourceMap.Keys);
         }
 
         private IEnumerable<Defrule> GetBalanceRules(int amount, int threshold, Dictionary<int, string> goalToResourceMap, IEnumerable<int> resourceGoalsQueue, IEnumerable<int> aboveThreshold = null, IEnumerable<int> belowThreshold = null)

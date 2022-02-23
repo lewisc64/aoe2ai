@@ -40,22 +40,16 @@ namespace Language.Rules
 
             var content = File.ReadAllText(path.FullName);
 
-            var subcontext = context.Copy();
-            subcontext.CurrentFileName = path.Name;
-            subcontext.CurrentPath = path.DirectoryName;
+            Script rules = null;
 
-            subcontext.ActionStack.Clear();
-            subcontext.ConditionStack.Clear();
-            subcontext.DataStack.Clear();
-            subcontext.Script.Items.Clear();
+            context.UsingSubcontext(subcontext =>
+            {
+                subcontext.CurrentFileName = path.Name;
+                subcontext.CurrentPath = path.DirectoryName;
 
-            var transpiler = new Transpiler();
-            var rules = transpiler.Transpile(content, subcontext);
-
-            context.Constants = subcontext.Constants;
-            context.Goals = subcontext.Goals;
-            context.Timers = subcontext.Timers;
-            context.Templates = subcontext.Templates;
+                var transpiler = new Transpiler();
+                rules = transpiler.Transpile(content, subcontext);
+            });
 
             if (context.ConditionStack.Any())
             {

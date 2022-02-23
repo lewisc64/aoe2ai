@@ -41,25 +41,27 @@ namespace Language.Rules
             var rules = new List<Defrule>();
             var goalToResourceMap = new Dictionary<int, string>();
 
-            foreach (var resource in resources)
+            context.UsingVolatileGoal(escrowAmountGoal =>
             {
-                var nonEscrowedAmountGoal = context.CreateGoal();
-                var escrowAmountGoal = context.CreateGoal();
+                foreach (var resource in resources)
+                {
+                    var nonEscrowedAmountGoal = context.CreateVolatileGoal();
 
-                rules.Add(new Defrule(
-                    new[]
-                    {
-                        "true",
-                    },
-                    new[]
-                    {
-                        $"up-get-fact resource-amount {resource} {nonEscrowedAmountGoal}",
-                        $"up-get-fact escrow-amount {resource} {escrowAmountGoal}",
-                        $"up-modify-goal {nonEscrowedAmountGoal} g:- {escrowAmountGoal}",
-                    }));
+                    rules.Add(new Defrule(
+                        new[]
+                        {
+                            "true",
+                        },
+                        new[]
+                        {
+                            $"up-get-fact resource-amount {resource} {nonEscrowedAmountGoal}",
+                            $"up-get-fact escrow-amount {resource} {escrowAmountGoal}",
+                            $"up-modify-goal {nonEscrowedAmountGoal} g:- {escrowAmountGoal}",
+                        }));
 
-                goalToResourceMap[nonEscrowedAmountGoal] = resource;
-            }
+                    goalToResourceMap[nonEscrowedAmountGoal] = resource;
+                }
+            });
 
             return (rules, goalToResourceMap);
         }
