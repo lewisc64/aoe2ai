@@ -55,7 +55,8 @@ namespace Language.Rules
                 new[] { "true" },
                 new[] { "set-strategic-number sn-enable-new-building-system 1",
                         "set-strategic-number sn-percent-building-cancellation 20",
-                        "set-strategic-number sn-cap-civilian-builders 200" }));
+                        "set-strategic-number sn-cap-civilian-builders 200",
+                        "disable-self" }));
 
             rules.Add(new SnippetCollection("set up scouting",
                 new Snippet(null,
@@ -64,17 +65,20 @@ namespace Language.Rules
                             "set-strategic-number sn-cap-civilian-explorers 0",
                             "set-strategic-number sn-total-number-explorers 1",
                             "set-strategic-number sn-number-explore-groups 1",
-                            "set-strategic-number sn-initial-exploration-required 0" }),
+                            "set-strategic-number sn-initial-exploration-required 0",
+                            "disable-self" }),
                 new Snippet(null,
                     new[] { "military-population == 0",
                             "game-time < 60" },
                     new[] { "set-strategic-number sn-percent-civilian-explorers 100",
-                            "set-strategic-number sn-cap-civilian-explorers 1"}),
+                            "set-strategic-number sn-cap-civilian-explorers 1",
+                            "disable-self" }),
                 new Snippet(null,
                     new[] { "game-time >= 600",
                             "strategic-number sn-cap-civilian-explorers == 1" },
                     new[] { "set-strategic-number sn-percent-civilian-explorers 0",
-                            "set-strategic-number sn-cap-civilian-explorers 0" })));
+                            "set-strategic-number sn-cap-civilian-explorers 0",
+                            "disable-self" })));
 
             rules.Add(new Snippet("set up micro",
                 new[] { "true" },
@@ -97,7 +101,20 @@ namespace Language.Rules
                         "set-strategic-number sn-number-build-attempts-before-skip 5",
                         "set-strategic-number sn-max-skips-per-attempt 5",
                         "set-strategic-number sn-dropsite-separation-distance 8",
-                        "set-strategic-number sn-wall-targeting-mode 1"}));
+                        "set-strategic-number sn-wall-targeting-mode 1",
+                        "disable-self" }));
+
+            rules.Add(new Snippet("set up distances",
+                new[] { "true" },
+                new[] { "set-strategic-number sn-maximum-gold-drop-distance 8",
+                        "set-strategic-number sn-maximum-stone-drop-distance 8",
+                        "set-strategic-number sn-maximum-wood-drop-distance -1",
+                        "set-strategic-number sn-maximum-hunt-drop-distance 48",
+                        "set-strategic-number sn-maximum-food-drop-distance 25",
+                        "set-strategic-number sn-mill-max-distance 25",
+                        "set-strategic-number sn-camp-max-distance 25",
+                        "set-strategic-number sn-dropsite-separation-distance 5",
+                        "disable-self" }));
 
             rules.Add(new Snippet("target walls",
                 new[] { "true" },
@@ -153,6 +170,7 @@ namespace Language.Rules
                 "set up basics",
                 rules.First(x => x.Name == "set up new building system"),
                 rules.First(x => x.Name == "set up micro"),
+                rules.First(x => x.Name == "set up distances"),
                 (SnippetCollection)rules.First(x => x.Name == "set up scouting")));
 
             rules.Add(new SnippetCollection(

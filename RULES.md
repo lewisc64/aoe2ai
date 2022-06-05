@@ -34,6 +34,11 @@ set up scouting
 ```
 set up micro
 ```
+## set up distances
+### Example
+```
+set up distances
+```
 ## target walls
 ### Example
 ```
@@ -206,6 +211,12 @@ Sets up rule to build houses, default headroom is 5.
 ### Usage
 ```
 build houses with AMOUNT headroom
+```
+## build mills
+Builds mills based on how many farms there are.
+### Usage
+```
+build mills
 ```
 ## build walls
 Wall placement must be enabled on the same perimeter to function.

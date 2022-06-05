@@ -19,7 +19,7 @@ build stone mining camps
 build lumber camps maintaining 4 tiles";
 
         public BuildDropoffs()
-            : base(@"^build (?<dropofftype>lumber camps|(?:gold|stone) mining camps|mills)(?: maintaining (?<tiles>[^ ]+) tiles?)?$")
+            : base(@"^build (?<dropofftype>lumber camps|(?:gold|stone) mining camps)(?: maintaining (?<tiles>[^ ]+) tiles?)?$")
         {
         }
 
@@ -57,15 +57,6 @@ build lumber camps maintaining 4 tiles";
                     tiles = "2";
                 }
             }
-            else if (dropoffType == "mills")
-            {
-                resource = "food";
-                building = "mill";
-                if (string.IsNullOrEmpty(tiles))
-                {
-                    tiles = "3";
-                }
-            }
             else
             {
                 throw new System.InvalidOperationException("Unknown dropoff type.");
@@ -90,7 +81,7 @@ build lumber camps maintaining 4 tiles";
                     });
             }
 
-            if (building == "mill" || building == "lumber-camp")
+            if (building == "lumber-camp")
             {
                 conditions[0] = Condition.JoinConditions("and", conditions.GetRange(0, 2));
                 conditions.RemoveAt(1);
