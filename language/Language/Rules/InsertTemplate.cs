@@ -9,7 +9,7 @@ namespace Language.Rules
     [ActiveRule]
     public class InsertTemplate : RuleBase
     {
-        private static readonly Regex ParamRegex = new Regex(@"(?<name>[^\s(,]+)\s*=\s*(?<value>(?:""(?:\\""|[^""])*""|[0-9]+))\s*");
+        private static readonly Regex ParamRegex = new Regex(@"(?<name>[^\s(,]+?)\s*=\s*(?<value>(?:""(?:\\""|[^""])*""|[0-9]+))\s*");
 
         public override string Name => "insert template";
 
