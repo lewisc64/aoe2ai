@@ -102,6 +102,7 @@ namespace Language.Rules
                         "set-strategic-number sn-max-skips-per-attempt 5",
                         "set-strategic-number sn-dropsite-separation-distance 8",
                         "set-strategic-number sn-wall-targeting-mode 1",
+                        "set-strategic-number sn-minimum-water-body-size-for-dock 999",
                         "disable-self" }));
 
             rules.Add(new Snippet("set up distances",
