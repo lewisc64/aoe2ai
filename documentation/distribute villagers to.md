@@ -6,9 +6,16 @@ distribute PERCENTAGE villagers from RESOURCE_NAME to RESOURCE_NAME
 ```
 ## Examples
 ```
-distibute 5 villagers from wood to stone
+distribute 5 villagers from wood to stone
 ```
 ```
+(defrule
+    (strategic-number sn-wood-gatherer-percentage >= 5)
+    (strategic-number sn-stone-gatherer-percentage <= 95)
+=>
+    (up-modify-sn sn-wood-gatherer-percentage c:- 5)
+    (up-modify-sn sn-stone-gatherer-percentage c:+ 5)
+)
 
 ```
 ---

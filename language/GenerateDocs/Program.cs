@@ -1,4 +1,7 @@
 ﻿using Language;
+using NLog;
+using NLog.Layouts;
+using NLog.Targets;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -11,6 +14,10 @@ namespace GenerateDocs
 
         public static void Main(string[] args)
         {
+            var config = new NLog.Config.LoggingConfiguration();
+            config.AddRule(LogLevel.Debug, LogLevel.Fatal, new ColoredConsoleTarget { Layout = new SimpleLayout("${message}") });
+            LogManager.Configuration = config;
+
             var transpiler = new Transpiler();
 
             foreach (var file in Folder.EnumerateFiles())

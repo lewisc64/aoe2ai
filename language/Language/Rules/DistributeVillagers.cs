@@ -14,7 +14,7 @@ namespace Language.Rules
 
         public override IEnumerable<string> Examples => new[]
         {
-            "distribute villlagers 40 30 20 10",
+            "distribute villagers 40 30 20 10",
         };
 
         public DistributeVillagers()

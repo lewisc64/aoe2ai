@@ -16,10 +16,10 @@ namespace Language.Rules
 
         public override IEnumerable<string> Examples => new[]
         {
-            @"delay by 30 seconds
+            @"#delay by 30 seconds
     chat to all ""30 seconds has passed.""
 #end delay",
-            @"delay by 30 minutes
+            @"#delay by 30 minutes
     chat to all ""30 minutes has passed.""
 #end delay",
         };

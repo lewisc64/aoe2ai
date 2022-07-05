@@ -14,7 +14,7 @@ Blocks out rules having them advance into each other switching by a goal.
     train archer-line
 #advance when unit-type-count archer-line >= 10
     train skirmisher-line
-#end advance
+#end stages
 ```
 ```
 (defrule

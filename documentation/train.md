@@ -9,16 +9,27 @@ train AMOUNT UNIT_NAME with RESOURCE_NAME escrow
 ```
 ## Examples
 ```
-trade archer-line
+train archer-line
 ```
 ```
+(defrule
+    (can-train archer-line)
+=>
+    (train archer-line)
+)
 
 ```
 ---
 ```
-trade 10 archer-line
+train 10 archer-line
 ```
 ```
+(defrule
+    (can-train archer-line)
+    (unit-type-count-total archer-line < 10)
+=>
+    (train archer-line)
+)
 
 ```
 ---

@@ -22,7 +22,7 @@ namespace Language.Rules
     train archer-line
 #advance when unit-type-count archer-line >= 10
     train skirmisher-line
-#end advance",
+#end stages",
         };
 
         public Stages()

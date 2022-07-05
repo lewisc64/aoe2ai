@@ -20,8 +20,8 @@ train AMOUNT UNIT_NAME with RESOURCE_NAME escrow";
 
         public override IEnumerable<string> Examples => new[]
         {
-            "trade archer-line",
-            "trade 10 archer-line",
+            "train archer-line",
+            "train 10 archer-line",
             "train 10 archer-line with wood and gold escrow",
         };
 
