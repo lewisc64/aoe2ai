@@ -56,7 +56,7 @@ namespace Language.Rules
                     context.ConditionStack.Pop();
 
                     var goal = (int)context.DataStack.Pop();
-                    context.AddToScript(context.ApplyStacks(new Defrule(new[] { "true" }, new[] { $"set-goal {goal} 0" })));
+                    context.AddToScript(context.ApplyStacks(new Defrule(new[] { "true" }, new[] { $"set-goal {goal} 0", "disable-self" })));
                 }
             }
         }
