@@ -1,4 +1,5 @@
 ﻿using Language.ScriptItems;
+using System.Collections.Generic;
 
 namespace Language.Rules
 {
@@ -11,8 +12,11 @@ namespace Language.Rules
 
         public override string Usage => "scout AREA_NAME";
 
-        public override string Example => @"scout opposite
-scout enemy";
+        public override IEnumerable<string> Examples => new[]
+        {
+            "scout opposite",
+            "scout enemy",
+        };
 
         public SendScout()
             : base(@"^scout (?<location>.+)$")

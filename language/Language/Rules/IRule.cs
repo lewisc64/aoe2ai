@@ -1,4 +1,6 @@
-﻿namespace Language.Rules
+﻿using System.Collections.Generic;
+
+namespace Language.Rules
 {
     public interface IRule
     {
@@ -8,7 +10,7 @@
 
         string Usage { get; }
 
-        string Example { get; }
+        IEnumerable<string> Examples { get; }
 
         bool Match(string line);
 

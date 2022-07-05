@@ -1,4 +1,5 @@
 ﻿using Language.ScriptItems;
+using System.Collections.Generic;
 
 namespace Language.Rules
 {
@@ -11,8 +12,11 @@ namespace Language.Rules
 
         public override string Usage => "STRATEGIC_NUMBER_NAME = VALUE";
 
-        public override string Example => @"sn-maximum-gold-drop-distance = 8
-sn-maximum-town-size += 5";
+        public override IEnumerable<string> Examples => new[]
+        {
+            "sn-gold-gatherer-percentage = 50",
+            "sn-gold-gatherer-percentage -= 5",
+        };
 
         public SetStrategicNumber()
             : base(@"^(?<name>sn-[^ ]+) ?(?<mathop>\+|\-|\*|\/)?= ?(?<value>.+)$")

@@ -12,9 +12,12 @@ namespace Language.Rules
 
         public override string Usage => "distribute PERCENTAGE villagers from RESOURCE_NAME to RESOURCE_NAME";
 
-        public override string Example => @"distibute 5 villagers from wood to stone
-distribute 10 villagers from wood and food to gold
-distribute 8 villagers from food to gold and stone using modifiers";
+        public override IEnumerable<string> Examples => new[]
+        {
+            "distibute 5 villagers from wood to stone",
+            "distribute 10 villagers from wood and food to gold",
+            "distribute 8 villagers from food to gold and stone using modifiers",
+        };
 
         public DistributeVillagersTo()
             : base(@"^distribute (?<amount>[0-9]+) villagers? from (?<fromlist>(?:[^ ]+(?: and )?)*) to (?<tolist>.+?)$")

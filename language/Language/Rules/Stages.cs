@@ -1,4 +1,5 @@
 ﻿using Language.ScriptItems;
+using System.Collections.Generic;
 
 namespace Language.Rules
 {
@@ -14,6 +15,15 @@ namespace Language.Rules
 #advance when CONDITION
     RULES
 #end stages";
+
+        public override IEnumerable<string> Examples => new[]
+        {
+            @"#stages
+    train archer-line
+#advance when unit-type-count archer-line >= 10
+    train skirmisher-line
+#end advance",
+        };
 
         public Stages()
             : base(@"^(?:#stages|#advance when (?<condition>.+)|#end stages)$")

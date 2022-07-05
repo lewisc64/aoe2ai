@@ -13,10 +13,13 @@ namespace Language.Rules
 
         public override string Usage => "build DROPOFF_TYPE";
 
-        public override string Example => @"build lumber camps
-build gold mining camps
-build stone mining camps
-build lumber camps maintaining 4 tiles";
+        public override IEnumerable<string> Examples => new[]
+        {
+            "build lumber camps",
+            "build gold mining camps",
+            "build stone mining camps",
+            "build lumber camps maintaining 4 tiles",
+        };
 
         public BuildDropoffs()
             : base(@"^build (?<dropofftype>lumber camps|(?:gold|stone) mining camps)(?: maintaining (?<tiles>[^ ]+) tiles?)?$")

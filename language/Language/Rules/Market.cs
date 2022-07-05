@@ -1,4 +1,5 @@
 ﻿using Language.ScriptItems;
+using System.Collections.Generic;
 
 namespace Language.Rules
 {
@@ -11,8 +12,11 @@ namespace Language.Rules
 
         public override string Usage => "buy/sell RESOURCE_NAME when RESOURCE_NAME COMPARISON AMOUNT";
 
-        public override string Example => @"buy food when gold > 100
-sell wood when wood > 1500";
+        public override IEnumerable<string> Examples => new[]
+        {
+            "buy food when gold > 100",
+            "sell wood when wood > 1500",
+        };
 
         public Market()
             : base(@"^(?<action>buy|sell) (?<resource>[^ ]+) when (?<testresource>[^ +]+) (?<comparison>[<>!=]+) (?<amount>[^ ]+)$")

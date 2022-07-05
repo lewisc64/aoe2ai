@@ -13,6 +13,12 @@ namespace Language.Rules
 
         public override string Usage => "respond to ?AMOUNT NAME ?BUILDING/UNIT with NAME ?BUILDING/UNIT";
 
+        public override IEnumerable<string> Examples => new[]
+        {
+            "respond to 2 scout-cavalry-line with 5 spearman-line",
+            "respond to archery-range building with 10 skirmisher-line",
+        };
+
         public Respond()
             : base(@"^respond to (?:(?<enemyamount>[^ ]+) )??(?<enemyname>[^ ]+)(?: (?<enemytype>building|unit))?(?: from(?: player)? (?<player>[^ ]+))? with (?:(?<createamount>[^ ]+) )?(?<createname>[^ ]+)(?: (?<createtype>building|unit))?$")
         {

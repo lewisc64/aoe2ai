@@ -1,5 +1,6 @@
 ﻿using Language.Extensions;
 using Language.ScriptItems;
+using System.Collections.Generic;
 
 namespace Language.Rules
 {
@@ -14,9 +15,12 @@ namespace Language.Rules
    RULES
 #end respond";
 
-        public override string Example => @"#respond to 3 scout-cavalry-line
+        public override IEnumerable<string> Examples => new[]
+        {
+            @"#respond to 3 scout-cavalry-line
     train 4 spearman-line
-#end respond";
+#end respond",
+        };
 
         public BlockRespond()
             : base(@"^(?:#respond to (?:(?<amount>[^ ]+) )??(?<name>[^ ]+)(?: (?<type>building|unit))?(?: from(?: player)? (?<player>[^ ]+))?|#end respond)$")

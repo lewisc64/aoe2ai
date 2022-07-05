@@ -1,4 +1,5 @@
 ﻿using Language.ScriptItems;
+using System.Collections.Generic;
 
 namespace Language.Rules
 {
@@ -8,6 +9,15 @@ namespace Language.Rules
         public override string Name => "chat to";
 
         public override string Usage => "chat to PLAYER_TYPE \"MESSAGE\"";
+
+        public override IEnumerable<string> Examples => new[]
+        {
+            "chat to all \"hello everyone!\"",
+            "chat to self \"hello me!\"",
+            "chat to allies \"hello friends!\"",
+            "chat to 5 \"hello player 5!\"",
+            "chat to target-player \"hello target player!\"",
+        };
 
         public ChatTo()
             : base(@"^chat to (?:(?<playerwildcard>all|self|allies)|(?<player>[^ ]+)) ""(?<message>.+)""$")

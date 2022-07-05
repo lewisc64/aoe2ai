@@ -1,4 +1,5 @@
 ﻿using Language.ScriptItems;
+using System.Collections.Generic;
 
 namespace Language.Rules
 {
@@ -12,6 +13,16 @@ namespace Language.Rules
         public override string Usage => @"#do once ?grouped
     RULES
 #end do";
+
+        public override IEnumerable<string> Examples => new[]
+        {
+            @"#do once
+    chat to all ""hello""
+#end do",
+            @"#do once grouped
+    chat to all ""hello""
+#end do",
+        };
 
         public DoOnce()
             : base(@"^(?:#do once(?<grouped> grouped)?|#end do(?: once)?)$")

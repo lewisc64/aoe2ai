@@ -14,9 +14,12 @@ namespace Language.Rules
 
         public override string Usage => "auto balance RESOURCES around THRESHOLD every AMOUNT seconds";
 
-        public override string Example => @"auto balance wood and food and gold
-auto balance all
-auto balance wood and food every 30 seconds";
+        public override IEnumerable<string> Examples => new[]
+        {
+            "auto balance wood and food and gold",
+            "auto balance all",
+            "auto balance wood and food every 30 seconds",
+        };
 
         public AutoBalance()
             : base(@"^auto balance (?<resourcelist>(?:[^ ]+(?: and (?=\w))?)+)(?: around (?<threshold>[^ ]+))?(?: every (?<time>[^ ]+) seconds)?$")

@@ -1,4 +1,5 @@
 ﻿using Language.ScriptItems;
+using System.Collections.Generic;
 
 namespace Language.Rules
 {
@@ -10,6 +11,13 @@ namespace Language.Rules
         public override string Help => "Modifies the sn-maximum-town-size strategic number.";
 
         public override string Usage => "set/increase/decrease town size by/to AMOUNT";
+
+        public override IEnumerable<string> Examples => new[]
+        {
+            "set town size to 30",
+            "increase town size by 10",
+            "decrease town size by 5",
+        };
 
         public ModifyTownSize()
             : base(@"^(?<operation>set|increase|decrease) town size (?:to|by) (?<amount>.+)$")

@@ -1,4 +1,5 @@
 ﻿using Language.ScriptItems;
+using System.Collections.Generic;
 
 namespace Language.Rules
 {
@@ -15,11 +16,14 @@ namespace Language.Rules
     RULES
 #end when";
 
-        public override string Example => @"#when
-    build houses
+        public override IEnumerable<string> Examples => new[]
+        {
+            @"#when
+    build 1 house
 #then
     chat to all ""I built a house!""
-#end when";
+#end when",
+        };
 
         public When()
             : base(@"^(?:#when|#then(?<always> always)?|#end when)$")

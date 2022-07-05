@@ -17,7 +17,7 @@ namespace Language.Rules
 
         public virtual string Usage { get; set; } = string.Empty;
 
-        public virtual string Example { get; set; } = string.Empty;
+        public virtual IEnumerable<string> Examples { get; set; } = new string[0];
 
         public RuleBase(string regex)
         {

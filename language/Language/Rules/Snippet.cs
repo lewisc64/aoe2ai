@@ -21,6 +21,7 @@ namespace Language.Rules
         {
             Name = trigger;
             Usage = trigger;
+            Examples = new[] { trigger };
             Conditions = conditions;
             Actions = actions;
         }

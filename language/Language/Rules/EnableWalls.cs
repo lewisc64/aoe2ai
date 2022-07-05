@@ -1,4 +1,5 @@
 ﻿using Language.ScriptItems;
+using System.Collections.Generic;
 
 namespace Language.Rules
 {
@@ -10,6 +11,12 @@ namespace Language.Rules
         public override string Help => "Sets up rule that allows the AI to build walls on the specified perimeter.";
 
         public override string Usage => "enable walls on perimeter PERIMETER_NUMBER";
+
+        public override IEnumerable<string> Examples => new[]
+        {
+            "enable walls on perimeter 1",
+            "enable walls on perimeter 2",
+        };
 
         public EnableWalls()
             : base(@"^enable walls (?:with|on) perimeter (?<perimeter>1|2)$")

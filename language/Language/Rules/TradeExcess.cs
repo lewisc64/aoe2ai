@@ -14,8 +14,11 @@ namespace Language.Rules
 
         public override string Usage => "trade excess RESOURCE_LIST at AMOUNT";
 
-        public override string Example => @"trade excess food at 2000
-trade excess wood and food and gold at 2000";
+        public override IEnumerable<string> Examples => new[]
+        {
+            "trade excess food at 2000",
+            "trade excess wood and food and gold at 2000",
+        };
 
         public TradeExcess()
             : base(@"^trade excess (?:(?<resourcelist>(?:[^ ]+(?: and (?=\w))?)+) )?at (?<amount>[^ ]+)$")

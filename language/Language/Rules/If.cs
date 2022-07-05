@@ -19,6 +19,20 @@ namespace Language.Rules
     RULES
 #end if";
 
+        public override IEnumerable<string> Examples => new[]
+        {
+            @"#if goal 1 1
+    chat to all ""goal 1 is 1!""
+#end if",
+            @"#if current-age == dark-age
+    chat to all ""dark age""
+#else if current-age == feudal-age
+    chat to all ""feudal age""
+#else
+    chat to all ""castle age or imperial age""
+#end if",
+        };
+
         public If()
             : base(@"^(#if (?<ifcondition>.+)|#else if (?<elseifcondition>.+)|#else|#end if)$")
         {

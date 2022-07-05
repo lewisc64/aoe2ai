@@ -1,4 +1,5 @@
 ﻿using Language.ScriptItems;
+using System.Collections.Generic;
 
 namespace Language.Rules
 {
@@ -10,6 +11,11 @@ namespace Language.Rules
         public override string Help => "Sets the amount of builders that should build a building.";
 
         public override string Usage => "assign AMOUNT builders to BUILDING_NAME";
+
+        public override IEnumerable<string> Examples => new[]
+        {
+            "assign 8 builders to castle"
+        };
 
         public AssignBuilders()
             : base(@"^assign (?<amount>[^ ]+) builders? to (?<building>[^ ]+)$")

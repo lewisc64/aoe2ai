@@ -12,6 +12,12 @@ namespace Language.Rules
 
         public override string Usage => @"train NUMBER villagers with NUMBER trade";
 
+        public override IEnumerable<string> Examples => new[]
+        {
+            "train 120 villagers with 30 trade",
+            "train 120 villagers with 30 trade using escrow for caravan",
+        };
+
         public TrainVillagersWithTrade()
             : base(@"^train (?<villamount>[^ ]+) villagers? with (?<tradeamount>[^ ]+) trade(?<useescrow> using escrow for caravan)?$")
         {

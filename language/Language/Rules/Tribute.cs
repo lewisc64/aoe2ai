@@ -1,4 +1,5 @@
 ﻿using Language.ScriptItems;
+using System.Collections.Generic;
 
 namespace Language.Rules
 {
@@ -10,6 +11,11 @@ namespace Language.Rules
         public override string Help => "Gives the specified player resources.";
 
         public override string Usage => "tribute AMOUNT RESOURCE_NAME to PLAYER_NUMBER";
+
+        public override IEnumerable<string> Examples => new[]
+        {
+            "tribute 300 food to any-ally",
+        };
 
         public Tribute()
             : base(@"^tribute (?<amount>[^ ]+) (?<resource>[^ ]+) to (?:player )?(?<player>[^ ]+)$")

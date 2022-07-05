@@ -14,9 +14,12 @@ namespace Language.Rules
 
         public override string Usage => "build ?forward AMOUNT BUILDING_NAME with RESOURCE_NAME escrow";
 
-        public override string Example => @"build 1 barracks
-build forward castle
-build archery-range with wood escrow";
+        public override IEnumerable<string> Examples => new[]
+        {
+            "build 1 barracks",
+            "build forward castle",
+            "build archery-range with wood escrow",
+        };
 
         public Build()
             : base(@"^build (?<forward>forward )?(?:(?<amount>[^ ]+) )?(?<building>[^ ]+)(?: near (?<near>[^ ]+))?(?: with (?<escrowlist>(?:[^ ]+(?: and )?)*) escrow)?$")

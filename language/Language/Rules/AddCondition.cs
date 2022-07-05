@@ -1,4 +1,5 @@
 ﻿using Language.ScriptItems;
+using System.Collections.Generic;
 
 namespace Language.Rules
 {
@@ -12,6 +13,13 @@ namespace Language.Rules
         public override string Usage => @"#add condition CONDITION
     RULES
 #remove condition";
+
+        public override IEnumerable<string> Examples => new[]
+        {
+            @"#add condition current-age == dark-age
+    rule
+#remove condition"
+        };
 
         public AddCondition()
             : base(@"^(?:#add condition (?<condition>.+)|#remove condition)$")

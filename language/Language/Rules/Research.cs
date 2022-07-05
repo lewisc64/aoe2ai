@@ -13,9 +13,12 @@ namespace Language.Rules
 
         public override string Usage => "research TECH_NAME with RESOURCE_NAME escrow";
 
-        public override string Example => @"research ri-loom
-research feudal-age with food and gold escrow
-research blacksmith infantry upgrades";
+        public override IEnumerable<string> Examples => new[]
+        {
+            "research ri-loom",
+            "research feudal-age with food and gold escrow",
+            "research blacksmith infantry upgrades",
+        };
 
         public static Dictionary<string, string[]> AllResearch => Game.GetResearches();
 

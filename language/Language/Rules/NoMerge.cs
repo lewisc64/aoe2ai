@@ -1,4 +1,5 @@
 ﻿using Language.ScriptItems;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Language.Rules
@@ -13,6 +14,15 @@ namespace Language.Rules
         public override string Usage => @"#nomerge
    RULES
 #end nomerge";
+
+        public override IEnumerable<string> Examples => new[]
+        {
+            @"#nomerge
+    chat to all ""in""
+    chat to all ""different""
+    chat to all ""rules""
+#end nomerge",
+        };
 
         public NoMerge()
             : base(@"^(?:#nomerge|#end nomerge)$")

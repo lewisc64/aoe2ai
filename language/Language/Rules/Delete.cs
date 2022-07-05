@@ -1,4 +1,5 @@
 ﻿using Language.ScriptItems;
+using System.Collections.Generic;
 
 namespace Language.Rules
 {
@@ -10,6 +11,12 @@ namespace Language.Rules
         public override string Help => "Creates a rule that deletes the specified object.";
 
         public override string Usage => "delete unit/building NAME";
+
+        public override IEnumerable<string> Examples => new[]
+        {
+            "delete unit villager",
+            "delete building town-center",
+        };
 
         public Delete()
             : base(@"delete (?<type>unit|building) (?<name>.+)$")

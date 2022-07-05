@@ -1,4 +1,5 @@
 ﻿using Language.ScriptItems;
+using System.Collections.Generic;
 
 namespace Language.Rules
 {
@@ -10,6 +11,12 @@ namespace Language.Rules
         public override string Help => "Makes use of the attack-now action.";
 
         public override string Usage => "attack with AMOUNT units";
+
+        public override IEnumerable<string> Examples => new[]
+        {
+            "attack",
+            "attack with 30 units",
+        };
 
         public Attack()
             : base(@"^attack(?: with (?<amount>[^ ]+) units)?$")

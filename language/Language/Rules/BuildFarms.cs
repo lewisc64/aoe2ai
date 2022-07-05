@@ -1,4 +1,5 @@
 ﻿using Language.ScriptItems;
+using System.Collections.Generic;
 
 namespace Language.Rules
 {
@@ -10,6 +11,11 @@ namespace Language.Rules
         public override string Help => "Builds farms according to how many food gatherers should exist.";
 
         public override string Usage => "build farms";
+
+        public override IEnumerable<string> Examples => new[]
+        {
+            "build farms",
+        };
 
         public BuildFarms()
             : base(@"^build farms$")

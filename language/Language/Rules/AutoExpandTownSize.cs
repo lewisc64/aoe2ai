@@ -36,7 +36,13 @@ Affects the following sn's:
 This will disturb any town size attacks because it takes absolute control over the town size. Disable this during TSA.";
 
         public override string Usage => @"auto expand town size
-auto expand town size to 30";
+auto expand town size to RADIUS";
+
+        public override IEnumerable<string> Examples => new[]
+        {
+            "auto expand town size",
+            "auto expand town size to 50",
+        };
 
         public AutoExpandTownSize()
             : base(@"^auto expand town size(?: to (?<maximum>[^ ]+))?$")

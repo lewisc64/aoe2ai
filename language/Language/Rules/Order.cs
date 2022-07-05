@@ -11,7 +11,10 @@ namespace Language.Rules
 
         public override string Help => "Executes statements in order once every rule pass. Loops back to the beginning upon reaching the end.";
 
-        public override string Example => "train archer-line => train skirmisher-line";
+        public override IEnumerable<string> Examples => new[]
+        {
+            "train archer-line => train skirmisher-line",
+        };
 
         public Order()
             : base(@"^.+?( *=> *.+)+$")

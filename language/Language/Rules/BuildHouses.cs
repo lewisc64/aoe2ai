@@ -1,5 +1,6 @@
 ﻿using Language.Extensions;
 using Language.ScriptItems;
+using System.Collections.Generic;
 
 namespace Language.Rules
 {
@@ -13,6 +14,12 @@ namespace Language.Rules
         public override string Help => $"Sets up rule to build houses, default headroom is {DefaultHeadroom}.";
 
         public override string Usage => @"build houses with AMOUNT headroom";
+
+        public override IEnumerable<string> Examples => new[]
+        {
+            "build houses",
+            "build houses with 15 headroom",
+        };
 
         public BuildHouses()
             : base(@"^build (?<style>houses|yurts)(?: with (?<headroom>[^ ]+) headroom)?$")

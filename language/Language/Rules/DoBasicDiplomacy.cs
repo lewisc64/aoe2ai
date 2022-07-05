@@ -14,6 +14,12 @@ namespace Language.Rules
         public override string Usage => @"do basic diplomacy
 do basic diplomacy without backstabbing";
 
+        public override IEnumerable<string> Examples => new[]
+        {
+            "do basic diplomacy",
+            "do basic diplomacy without backstabbing",
+        };
+
         public DoBasicDiplomacy()
             : base(@"^do basic diplomacy(?<nobackstab> without backstabbing)?$")
         {

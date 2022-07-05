@@ -19,6 +19,11 @@ namespace Language.Rules
 
         public override string Usage => "target winning/closest/attacking enemy/ally";
 
+        public override IEnumerable<string> Examples => new[]
+        {
+            "target closest enemy",
+        };
+
         public TargetPlayer()
             : base(@"^target (?<findtype>winning|closest|attacking|random) (?<playertype>enemy|ally)$")
         {

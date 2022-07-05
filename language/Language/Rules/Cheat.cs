@@ -1,4 +1,5 @@
 ﻿using Language.ScriptItems;
+using System.Collections.Generic;
 
 namespace Language.Rules
 {
@@ -10,6 +11,11 @@ namespace Language.Rules
         public override string Help => "Gives the AI resources";
 
         public override string Usage => "cheat AMOUNT RESOURCE_NAME";
+
+        public override IEnumerable<string> Examples => new[]
+        {
+            "cheat 500 wood",
+        };
 
         public Cheat()
             : base(@"^cheat (?<amount>[^ ]+) (?<resource>[^ ]+)$")

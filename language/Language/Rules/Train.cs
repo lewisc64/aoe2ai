@@ -18,7 +18,12 @@ train UNIT_NAME with RESOURCE_NAME escrow
 train AMOUNT UNIT_NAME
 train AMOUNT UNIT_NAME with RESOURCE_NAME escrow";
 
-        public override string Example => "train 10 militiaman-line with food and gold escrow";
+        public override IEnumerable<string> Examples => new[]
+        {
+            "trade archer-line",
+            "trade 10 archer-line",
+            "train 10 archer-line with wood and gold escrow",
+        };
 
         public Train()
             : base(@"^train (?:(?<amount>[^ ]+) )?(?<unit>[^ ]+)(?: with (?<escrowlist>(?:[^ ]+(?: and )?)*) escrow)?$")

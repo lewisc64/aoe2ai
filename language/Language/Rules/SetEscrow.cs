@@ -1,4 +1,5 @@
 ﻿using Language.ScriptItems;
+using System.Collections.Generic;
 
 namespace Language.Rules
 {
@@ -10,6 +11,11 @@ namespace Language.Rules
         public override string Help => "Creates rule that sets the escrow percentage.";
 
         public override string Usage => "escrow PERCENTAGE RESOURCE_NAME";
+
+        public override IEnumerable<string> Examples => new[]
+        {
+            "escrow 10 wood",
+        };
 
         public SetEscrow()
             : base(@"^escrow (?<amount>[^ ]+) (?<resource>.+)$")

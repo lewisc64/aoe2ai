@@ -1,4 +1,5 @@
 ﻿using Language.ScriptItems;
+using System.Collections.Generic;
 
 namespace Language.Rules
 {
@@ -12,6 +13,13 @@ namespace Language.Rules
         public override string Usage => @"#repeat every AMOUNT TIME_UNIT
     RULES
 #end repeat";
+
+        public override IEnumerable<string> Examples => new[]
+        {
+            @"#repeat every 30 seconds
+    chat to all ""hello""
+#end repeat",
+        };
 
         public Repeat()
             : base(@"^(?:#repeat every (?<amount>[^ ]+) (?<unit>seconds?|minutes?|hours?)|#end repeat)$")

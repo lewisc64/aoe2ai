@@ -17,12 +17,14 @@ namespace Language.Rules
 
         public override string Usage => "insert TEMPLATE_NAME";
 
-        public override string Example => @"#template train-unit
+        public override IEnumerable<string> Examples => new[]
+        {
+            @"#template train-unit
     train {unit}
 #end template
 
-insert train-unit(unit=""archer-line\"")
-";
+insert train-unit(unit=""archer-line"")",
+        };
 
         public InsertTemplate()
             : base(@"^insert (?<name>[^ ()]+)(?:\(.+\))?$")

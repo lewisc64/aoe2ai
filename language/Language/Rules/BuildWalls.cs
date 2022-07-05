@@ -12,6 +12,13 @@ namespace Language.Rules
 
         public override string Usage => "build stone/palisade walls/gates on perimeter PERIMETER_NUMBER";
 
+        public override IEnumerable<string> Examples => new[]
+        {
+            "build stone walls on perimeter 2",
+            "build stone gates on perimeter 2",
+            "build palisade walls on perimeter 1",
+        };
+
         public BuildWalls()
             : base(@"^build (?<material>stone|palisade) (?<type>walls|gates) (?:with|on) perimeter (?<perimeter>1|2)$")
         {

@@ -1,4 +1,5 @@
 ﻿using Language.ScriptItems;
+using System.Collections.Generic;
 
 namespace Language.Rules
 {
@@ -12,6 +13,13 @@ namespace Language.Rules
         public override string Usage => @"#reply to ENEMY/ALLY taunt TAUNT_NUMBER
    RULES
 #end reply";
+
+        public override IEnumerable<string> Examples => new[]
+        {
+            @"#reply to ally taunt 31
+    attack
+#end reply",
+        };
 
         public Reply()
             : base(@"^(?:#reply to (?<playertype>enemy|ally) taunt (?<tauntnumber>[^ ]+)|#end reply)$")

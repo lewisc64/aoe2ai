@@ -1,4 +1,6 @@
-﻿namespace Language.Rules
+﻿using System.Collections.Generic;
+
+namespace Language.Rules
 {
     [ActiveRule]
     public class SetConst : RuleBase
@@ -8,6 +10,11 @@
         public override string Help => "Sets a constant. Can only be done once for every name.";
 
         public override string Usage => "const CONST_NAME = VALUE";
+
+        public override IEnumerable<string> Examples => new[]
+        {
+            "const ri-logistica = 61",
+        };
 
         public SetConst()
             : base(@"^const (?<name>[^ ]+) ?= ?(?<value>.+)$")

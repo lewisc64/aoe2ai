@@ -1,4 +1,5 @@
 ﻿using Language.ScriptItems;
+using System.Collections.Generic;
 
 namespace Language.Rules
 {
@@ -11,8 +12,12 @@ namespace Language.Rules
 
         public override string Usage => "goal GOAL_NAME = VALUE";
 
-        public override string Example => @"goal advance = 1
-goal count += 1";
+        public override IEnumerable<string> Examples => new[]
+        {
+            "goal test = 1",
+            "goal test += 1",
+            "goal test *= 5",
+        };
 
         public SetGoal()
             : base(@"^goal (?<name>[^ ]+) ?(?<mathop>\+|\-|\*|\/)?= ?(?<value>.+)$")

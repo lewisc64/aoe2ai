@@ -18,6 +18,11 @@ namespace Language.Rules
 
         public override string Usage => "build mills";
 
+        public override IEnumerable<string> Examples => new[]
+        {
+            "build mills",
+        };
+
         public BuildMills()
             : base(@"^build mills$")
         {

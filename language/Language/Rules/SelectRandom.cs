@@ -1,4 +1,5 @@
 ﻿using Language.ScriptItems;
+using System.Collections.Generic;
 
 namespace Language.Rules
 {
@@ -14,6 +15,20 @@ namespace Language.Rules
 #randor
    RULES
 #end select";
+
+        public override IEnumerable<string> Examples => new[]
+        {
+            @"#select random
+    chat to all ""one!""
+#randor
+    chat to all ""two!""
+#end select",
+            @"#select random persistant
+    chat to all ""one!""
+#randor
+    chat to all ""two!""
+#end select",
+        };
 
         public SelectRandom()
             : base(@"^#select random(?<persistant> persistant)?|#randor|#end select(?: random)?$")

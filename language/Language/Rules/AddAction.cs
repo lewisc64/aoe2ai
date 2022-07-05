@@ -1,4 +1,5 @@
 ﻿using Language.ScriptItems;
+using System.Collections.Generic;
 
 namespace Language.Rules
 {
@@ -12,6 +13,13 @@ namespace Language.Rules
         public override string Usage => @"#add action ACTION
     RULES
 #remove action";
+
+        public override IEnumerable<string> Examples => new[]
+        {
+            @"#add action chat-to-all ""hello""
+    rule
+#remove action",
+        };
 
         public AddAction()
             : base(@"^(?:#add action (?<condition>.+)|#remove action)")
