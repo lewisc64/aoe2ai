@@ -285,10 +285,10 @@ do basic diplomacy
 do basic diplomacy without backstabbing
 ```
 ## do once
-Adds 'disable-self' to the action stack. Makes sure each rule in the block individually runs only once.
+Adds 'disable-self' to the action stack. Makes sure each rule in the block individually runs only once. Can specify 'grouped' afterwards to additionaly switch on a goal.
 ### Usage
 ```
-#do once
+#do once ?grouped
     RULES
 #end do
 ```
