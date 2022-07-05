@@ -44,6 +44,7 @@ Adds 'disable-self' to the action stack. Makes sure each rule in the block indiv
     (true)
 =>
     (set-goal 1 0)
+    (disable-self)
 )
 
 ```
