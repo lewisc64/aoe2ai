@@ -35,19 +35,3 @@ distribute 10 villagers from wood and food to gold
 
 ```
 ---
-```
-distribute 8 villagers from food to gold and stone using modifiers
-```
-```
-(defrule
-    (strategic-number sn-food-gatherer-percentage >= 8)
-    (strategic-number sn-gold-gatherer-percentage <= 96)
-    (strategic-number sn-stone using modifiers-gatherer-percentage <= 96)
-=>
-    (up-modify-sn sn-food-gatherer-percentage c:- 8)
-    (up-modify-sn sn-gold-gatherer-percentage c:+ 4)
-    (up-modify-sn sn-stone using modifiers-gatherer-percentage c:+ 4)
-)
-
-```
----

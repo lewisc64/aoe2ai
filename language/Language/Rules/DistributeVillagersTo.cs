@@ -16,7 +16,6 @@ namespace Language.Rules
         {
             "distribute 5 villagers from wood to stone",
             "distribute 10 villagers from wood and food to gold",
-            "distribute 8 villagers from food to gold and stone using modifiers",
         };
 
         public DistributeVillagersTo()
