@@ -5,7 +5,7 @@ namespace Language.Rules
     [ActiveRule]
     public class SendScout : RuleBase
     {
-        public override string Name => "attack";
+        public override string Name => "send scout";
 
         public override string Help => "Sets up the userpatch rule to send the scout somewhere else.";
 

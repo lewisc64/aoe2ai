@@ -1,123 +1,5 @@
 # Rules
-Below are all the rules and structures recognised by the parser. They are listed in order of priority.
-## rule
-### Example
-```
-rule
-```
-## take boar
-### Example
-```
-take boar
-```
-## take boar and deer
-### Example
-```
-take boar and deer
-```
-## set up new building system
-### Example
-```
-set up new building system
-```
-## set up scouting
-### Usage
-```
-set up scouting
-```
-### Example
-```
-^set up scouting$
-```
-## set up micro
-### Example
-```
-set up micro
-```
-## set up distances
-### Example
-```
-set up distances
-```
-## target walls
-### Example
-```
-target walls
-```
-## retreat
-### Example
-```
-retreat
-```
-## resign
-### Example
-```
-resign
-```
-## drop off food
-### Example
-```
-drop off food
-```
-## delete walls
-### Example
-```
-delete walls
-```
-## buy wood
-### Example
-```
-buy wood
-```
-## buy food
-### Example
-```
-buy food
-```
-## buy stone
-### Example
-```
-buy stone
-```
-## sell wood
-### Example
-```
-sell wood
-```
-## sell food
-### Example
-```
-sell food
-```
-## sell stone
-### Example
-```
-sell stone
-```
-## set up basics
-### Usage
-```
-set up basics
-```
-### Example
-```
-^set up basics$
-```
-## lure boars
-### Usage
-```
-lure boars
-```
-### Example
-```
-^lure boars$
-```
-## order
-Executes statements in order once every rule pass. Loops back to the beginning upon reaching the end.
-### Example
-```
-train archer-line => train skirmisher-line
-```
+Below are all the rules and structures recognised by the parser.
 ## add action
 Adds an action to the action stack.
 ### Usage
@@ -187,6 +69,51 @@ When the AI sees the specified amount, the body is allowed to trigger. If buildi
     train 4 spearman-line
 #end respond
 ```
+## build
+Sets up the rule to build the building. Can only build 5 buildings at a time to prevent accidental build queue flooding.
+### Usage
+```
+build ?forward AMOUNT BUILDING_NAME with RESOURCE_NAME escrow
+```
+### Example
+```
+build 1 barracks
+build forward castle
+build archery-range with wood escrow
+```
+## build farms
+Builds farms according to how many food gatherers should exist.
+### Usage
+```
+build farms
+```
+## build mills
+Builds mills based on how many farms there are.
+### Usage
+```
+build mills
+```
+## build walls
+Wall placement must be enabled on the same perimeter to function.
+### Usage
+```
+build stone/palisade walls/gates on perimeter PERIMETER_NUMBER
+```
+## buy food
+### Usage
+```
+buy food
+```
+## buy stone
+### Usage
+```
+buy stone
+```
+## buy wood
+### Usage
+```
+buy wood
+```
 ## chat to
 Sets up a rule for automatically refreshing dropoff points.
 ### Usage
@@ -200,29 +127,11 @@ build gold mining camps
 build stone mining camps
 build lumber camps maintaining 4 tiles
 ```
-## build farms
-Builds farms according to how many food gatherers should exist.
-### Usage
-```
-build farms
-```
 ## chat to
 Sets up rule to build houses, default headroom is 5.
 ### Usage
 ```
 build houses with AMOUNT headroom
-```
-## build mills
-Builds mills based on how many farms there are.
-### Usage
-```
-build mills
-```
-## build walls
-Wall placement must be enabled on the same perimeter to function.
-### Usage
-```
-build stone/palisade walls/gates on perimeter PERIMETER_NUMBER
 ```
 ## chat to
 ### Usage
@@ -245,19 +154,16 @@ Creates a rule with the action contained within.
 ```
 @chat-to-all "test"
 ```
-## do once
-Block body is only allowed to trigger after the time is up.
-### Usage
-```
-#delay by AMOUNT TIME_UNIT
-    RULES
-#end delay
-```
 ## delete
 Creates a rule that deletes the specified object.
 ### Usage
 ```
 delete unit/building NAME
+```
+## delete walls
+### Usage
+```
+delete walls
 ```
 ## distribute villagers
 Percentages must add up to 100. Makes use of the sn-TYPE-gatherer-percentage strategic number.
@@ -285,12 +191,25 @@ do basic diplomacy
 do basic diplomacy without backstabbing
 ```
 ## do once
+Block body is only allowed to trigger after the time is up.
+### Usage
+```
+#delay by AMOUNT TIME_UNIT
+    RULES
+#end delay
+```
+## do once
 Adds 'disable-self' to the action stack. Makes sure each rule in the block individually runs only once. Can specify 'grouped' afterwards to additionaly switch on a goal.
 ### Usage
 ```
 #do once ?grouped
     RULES
 #end do
+```
+## drop off food
+### Usage
+```
+drop off food
 ```
 ## enable walls
 Sets up rule that allows the AI to build walls on the specified perimeter.
@@ -331,6 +250,16 @@ Loads another aoe2ai file. Tries to load relatively from the current file first,
 ```
 load "PATH"
 ```
+## lure boars
+### Usage
+```
+lure boars
+```
+## manage scouting
+### Usage
+```
+manage scouting
+```
 ## market
 Buys/sells based on a condition.
 ### Usage
@@ -356,6 +285,12 @@ Prevents the rules within from being merged together in compilation.
    RULES
 #end nomerge
 ```
+## order
+Executes statements in order once every rule pass. Loops back to the beginning upon reaching the end.
+### Example
+```
+train archer-line => train skirmisher-line
+```
 ## repeat
 Each rule is allowed to be triggered once after the time has elapsed, the process repeats.
 ### Usage
@@ -372,11 +307,38 @@ Body is allowed to trigger when the taunt is detected from the specified player.
    RULES
 #end reply
 ```
+## research
+Sets up the rule to research the specified research.
+### Usage
+```
+research TECH_NAME with RESOURCE_NAME escrow
+```
+### Example
+```
+research ri-loom
+research feudal-age with food and gold escrow
+research blacksmith infantry upgrades
+```
+## resign
+### Usage
+```
+resign
+```
 ## respond
 When the AI sees the specified amount, it reacts with the specified parameters. If building/unit is unspecified, unit is assumed. If amount is unspecified, 1 is assumed.
 ### Usage
 ```
 respond to ?AMOUNT NAME ?BUILDING/UNIT with NAME ?BUILDING/UNIT
+```
+## retreat
+### Usage
+```
+retreat
+```
+## rule
+### Usage
+```
+rule
 ```
 ## select random
 A random block separated by randors will be allowed to execute. Using persistant mode means the randomly chosen one is picked every time, otherwise it will change.
@@ -388,7 +350,22 @@ A random block separated by randors will be allowed to execute. Using persistant
    RULES
 #end select
 ```
-## attack
+## sell food
+### Usage
+```
+sell food
+```
+## sell stone
+### Usage
+```
+sell stone
+```
+## sell wood
+### Usage
+```
+sell wood
+```
+## send scout
 Sets up the userpatch rule to send the scout somewhere else.
 ### Usage
 ```
@@ -433,6 +410,31 @@ STRATEGIC_NUMBER_NAME = VALUE
 sn-maximum-gold-drop-distance = 8
 sn-maximum-town-size += 5
 ```
+## set up basics
+### Usage
+```
+set up basics
+```
+## set up distances
+### Usage
+```
+set up distances
+```
+## set up micro
+### Usage
+```
+set up micro
+```
+## set up new building system
+### Usage
+```
+set up new building system
+```
+## set up scouting
+### Usage
+```
+set up scouting
+```
 ## stages
 Blocks out rules having them advance into each other switching by a goal.
 ### Usage
@@ -443,11 +445,26 @@ Blocks out rules having them advance into each other switching by a goal.
     RULES
 #end stages
 ```
+## take boar
+### Usage
+```
+take boar
+```
+## take boar and deer
+### Usage
+```
+take boar and deer
+```
 ## target player
 Sets sn-target-player-number and sn-focus-player-number.
 ### Usage
 ```
 target winning/closest/attacking enemy/ally
+```
+## target walls
+### Usage
+```
+target walls
 ```
 ## trade excess
 Uses the market to rebalance resources around a certain threshold. Ignores escrowed values.
@@ -459,6 +476,19 @@ trade excess RESOURCE_LIST at AMOUNT
 ```
 trade excess food at 2000
 trade excess wood and food and gold at 2000
+```
+## train
+Trains a unit using the specified parameters.
+### Usage
+```
+train UNIT_NAME
+train UNIT_NAME with RESOURCE_NAME escrow
+train AMOUNT UNIT_NAME
+train AMOUNT UNIT_NAME with RESOURCE_NAME escrow
+```
+### Example
+```
+train 10 militiaman-line with food and gold escrow
 ```
 ## train villagers with trade
 Trains the specified amount of villagers, with a portion of that being trade carts if it is a team game.
@@ -489,41 +519,4 @@ Rules in the 'then' block are allowed to trigger when any rule in the main 'when
 #then
     chat to all "I built a house!"
 #end when
-```
-## build
-Sets up the rule to build the building. Can only build 5 buildings at a time to prevent accidental build queue flooding.
-### Usage
-```
-build ?forward AMOUNT BUILDING_NAME with RESOURCE_NAME escrow
-```
-### Example
-```
-build 1 barracks
-build forward castle
-build archery-range with wood escrow
-```
-## research
-Sets up the rule to research the specified research.
-### Usage
-```
-research TECH_NAME with RESOURCE_NAME escrow
-```
-### Example
-```
-research ri-loom
-research feudal-age with food and gold escrow
-research blacksmith infantry upgrades
-```
-## train
-Trains a unit using the specified parameters.
-### Usage
-```
-train UNIT_NAME
-train UNIT_NAME with RESOURCE_NAME escrow
-train AMOUNT UNIT_NAME
-train AMOUNT UNIT_NAME with RESOURCE_NAME escrow
-```
-### Example
-```
-train 10 militiaman-line with food and gold escrow
 ```

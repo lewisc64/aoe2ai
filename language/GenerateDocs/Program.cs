@@ -1,6 +1,7 @@
 ﻿using Language;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace GenerateDocs
 {
@@ -14,9 +15,9 @@ namespace GenerateDocs
 
             var ruleDocLines = new List<string>();
             ruleDocLines.Add("# Rules");
-            ruleDocLines.Add("Below are all the rules and structures recognised by the parser. They are listed in order of priority.");
+            ruleDocLines.Add("Below are all the rules and structures recognised by the parser.");
 
-            foreach (var rule in rules)
+            foreach (var rule in rules.OrderBy(x => x.Name))
             {
                 ruleDocLines.Add($"## {rule.Name}");
 
