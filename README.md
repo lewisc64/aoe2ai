@@ -60,7 +60,6 @@ Translation:
     (set-strategic-number sn-local-targeting-mode 1)
     (set-strategic-number sn-retask-gather-amount 0)
     (set-strategic-number sn-target-evaluation-siege-weapon 500)
-    (set-strategic-number sn-ttkfactor-scalar 500)
     (set-strategic-number sn-percent-enemy-sighted-response 100)
     (set-strategic-number sn-task-ungrouped-soldiers 0)
     (set-strategic-number sn-gather-defense-units 1)
@@ -70,37 +69,25 @@ Translation:
     (set-strategic-number sn-max-skips-per-attempt 5)
     (set-strategic-number sn-dropsite-separation-distance 8)
     (set-strategic-number sn-wall-targeting-mode 1)
+    (set-strategic-number sn-minimum-water-body-size-for-dock 999)
     (disable-self)
 )
 (defrule
     (true)
 =>
+    (set-strategic-number sn-maximum-gold-drop-distance 8)
+    (set-strategic-number sn-maximum-stone-drop-distance 8)
+    (set-strategic-number sn-maximum-wood-drop-distance -1)
+    (set-strategic-number sn-maximum-hunt-drop-distance 48)
+    (set-strategic-number sn-maximum-food-drop-distance 25)
+    (set-strategic-number sn-mill-max-distance 25)
+    (set-strategic-number sn-camp-max-distance 25)
+    (set-strategic-number sn-dropsite-separation-distance 5)
     (set-strategic-number sn-percent-civilian-explorers 0)
     (set-strategic-number sn-cap-civilian-explorers 0)
     (set-strategic-number sn-total-number-explorers 1)
     (set-strategic-number sn-number-explore-groups 1)
     (set-strategic-number sn-initial-exploration-required 0)
-    (disable-self)
-)
-(defrule
-    (military-population == 0)
-    (game-time < 60)
-=>
-    (set-strategic-number sn-percent-civilian-explorers 100)
-    (set-strategic-number sn-cap-civilian-explorers 1)
-    (disable-self)
-)
-(defrule
-    (game-time >= 600)
-    (strategic-number sn-cap-civilian-explorers == 1)
-=>
-    (set-strategic-number sn-percent-civilian-explorers 0)
-    (set-strategic-number sn-cap-civilian-explorers 0)
-    (disable-self)
-)
-(defrule
-    (true)
-=>
     (set-strategic-number sn-wood-gatherer-percentage 20)
     (set-strategic-number sn-food-gatherer-percentage 60)
     (set-strategic-number sn-gold-gatherer-percentage 20)
@@ -116,17 +103,22 @@ Translation:
     (dropsite-min-distance live-boar < 4)
     (strategic-number sn-minimum-number-hunters != 8)
 =>
-    (up-request-hunters c: 8)
     (set-strategic-number sn-minimum-number-hunters 8)
+    (up-drop-resources c: sheep-food 0)
+)
+(defrule
+    (food-amount < 50)
+    (up-pending-objects c: villager <= 1)
+    (strategic-number sn-minimum-number-hunters == 8)
+=>
+    (up-drop-resources c: boar-food 10)
 )
 (defrule
     (strategic-number sn-minimum-number-hunters == 8)
-    (and
-      (dropsite-min-distance live-boar > 4)
-      (or
-        (dropsite-min-distance boar-food > 4)
-        (dropsite-min-distance boar-food == -1)
-      )
+    (dropsite-min-distance live-boar > 4)
+    (or
+      (dropsite-min-distance boar-food > 4)
+      (dropsite-min-distance boar-food == -1)
     )
 =>
     (set-strategic-number sn-minimum-number-hunters 1)
@@ -154,9 +146,16 @@ Translation:
     (research ri-loom)
 )
 (defrule
-    (dropsite-min-distance wood > 2)
-    (dropsite-min-distance wood != -1)
-    (resource-found wood)
+    (or
+      (and
+        (dropsite-min-distance wood > 2)
+        (resource-found wood)
+      )
+      (and
+        (game-time >= 60)
+        (building-type-count-total lumber-camp == 0)
+      )
+    )
     (up-pending-objects c: lumber-camp == 0)
     (can-build lumber-camp)
 =>
@@ -179,7 +178,6 @@ Translation:
         )
       )
     )
-    (dropsite-min-distance gold != -1)
     (resource-found gold)
     (up-pending-objects c: mining-camp == 0)
     (can-build mining-camp)
@@ -216,7 +214,7 @@ Translation:
 )
 (defrule
     (population-headroom != 0)
-    (up-pending-objects c: house == 0)
+    (up-pending-objects c: house < 2)
     (can-build house)
     (housing-headroom < 5)
 =>
