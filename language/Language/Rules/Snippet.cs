@@ -163,52 +163,6 @@ namespace Language.Rules
                 new[] { "can-sell-commodity stone" },
                 new[] { "sell-commodity stone" }));
 
-            rules.Add(new SnippetCollection("manage scouting",
-                new Snippet(null,
-                    new[] { "true" },
-                    new[] { "set-strategic-number sn-percent-civilian-explorers 0",
-                            "set-strategic-number sn-cap-civilian-explorers 0",
-                            "set-strategic-number sn-total-number-explorers 1",
-                            "set-strategic-number sn-number-explore-groups 1",
-                            "set-strategic-number sn-initial-exploration-required 0",
-                            "disable-self" }),
-                new Snippet(null,
-                    new[] { new Condition("soldier-count == 0"),
-                            Condition.JoinConditions(
-                                "or",
-                                new[]
-                                {
-                                    new Condition("game-time < 600"),
-                                    Condition.JoinConditions(
-                                        "and",
-                                        new[]
-                                        {
-                                            new Condition("resource-found gold"),
-                                            new Condition("resource-found stone"),
-                                        }).Invert(),
-                                }),
-                            new Condition("strategic-number sn-cap-civilian-explorers == 0") },
-                    new[] { new Action("set-strategic-number sn-percent-civilian-explorers 100"),
-                            new Action("set-strategic-number sn-cap-civilian-explorers 1") }),
-                new Snippet(null,
-                    new[] { Condition.JoinConditions(
-                        "or",
-                        new[]
-                        {
-                            new Condition("soldier-count >= 1"),
-                            Condition.JoinConditions(
-                                "and",
-                                new[]
-                                {
-                                    new Condition("game-time >= 600"),
-                                    new Condition("resource-found gold"),
-                                    new Condition("resource-found stone"),
-                                }),
-                        }),
-                            new Condition("strategic-number sn-cap-civilian-explorers == 1") },
-                    new[] { new Action("set-strategic-number sn-percent-civilian-explorers 0"),
-                            new Action("set-strategic-number sn-cap-civilian-explorers 0") })));
-
             return rules;
         }
     }
