@@ -1,4 +1,5 @@
 # manage scouting
+Scouts using one soldier. Will scout with a villager for 10 minutes if none are available.
 ## Usage
 ```
 manage scouting
