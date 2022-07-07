@@ -1,4 +1,5 @@
 # lure boars
+Lures boars using one villager to the town center.
 ## Usage
 ```
 lure boars

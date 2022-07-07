@@ -163,52 +163,6 @@ namespace Language.Rules
                 new[] { "can-sell-commodity stone" },
                 new[] { "sell-commodity stone" }));
 
-            rules.Add(new SnippetCollection(
-                "lure boars",
-                new Snippet(
-                    null,
-                    new[] { "true" },
-                    new[] {
-                        "set-strategic-number sn-enable-boar-hunting 2",
-                        "set-strategic-number sn-minimum-number-hunters 1",
-                        "set-strategic-number sn-minimum-boar-lure-group-size 1",
-                        "set-strategic-number sn-minimum-boar-hunt-group-size 1",
-                        "set-strategic-number sn-maximum-hunt-drop-distance 48",
-                        "disable-self",
-                    }),
-                new Snippet(
-                    null,
-                    new[] { "dropsite-min-distance live-boar < 4",
-                            "strategic-number sn-minimum-number-hunters != 8" },
-                    new[] {
-                        "set-strategic-number sn-minimum-number-hunters 8",
-                        "up-drop-resources c: sheep-food 0",
-                    }),
-                new Snippet(
-                    null,
-                    new[] { "food-amount < 50",
-                            "up-pending-objects c: villager <= 1",
-                            "strategic-number sn-minimum-number-hunters == 8" },
-                    new[] { "up-drop-resources c: boar-food 10" }),
-                new Snippet(
-                    null,
-                    new[] {
-                        new Condition("strategic-number sn-minimum-number-hunters == 8"),
-                        new Condition("dropsite-min-distance live-boar > 4"),
-                        Condition.JoinConditions(
-                            "or",
-                            new[]
-                            {
-                                new Condition("dropsite-min-distance boar-food > 4"),
-                                new Condition("dropsite-min-distance boar-food == -1"),
-                            }),
-                    },
-                    new[] {
-                        new Action("set-strategic-number sn-minimum-number-hunters 1"),
-                        new Action("up-retask-gatherers food c: 255"),
-                    })
-                ));
-
             rules.Add(new SnippetCollection("manage scouting",
                 new Snippet(null,
                     new[] { "true" },
