@@ -31,7 +31,6 @@ Affects the following sn's:
  - sn-maximum-town-size
  - sn-minimum-town-size
  - sn-safe-town-size
- - sn-maximum-food-drop-distance
 
 This will disturb any town size attacks because it takes absolute control over the town size. Disable this during TSA.";
 
@@ -75,7 +74,6 @@ auto expand town size to RADIUS";
                         $"set-strategic-number sn-maximum-town-size {maximum}",
                         $"set-strategic-number sn-minimum-town-size {MinimumTownSize}",
                         $"set-strategic-number sn-safe-town-size {maximum}",
-                        $"set-strategic-number sn-maximum-food-drop-distance {maximum}",
                         $"set-goal {didResetGoal} 0",
                         "disable-self"
                     }),
@@ -90,7 +88,6 @@ auto expand town size to RADIUS";
                         $"up-modify-sn sn-maximum-town-size c:min {maximum}",
                         $"set-strategic-number sn-minimum-town-size {MinimumTownSize}",
                         $"set-strategic-number sn-safe-town-size {maximum}",
-                        $"set-strategic-number sn-maximum-food-drop-distance {maximum}",
                     }),
                 new Defrule(
                     new[]
