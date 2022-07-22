@@ -61,3 +61,38 @@ Adds a condition to the condition stack.
 
 ```
 ---
+```
+#ifg goal 5 1
+    chat to all "goal 5 is 1"
+    @set-goal 5 2
+    #if goal 5 2
+        chat to all "This will still execute, because the condition `goal 5 1` was frozen into a goal due to `ifg`."
+    #end if
+#end if
+```
+```
+(defrule
+    (true)
+=>
+    (set-goal 1 0)
+)
+(defrule
+    (goal 5 1)
+=>
+    (set-goal 1 1)
+)
+(defrule
+    (goal 1 1)
+=>
+    (chat-to-all "goal 5 is 1")
+    (set-goal 5 2)
+)
+(defrule
+    (goal 5 2)
+    (goal 1 1)
+=>
+    (chat-to-all "This will still execute, because the condition `goal 5 1` was frozen into a goal due to `ifg`.")
+)
+
+```
+---

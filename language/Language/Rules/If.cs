@@ -31,10 +31,17 @@ namespace Language.Rules
 #else
     chat to all ""castle age or imperial age""
 #end if",
+            @"#ifg goal 5 1
+    chat to all ""goal 5 is 1""
+    @set-goal 5 2
+    #if goal 5 2
+        chat to all ""This will still execute, because the condition `goal 5 1` was frozen into a goal due to `ifg`.""
+    #end if
+#end if",
         };
 
         public If()
-            : base(@"^(#if (?<ifcondition>.+)|#else if (?<elseifcondition>.+)|#else|#end if)$")
+            : base(@"^(#if(?<ifusegoal>g)? (?<ifcondition>.+)|#else if(?<elseifusegoal>g)? (?<elseifcondition>.+)|#else|#end if)$")
         {
         }
 
@@ -45,6 +52,12 @@ namespace Language.Rules
             if (line.StartsWith("#if"))
             {
                 var condition = Condition.Parse(data["ifcondition"].Value);
+
+                if (data["ifusegoal"].Success)
+                {
+                    condition = FreezeToGoal(context, condition);
+                }
+
                 context.ConditionStack.Push(condition);
                 context.DataStack.Push(condition);
                 context.DataStack.Push(1);
@@ -65,7 +78,7 @@ namespace Language.Rules
                 {
                     if (condition is CombinatoryCondition combCondition && combCondition.Text == "or")
                     {
-                         context.ConditionStack.Push(condition.DeMorgans().Invert());
+                        context.ConditionStack.Push(condition.DeMorgans().Invert());
                     }
                     else
                     {
@@ -77,6 +90,12 @@ namespace Language.Rules
                 if (line.StartsWith("#else if"))
                 {
                     var condition = Condition.Parse(data["elseifcondition"].Value);
+
+                    if (data["elseifusegoal"].Success)
+                    {
+                        condition = FreezeToGoal(context, condition);
+                    }
+
                     context.ConditionStack.Push(condition);
                     context.DataStack.Push(condition);
                     context.DataStack.Push(amount + 1);
@@ -95,6 +114,21 @@ namespace Language.Rules
                     context.DataStack.Pop();
                 }
             }
+        }
+
+        private Condition FreezeToGoal(TranspilerContext context, Condition condition)
+        {
+            var goal = context.CreateGoal();
+
+            var rules = new[]
+            {
+                new Defrule(new[] { "true" }, new[] { $"set-goal {goal} 0" }),
+                new Defrule(new[] { condition }, new[] { new Action($"set-goal {goal} 1") }),
+            };
+
+            context.AddToScript(context.ApplyStacks(rules));
+
+            return new Condition($"goal {goal} 1");
         }
     }
 }
