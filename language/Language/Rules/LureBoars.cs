@@ -29,7 +29,7 @@ namespace Language.Rules
                 new Defrule(
                     new[]
                     {
-                        "true"
+                        "dropsite-min-distance live-boar != -1"
                     },
                     new[]
                     {
@@ -38,47 +38,39 @@ namespace Language.Rules
                         "set-strategic-number sn-minimum-boar-lure-group-size 1",
                         "set-strategic-number sn-minimum-boar-hunt-group-size 1",
                         "set-strategic-number sn-maximum-hunt-drop-distance 48",
-                        "disable-self"
+                    }),
+                new Defrule(
+                    new[]
+                    {
+                        "dropsite-min-distance live-boar == -1"
+                    },
+                    new[]
+                    {
+                        "set-strategic-number sn-enable-boar-hunting 1",
+                        "set-strategic-number sn-minimum-number-hunters 0",
+                        "set-strategic-number sn-minimum-boar-lure-group-size 0",
+                        "set-strategic-number sn-minimum-boar-hunt-group-size 0",
+                        "set-strategic-number sn-maximum-hunt-drop-distance 8",
                     }),
                 new Defrule(
                     new[]
                     {
                         "dropsite-min-distance live-boar < 4",
-                        "strategic-number sn-minimum-number-hunters != 8",
+                        "dropsite-min-distance live-boar >= 0",
                     },
                     new[]
                     {
-                        "set-strategic-number sn-minimum-number-hunters 8",
-                        "up-drop-resources c: sheep-food 0",
+                        "up-request-hunters c: 8",
                     }),
                 new Defrule(
                     new[]
                     {
                         "food-amount < 50",
                         "up-pending-objects c: villager <= 1",
-                        "strategic-number sn-minimum-number-hunters == 8",
                     },
                     new[]
                     {
                         "up-drop-resources c: boar-food 10",
-                    }),
-                new Defrule(
-                    new[]
-                    {
-                        new Condition("strategic-number sn-minimum-number-hunters == 8"),
-                        new Condition("dropsite-min-distance live-boar > 4"),
-                        Condition.JoinConditions(
-                            "or",
-                            new[]
-                            {
-                                new Condition("dropsite-min-distance boar-food > 4"),
-                                new Condition("dropsite-min-distance boar-food == -1"),
-                            }),
-                    },
-                    new[]
-                    {
-                        new Action("set-strategic-number sn-minimum-number-hunters 1"),
-                        new Action("up-retask-gatherers food c: 255"),
                     }),
             };
 
