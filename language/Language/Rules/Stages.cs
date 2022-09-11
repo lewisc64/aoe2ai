@@ -54,7 +54,17 @@ namespace Language.Rules
 
                 context.ConditionStack.Pop();
 
-                var rule = new Defrule(new[] { $"goal {stagesGoal} {previousStage}", condition }, new[] { $"set-goal {stagesGoal} {previousStage + 1}" });
+                var rule = new Defrule(
+                    new[]
+                    {
+                        new Condition($"goal {stagesGoal} {previousStage}"),
+                        Condition.Parse(condition),
+                    },
+                    new[]
+                    {
+                        new Action($"set-goal {stagesGoal} {previousStage + 1}"),
+                    });
+
                 context.AddToScript(context.ApplyStacks(rule));
 
                 context.ConditionStack.Push(new Condition($"goal {stagesGoal} {previousStage + 1}"));
