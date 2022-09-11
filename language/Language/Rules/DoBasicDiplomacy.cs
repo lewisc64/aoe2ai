@@ -259,6 +259,7 @@ do basic diplomacy without backstabbing";
                     new[]
                     {
                         new Action($"set-stance {player} ally"),
+                        new Action("up-reset-unit c: -1")
                     }));
             }
 

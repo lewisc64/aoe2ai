@@ -816,6 +816,7 @@ do basic diplomacy
     )
 =>
     (set-stance 1 ally)
+    (up-reset-unit c: -1)
 )
 (defrule
     (players-stance 2 ally)
@@ -827,6 +828,7 @@ do basic diplomacy
     )
 =>
     (set-stance 2 ally)
+    (up-reset-unit c: -1)
 )
 (defrule
     (players-stance 3 ally)
@@ -838,6 +840,7 @@ do basic diplomacy
     )
 =>
     (set-stance 3 ally)
+    (up-reset-unit c: -1)
 )
 (defrule
     (players-stance 4 ally)
@@ -849,6 +852,7 @@ do basic diplomacy
     )
 =>
     (set-stance 4 ally)
+    (up-reset-unit c: -1)
 )
 (defrule
     (players-stance 5 ally)
@@ -860,6 +864,7 @@ do basic diplomacy
     )
 =>
     (set-stance 5 ally)
+    (up-reset-unit c: -1)
 )
 (defrule
     (players-stance 6 ally)
@@ -871,6 +876,7 @@ do basic diplomacy
     )
 =>
     (set-stance 6 ally)
+    (up-reset-unit c: -1)
 )
 (defrule
     (players-stance 7 ally)
@@ -882,6 +888,7 @@ do basic diplomacy
     )
 =>
     (set-stance 7 ally)
+    (up-reset-unit c: -1)
 )
 (defrule
     (players-stance 8 ally)
@@ -893,6 +900,7 @@ do basic diplomacy
     )
 =>
     (set-stance 8 ally)
+    (up-reset-unit c: -1)
 )
 (defrule
     (true)
@@ -1797,6 +1805,7 @@ do basic diplomacy without backstabbing
     )
 =>
     (set-stance 1 ally)
+    (up-reset-unit c: -1)
 )
 (defrule
     (players-stance 2 ally)
@@ -1808,6 +1817,7 @@ do basic diplomacy without backstabbing
     )
 =>
     (set-stance 2 ally)
+    (up-reset-unit c: -1)
 )
 (defrule
     (players-stance 3 ally)
@@ -1819,6 +1829,7 @@ do basic diplomacy without backstabbing
     )
 =>
     (set-stance 3 ally)
+    (up-reset-unit c: -1)
 )
 (defrule
     (players-stance 4 ally)
@@ -1830,6 +1841,7 @@ do basic diplomacy without backstabbing
     )
 =>
     (set-stance 4 ally)
+    (up-reset-unit c: -1)
 )
 (defrule
     (players-stance 5 ally)
@@ -1841,6 +1853,7 @@ do basic diplomacy without backstabbing
     )
 =>
     (set-stance 5 ally)
+    (up-reset-unit c: -1)
 )
 (defrule
     (players-stance 6 ally)
@@ -1852,6 +1865,7 @@ do basic diplomacy without backstabbing
     )
 =>
     (set-stance 6 ally)
+    (up-reset-unit c: -1)
 )
 (defrule
     (players-stance 7 ally)
@@ -1863,6 +1877,7 @@ do basic diplomacy without backstabbing
     )
 =>
     (set-stance 7 ally)
+    (up-reset-unit c: -1)
 )
 (defrule
     (players-stance 8 ally)
@@ -1874,6 +1889,7 @@ do basic diplomacy without backstabbing
     )
 =>
     (set-stance 8 ally)
+    (up-reset-unit c: -1)
 )
 (defrule
     (true)
