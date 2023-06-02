@@ -17,10 +17,11 @@ Adds a condition to the condition stack.
 #end if
 ```
 ```
+(defconst chat-e9179705d0c627f4a2d395e7957281d8d0d69bf1 "goal 1 is 1!")
 (defrule
     (goal 1 1)
 =>
-    (chat-to-all "goal 1 is 1!")
+    (chat-to-all chat-e9179705d0c627f4a2d395e7957281d8d0d69bf1)
 )
 
 ```
@@ -35,10 +36,13 @@ Adds a condition to the condition stack.
 #end if
 ```
 ```
+(defconst chat-4d9c4d85286d6ae16d6d4fd729fabbe716c6659e "castle age or imperial age")
+(defconst chat-530921cc1ef4c0c7e73c193fea9686740bd199f6 "feudal age")
+(defconst chat-1e11faadb3bb6245f005d3a003a0d3c2f339fac3 "dark age")
 (defrule
     (current-age == dark-age)
 =>
-    (chat-to-all "dark age")
+    (chat-to-all chat-1e11faadb3bb6245f005d3a003a0d3c2f339fac3)
 )
 (defrule
     (current-age == feudal-age)
@@ -46,7 +50,7 @@ Adds a condition to the condition stack.
       (current-age == dark-age)
     )
 =>
-    (chat-to-all "feudal age")
+    (chat-to-all chat-530921cc1ef4c0c7e73c193fea9686740bd199f6)
 )
 (defrule
     (not
@@ -56,7 +60,7 @@ Adds a condition to the condition stack.
       (current-age == feudal-age)
     )
 =>
-    (chat-to-all "castle age or imperial age")
+    (chat-to-all chat-4d9c4d85286d6ae16d6d4fd729fabbe716c6659e)
 )
 
 ```
@@ -71,6 +75,8 @@ Adds a condition to the condition stack.
 #end if
 ```
 ```
+(defconst chat-f0b89dd1434265a4c9c3d9691ade85b3c7757617 "This will still execute, because the condition `goal 5 1` was frozen into a goal due to `ifg`.")
+(defconst chat-70b031f9bf0e9d1de01eda4071cc0b5e863fee04 "goal 5 is 1")
 (defrule
     (true)
 =>
@@ -84,14 +90,14 @@ Adds a condition to the condition stack.
 (defrule
     (goal 1 1)
 =>
-    (chat-to-all "goal 5 is 1")
+    (chat-to-all chat-70b031f9bf0e9d1de01eda4071cc0b5e863fee04)
     (set-goal 5 2)
 )
 (defrule
     (goal 5 2)
     (goal 1 1)
 =>
-    (chat-to-all "This will still execute, because the condition `goal 5 1` was frozen into a goal due to `ifg`.")
+    (chat-to-all chat-f0b89dd1434265a4c9c3d9691ade85b3c7757617)
 )
 
 ```

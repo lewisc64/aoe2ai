@@ -24,11 +24,21 @@ build mills
 (defrule
     (or
       (building-type-count-total mill == 0)
-      (up-compare-goal 2 g:>= 1)
+      (and
+        (not
+          (civ-selected khmer)
+        )
+        (up-compare-goal 2 g:>= 1)
+      )
     )
     (or
       (resource-found food)
-      (game-time >= 60)
+      (and
+        (not
+          (civ-selected khmer)
+        )
+        (game-time >= 60)
+      )
     )
     (can-build mill)
 =>

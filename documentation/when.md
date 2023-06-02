@@ -17,6 +17,7 @@ Rules in the 'then' block are allowed to trigger when any rule in the main 'when
 #end when
 ```
 ```
+(defconst chat-55b0eb48fa8a135b13b417df06c06bf644b044c8 "I built a house!")
 (defrule
     (true)
 =>
@@ -34,7 +35,7 @@ Rules in the 'then' block are allowed to trigger when any rule in the main 'when
 (defrule
     (goal 1 1)
 =>
-    (chat-to-all "I built a house!")
+    (chat-to-all chat-55b0eb48fa8a135b13b417df06c06bf644b044c8)
 )
 (defrule
     (true)

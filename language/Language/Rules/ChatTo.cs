@@ -1,5 +1,8 @@
 ﻿using Language.ScriptItems;
+using System;
 using System.Collections.Generic;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace Language.Rules
 {
@@ -27,15 +30,28 @@ namespace Language.Rules
         public override void Parse(string line, TranspilerContext context)
         {
             var data = GetData(line);
+            var message = data["message"].Value;
+
+            string constName = GetUniqueKey(message);
+            if (!context.Constants.Contains(constName))
+            {
+                context.AddToScript(context.CreateConstant(constName, message));
+            }
 
             if (data["playerwildcard"].Success)
             {
-                context.AddToScript(context.ApplyStacks(new Defrule(new[] { "true" }, new[] { $"chat-to-{data["playerwildcard"].Value} \"{data["message"].Value}\"".Replace("to-self", "local-to-self") })));
+                context.AddToScript(context.ApplyStacks(new Defrule(new[] { "true" }, new[] { $"chat-to-{data["playerwildcard"].Value} {constName}".Replace("to-self", "local-to-self") })));
             }
             else
             {
-                context.AddToScript(context.ApplyStacks(new Defrule(new[] { "true" }, new[] { $"chat-to-player {data["player"].Value} \"{data["message"].Value}\"" })));
+                context.AddToScript(context.ApplyStacks(new Defrule(new[] { "true" }, new[] { $"chat-to-player {data["player"].Value} {constName}" })));
             }
+        }
+
+        private string GetUniqueKey(string message)
+        {
+            using var hasher = SHA1.Create();
+            return $"chat-{BitConverter.ToString(hasher.ComputeHash(Encoding.UTF8.GetBytes(message))).Replace("-", "").ToLower()}";
         }
     }
 }

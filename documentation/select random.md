@@ -17,6 +17,8 @@ A random block separated by randors will be allowed to execute. Using persistant
 #end select
 ```
 ```
+(defconst chat-ae73cad7048986423902bfb35b0725445e57f22d "two!")
+(defconst chat-bc61c414f24f721c838e924297e6446ab4361886 "one!")
 (defrule
     (true)
 =>
@@ -27,12 +29,12 @@ A random block separated by randors will be allowed to execute. Using persistant
 (defrule
     (goal 1 1)
 =>
-    (chat-to-all "one!")
+    (chat-to-all chat-bc61c414f24f721c838e924297e6446ab4361886)
 )
 (defrule
     (goal 1 2)
 =>
-    (chat-to-all "two!")
+    (chat-to-all chat-ae73cad7048986423902bfb35b0725445e57f22d)
 )
 
 ```
@@ -45,6 +47,8 @@ A random block separated by randors will be allowed to execute. Using persistant
 #end select
 ```
 ```
+(defconst chat-ae73cad7048986423902bfb35b0725445e57f22d "two!")
+(defconst chat-bc61c414f24f721c838e924297e6446ab4361886 "one!")
 (defrule
     (true)
 =>
@@ -56,12 +60,12 @@ A random block separated by randors will be allowed to execute. Using persistant
 (defrule
     (goal 1 1)
 =>
-    (chat-to-all "one!")
+    (chat-to-all chat-bc61c414f24f721c838e924297e6446ab4361886)
 )
 (defrule
     (goal 1 2)
 =>
-    (chat-to-all "two!")
+    (chat-to-all chat-ae73cad7048986423902bfb35b0725445e57f22d)
 )
 
 ```
