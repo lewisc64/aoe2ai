@@ -48,7 +48,7 @@ namespace Language.Rules
             }
         }
 
-        private string GetUniqueKey(string message)
+        public static string GetUniqueKey(string message)
         {
             using var hasher = SHA1.Create();
             return $"chat-{BitConverter.ToString(hasher.ComputeHash(Encoding.UTF8.GetBytes(message))).Replace("-", "").ToLower()}";

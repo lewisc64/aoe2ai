@@ -38,7 +38,6 @@ build barracks; auto expand town size
 =>
     (set-strategic-number sn-maximum-town-size 8)
     (set-strategic-number sn-safe-town-size 8)
-    (up-chat-data-to-all "town: %d" s: sn-maximum-town-size)
     (set-goal 1 1)
 )
 (defrule
@@ -84,7 +83,6 @@ build barracks; auto expand town size to 50
 =>
     (set-strategic-number sn-maximum-town-size 8)
     (set-strategic-number sn-safe-town-size 8)
-    (up-chat-data-to-all "town: %d" s: sn-maximum-town-size)
     (set-goal 1 1)
 )
 (defrule
