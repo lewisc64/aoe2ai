@@ -25,7 +25,7 @@ chat sn to self "My town size is: %d" sn-maximum-town-size
 (defrule
     (true)
 =>
-    (up-chat-data-local-to-self chat-a89d8e72f45f347653013cd4bf54a6fa7696cc6b s: sn-maximum-town-size)
+    (up-chat-data-to-self chat-a89d8e72f45f347653013cd4bf54a6fa7696cc6b s: sn-maximum-town-size)
 )
 
 ```

@@ -46,7 +46,7 @@ chat const to allies ""I am color %s!"" 7031232",
 
             if (data["playerwildcard"].Success)
             {
-                context.AddToScript(context.ApplyStacks(new Defrule(new[] { "true" }, new[] { $"up-chat-data-to-{data["playerwildcard"].Value} {constName} {typeOp} {insertData}".Replace("to-self", "local-to-self") })));
+                context.AddToScript(context.ApplyStacks(new Defrule(new[] { "true" }, new[] { $"up-chat-data-to-{data["playerwildcard"].Value} {constName} {typeOp} {insertData}" })));
             }
             else
             {
