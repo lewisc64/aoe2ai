@@ -87,7 +87,6 @@ auto expand town size to RADIUS";
                     {
                         new Action($"set-strategic-number sn-maximum-town-size {MinimumTownSize}"),
                         new Action($"set-strategic-number sn-safe-town-size {MinimumTownSize}"),
-                        new Action("up-chat-data-to-all \"town: %d\" s: sn-maximum-town-size"),
                         new Action($"set-goal {didResetGoal} 1"),
                     }),
                 new Defrule(
