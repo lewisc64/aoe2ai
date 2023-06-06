@@ -83,6 +83,8 @@ namespace Language.Rules
                             rule.Actions.Add(new Action($"up-modify-goal {goalNumber} g:+ {tempGoal}"));
                         });
                         rule.Actions.Add(new Action($"up-modify-goal {goalNumber} c:mod {numberOfBlocks}"));
+                        rule.Actions.Add(new Action($"up-modify-goal {goalNumber} c:+ {numberOfBlocks}"));
+                        rule.Actions.Add(new Action($"up-modify-goal {goalNumber} c:mod {numberOfBlocks}"));
                         rule.Actions.Add(new Action($"up-modify-goal {goalNumber} c:+ 1"));
                         if (persistant)
                         {
