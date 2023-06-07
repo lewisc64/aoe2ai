@@ -88,7 +88,7 @@ namespace Language
 
         public int CreatePointGoal(string name = null)
         {
-            var goalNumber = CreateGoal(name, startId: 42);
+            var goalNumber = CreateGoal(name, startId: 41);
             var otherGoalNumber = CreateGoal(null, startId: goalNumber);
             if (goalNumber + 1 != otherGoalNumber)
             {
