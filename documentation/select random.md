@@ -28,6 +28,8 @@ A random block separated by randors will be allowed to execute. Using persistant
     (up-get-precise-time 0 2)
     (up-modify-goal 1 g:+ 2)
     (up-modify-goal 1 c:mod 2)
+    (up-modify-goal 1 c:+ 2)
+    (up-modify-goal 1 c:mod 2)
     (up-modify-goal 1 c:+ 1)
 )
 (defrule
@@ -61,6 +63,8 @@ A random block separated by randors will be allowed to execute. Using persistant
     (up-get-fact random-number 0 1)
     (up-get-precise-time 0 2)
     (up-modify-goal 1 g:+ 2)
+    (up-modify-goal 1 c:mod 2)
+    (up-modify-goal 1 c:+ 2)
     (up-modify-goal 1 c:mod 2)
     (up-modify-goal 1 c:+ 1)
     (disable-self)
