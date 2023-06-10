@@ -9,7 +9,7 @@ namespace Language.Rules
     [ActiveRule]
     public class PushDeer : RuleBase
     {
-        private static readonly string[] DefaultUnits = new[] { "scout-cavalry-line", "eagle-warrior-line" };
+        private static readonly string[] DefaultUnits = new[] { "scout-cavalry-line", "eagle-warrior-line", "camel-line" };
 
         private const int DefaultPushRange = 30;
 
