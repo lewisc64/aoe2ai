@@ -13,7 +13,7 @@ namespace Language.Rules.DUC
         public override string Usage => "TODO";
 
         public DucObjectsAction()
-            : base(@"^\$(?<action>move|attack|patrol)$")
+            : base(@"^\$(?<action>move|attack|patrol|garrison|gather)$")
         {
         }
 
@@ -35,6 +35,14 @@ namespace Language.Rules.DUC
             else if (action == "attack")
             {
                 rule.Actions.Add(new Action("up-target-objects 0 action-default -1 -1"));
+            }
+            else if (action == "garrison")
+            {
+                rule.Actions.Add(new Action("up-target-objects 0 action-garrison -1 -1"));
+            }
+            else if (action == "gather")
+            {
+                rule.Actions.Add(new Action("up-target-objects 0 action-gather -1 -1"));
             }
 
             context.AddToScript(context.ApplyStacks(rule));
