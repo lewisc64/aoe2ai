@@ -1,5 +1,6 @@
 ﻿using Language.ScriptItems;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Language.Rules
 {
@@ -35,7 +36,7 @@ namespace Language.Rules
 
             if (string.IsNullOrEmpty(mathOp))
             {
-                if (!context.Goals.Contains(name))
+                if (!context.Goals.Values.Contains(name))
                 {
                     context.CreateGoal(name);
                 }

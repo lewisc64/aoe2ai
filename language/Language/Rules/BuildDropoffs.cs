@@ -71,6 +71,7 @@ namespace Language.Rules
                 new Condition($"resource-found {resource}"),
                 new Condition($"up-pending-objects c: {building} == 0"),
                 new Condition($"can-build {building}"),
+                new Condition($"dropsite-min-distance {resource} != 255"),
             };
 
             if (building == "mining-camp" && resource == "gold")

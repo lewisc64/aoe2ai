@@ -5,6 +5,14 @@ namespace Language
 {
     public static class Game
     {
+        public static readonly int MaxGoals = 512;
+
+        public static readonly int ObjectDataPreciseX = 38;
+
+        public static readonly int ObjectDataPreciseY = 39;
+
+        public static readonly int GaiaPlayerNumber = 0;
+
         public static readonly int MaleBuilderId = 118;
 
         public static readonly int FemaleBuilderId = 212;
@@ -18,6 +26,8 @@ namespace Language
         public static readonly int DeadLoadedTradeCartId = 205;
 
         public static readonly int YurtId = 712;
+
+        public static readonly int DeerClassId = 909;
 
         public static readonly int[] AllClosedGateIds = new int[] { 789, 793, 797, 801, 64, 88, 659, 667, 63, 85, 660, 668 };
 

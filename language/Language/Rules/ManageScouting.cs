@@ -89,6 +89,21 @@ namespace Language.Rules
                         new Action("set-strategic-number sn-percent-civilian-explorers 0"),
                         new Action("set-strategic-number sn-cap-civilian-explorers 0"),
                     }),
+                new Defrule(
+                    new[]
+                    {
+                        "game-time < 600",
+                    },
+                    new[]
+                    {
+                        "up-full-reset-search",
+                        "up-find-local c: scout-cavalry-line c: 1",
+                        "up-find-local c: eagle-warrior-line c: 1",
+                        "up-remove-objects search-local object-data-action == actionid-move",
+                        "up-modify-sn sn-focus-player-number c:= 0",
+                        "up-find-remote c: livestock-class c: 255",
+                        "up-target-objects 0 action-move -1 -1",
+                    })
             };
 
             context.AddToScript(context.ApplyStacks(rules));

@@ -39,8 +39,8 @@ auto expand town size to RADIUS";
 
         public override IEnumerable<string> Examples => new[]
         {
-            "auto expand town size",
-            "auto expand town size to 50",
+            "build barracks; auto expand town size",
+            "build barracks; auto expand town size to 50",
         };
 
         public AutoExpandTownSize()
@@ -52,30 +52,52 @@ auto expand town size to RADIUS";
         {
             var maximum = GetData(line)["maximum"].Value.ReplaceIfNullOrEmpty(DefaultMaximum.ToString());
 
-            var hasBuiltBuildingGoal = context.CreateGoal();
             var didResetGoal = context.CreateGoal();
 
-            foreach (var item in context.Script)
-            {
-                if (item is Defrule rule && rule.Actions.Any(x => x.Text.StartsWith("build ") && !IgnoredBuildings.Any(y => x.Text.EndsWith($" {y}"))))
-                {
-                    rule.Actions.Add(new Action($"set-goal {hasBuiltBuildingGoal} 1"));
-                }
-            }
+            var buildings = context.Script
+                .Where(x => x is Defrule rule && rule.Actions.Any(x => x.Text.StartsWith("build ")))
+                .Cast<Defrule>()
+                .Select(x => x.Actions.First(y => y.Text.StartsWith("build ")).Text.Split(" ").Last())
+                .Except(IgnoredBuildings);
 
-            var rules = new List<Defrule>()
+            var pendingBuildingsCondition = Condition.JoinConditions("or", buildings.Select(x => new Condition($"up-pending-placement c: {x}")));
+
+            var rules = new List<Defrule>
             {
                 new Defrule(
-                    new[] {
+                    new[]
+                    {
                         "true"
                     },
                     new[]
                     {
-                        $"set-strategic-number sn-maximum-town-size {maximum}",
-                        $"set-strategic-number sn-minimum-town-size {MinimumTownSize}",
-                        $"set-strategic-number sn-safe-town-size {maximum}",
                         $"set-goal {didResetGoal} 0",
+                        $"set-strategic-number sn-maximum-town-size {MinimumTownSize}",
+                        $"set-strategic-number sn-minimum-town-size {MinimumTownSize}",
+                        $"set-strategic-number sn-safe-town-size {MinimumTownSize}",
                         "disable-self"
+                    }),
+                new Defrule(
+                    new[]
+                    {
+                        pendingBuildingsCondition,
+                        new Condition($"goal {didResetGoal} 0"),
+                    },
+                    new[]
+                    {
+                        new Action($"set-strategic-number sn-maximum-town-size {MinimumTownSize}"),
+                        new Action($"set-strategic-number sn-safe-town-size {MinimumTownSize}"),
+                        new Action($"set-goal {didResetGoal} 1"),
+                    }),
+                new Defrule(
+                    new[]
+                    {
+                        pendingBuildingsCondition.Invert(),
+                        new Condition($"goal {didResetGoal} 1"),
+                    },
+                    new[]
+                    {
+                        new Action($"set-goal {didResetGoal} 0"),
                     }),
                 new Defrule(
                     new[]
@@ -86,37 +108,7 @@ auto expand town size to RADIUS";
                     {
                         $"up-modify-sn sn-maximum-town-size c:+ {Increment}",
                         $"up-modify-sn sn-maximum-town-size c:min {maximum}",
-                        $"set-strategic-number sn-minimum-town-size {MinimumTownSize}",
-                        $"set-strategic-number sn-safe-town-size {maximum}",
-                    }),
-                new Defrule(
-                    new[]
-                    {
-                        $"goal {hasBuiltBuildingGoal} 0",
-                    },
-                    new[]
-                    {
-                        $"set-goal {didResetGoal} 0",
-                    }),
-                new Defrule(
-                    new[]
-                    {
-                        $"goal {hasBuiltBuildingGoal} 1",
-                        $"goal {didResetGoal} 0",
-                    },
-                    new[]
-                    {
-                        "up-modify-sn sn-maximum-town-size s:= sn-minimum-town-size",
-                        $"set-goal {didResetGoal} 1",
-                    }),
-                new Defrule(
-                    new[]
-                    {
-                        "true",
-                    },
-                    new[]
-                    {
-                        $"set-goal {hasBuiltBuildingGoal} 0",
+                        $"up-modify-sn sn-safe-town-size s:= sn-maximum-town-size",
                     }),
             };
 

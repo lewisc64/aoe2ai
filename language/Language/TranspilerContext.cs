@@ -14,7 +14,9 @@ namespace Language
 
         public Script Script { get; set; } = new Script();
 
-        public List<string> Goals { get; set; } = new List<string>();
+        public Dictionary<int, string> Goals { get; set; } = new Dictionary<int, string>();
+
+        public Dictionary<string, int> DucPointGoalNameMap { get; set; } = new Dictionary<string, int>();
 
         public Stack<int> VolatileGoalNumbers { get; set; } = new Stack<int>();
 
@@ -67,14 +69,48 @@ namespace Language
             AddToScript(items);
         }
 
-        public int CreateGoal(string name = null)
+        public int CreateGoal(string name = null, int startId = 1)
         {
-            Goals.Add(name);
-            if (name != null)
+            for (var i = startId; i <= Game.MaxGoals; i++)
             {
-                Script.Items.Insert(0, CreateConstant(name, Goals.Count));
+                if (!Goals.ContainsKey(i))
+                {
+                    Goals[i] = name;
+                    if (name != null)
+                    {
+                        Script.Items.Insert(0, CreateConstant(name, i));
+                    }
+                    return i;
+                }
             }
-            return Goals.Count;
+            throw new System.InvalidOperationException("There are not enough free goals.");
+        }
+
+        public int CreatePointGoal(string name = null)
+        {
+            var goalNumber = CreateGoal(name, startId: 41);
+            var otherGoalNumber = CreateGoal(null, startId: goalNumber);
+            if (goalNumber + 1 != otherGoalNumber)
+            {
+                throw new System.InvalidOperationException("Point goal pair was not created with consecutive numbers.");
+            }
+            return goalNumber;
+        }
+
+        public int CreateDucPointGoal(string name)
+        {
+            var goalNumber = CreatePointGoal();
+            DucPointGoalNameMap[name] = goalNumber;
+            return goalNumber;
+        }
+
+        public int GetDucPointGoalNumber(string name)
+        {
+            if (!DucPointGoalNameMap.ContainsKey(name))
+            {
+                throw new System.ArgumentException($"DUC point {name} is not defined.");
+            }
+            return DucPointGoalNameMap[name];
         }
 
         public int CreateVolatileGoal()
@@ -231,7 +267,8 @@ namespace Language
                 ActionStack = new Stack<Action>(ActionStack.Select(x => x.Copy())),
                 DataStack = new Stack<object>(DataStack),
                 Script = Script.Copy(),
-                Goals = new List<string>(Goals),
+                Goals = new Dictionary<int, string>(Goals),
+                DucPointGoalNameMap = new Dictionary<string, int>(DucPointGoalNameMap),
                 VolatileGoalNumbers = new Stack<int>(VolatileGoalNumbers),
                 Timers = new List<string>(Timers),
                 Constants = new List<string>(Constants),

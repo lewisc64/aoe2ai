@@ -14,83 +14,91 @@ auto expand town size to RADIUS
 ```
 ## Examples
 ```
-auto expand town size
+build barracks; auto expand town size
 ```
 ```
 (defrule
+    (can-build barracks)
+    (up-pending-objects c: barracks < 5)
+=>
+    (build barracks)
+)
+(defrule
     (true)
 =>
-    (set-strategic-number sn-maximum-town-size 30)
+    (set-goal 1 0)
+    (set-strategic-number sn-maximum-town-size 8)
     (set-strategic-number sn-minimum-town-size 8)
-    (set-strategic-number sn-safe-town-size 30)
-    (set-goal 2 0)
+    (set-strategic-number sn-safe-town-size 8)
     (disable-self)
+)
+(defrule
+    (up-pending-placement c: barracks)
+    (goal 1 0)
+=>
+    (set-strategic-number sn-maximum-town-size 8)
+    (set-strategic-number sn-safe-town-size 8)
+    (set-goal 1 1)
+)
+(defrule
+    (not
+      (up-pending-placement c: barracks)
+    )
+    (goal 1 1)
+=>
+    (set-goal 1 0)
 )
 (defrule
     (true)
 =>
     (up-modify-sn sn-maximum-town-size c:+ 4)
     (up-modify-sn sn-maximum-town-size c:min 30)
-    (set-strategic-number sn-minimum-town-size 8)
-    (set-strategic-number sn-safe-town-size 30)
-)
-(defrule
-    (goal 1 0)
-=>
-    (set-goal 2 0)
-)
-(defrule
-    (goal 1 1)
-    (goal 2 0)
-=>
-    (up-modify-sn sn-maximum-town-size s:= sn-minimum-town-size)
-    (set-goal 2 1)
-)
-(defrule
-    (true)
-=>
-    (set-goal 1 0)
+    (up-modify-sn sn-safe-town-size s:= sn-maximum-town-size)
 )
 
 ```
 ---
 ```
-auto expand town size to 50
+build barracks; auto expand town size to 50
 ```
 ```
 (defrule
+    (can-build barracks)
+    (up-pending-objects c: barracks < 5)
+=>
+    (build barracks)
+)
+(defrule
     (true)
 =>
-    (set-strategic-number sn-maximum-town-size 50)
+    (set-goal 1 0)
+    (set-strategic-number sn-maximum-town-size 8)
     (set-strategic-number sn-minimum-town-size 8)
-    (set-strategic-number sn-safe-town-size 50)
-    (set-goal 2 0)
+    (set-strategic-number sn-safe-town-size 8)
     (disable-self)
+)
+(defrule
+    (up-pending-placement c: barracks)
+    (goal 1 0)
+=>
+    (set-strategic-number sn-maximum-town-size 8)
+    (set-strategic-number sn-safe-town-size 8)
+    (set-goal 1 1)
+)
+(defrule
+    (not
+      (up-pending-placement c: barracks)
+    )
+    (goal 1 1)
+=>
+    (set-goal 1 0)
 )
 (defrule
     (true)
 =>
     (up-modify-sn sn-maximum-town-size c:+ 4)
     (up-modify-sn sn-maximum-town-size c:min 50)
-    (set-strategic-number sn-minimum-town-size 8)
-    (set-strategic-number sn-safe-town-size 50)
-)
-(defrule
-    (goal 1 0)
-=>
-    (set-goal 2 0)
-)
-(defrule
-    (goal 1 1)
-    (goal 2 0)
-=>
-    (up-modify-sn sn-maximum-town-size s:= sn-minimum-town-size)
-    (set-goal 2 1)
-)
-(defrule
-    (true)
-=>
-    (set-goal 1 0)
+    (up-modify-sn sn-safe-town-size s:= sn-maximum-town-size)
 )
 
 ```

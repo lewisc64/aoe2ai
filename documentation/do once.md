@@ -13,10 +13,11 @@ Adds 'disable-self' to the action stack. Makes sure each rule in the block indiv
 #end do
 ```
 ```
+(defconst chat-aaf4c61ddcc5e8a2dabede0f3b482cd9aea9434d "hello")
 (defrule
     (true)
 =>
-    (chat-to-all "hello")
+    (chat-to-all chat-aaf4c61ddcc5e8a2dabede0f3b482cd9aea9434d)
     (disable-self)
 )
 
@@ -28,6 +29,7 @@ Adds 'disable-self' to the action stack. Makes sure each rule in the block indiv
 #end do
 ```
 ```
+(defconst chat-aaf4c61ddcc5e8a2dabede0f3b482cd9aea9434d "hello")
 (defrule
     (true)
 =>
@@ -37,7 +39,7 @@ Adds 'disable-self' to the action stack. Makes sure each rule in the block indiv
 (defrule
     (goal 1 1)
 =>
-    (chat-to-all "hello")
+    (chat-to-all chat-aaf4c61ddcc5e8a2dabede0f3b482cd9aea9434d)
     (disable-self)
 )
 (defrule

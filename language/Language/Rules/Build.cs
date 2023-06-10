@@ -65,8 +65,16 @@ namespace Language.Rules
             }
             else
             {
-                actions.Add($"up-set-placement-data {(forward ? "any-enemy" : "my-player-number")} {near} c: 4");
-                actions.Add($"up-build place-{(forward ? "forward" : "control")} 0 c: {building}");
+                if (forward)
+                {
+                    conditions.Add($"players-building-type-count target-player {near} >= 1");
+                }
+                else
+                {
+                    conditions.Add($"building-type-count {near} >= 1");
+                }
+                actions.Add($"up-set-placement-data {(forward ? "target-player" : "my-player-number")} {near} c: 0");
+                actions.Add($"up-build {(forward ? "place-forward" : "place-control")} 0 c: {building}");
                 compressable = false;
             }
 

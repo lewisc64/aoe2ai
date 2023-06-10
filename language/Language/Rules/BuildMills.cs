@@ -1,4 +1,5 @@
-﻿using Language.ScriptItems;
+﻿using Language.Extensions;
+using Language.ScriptItems;
 using System.Collections.Generic;
 
 namespace Language.Rules
@@ -66,14 +67,26 @@ namespace Language.Rules
                         new[]
                         {
                             new Condition("building-type-count-total mill == 0"),
-                            new Condition($"up-compare-goal {farmCountGoal} g:>= {currentFarmsSupportedGoal}"),
+                            new CombinatoryCondition(
+                                "and",
+                                new[]
+                                {
+                                    new Condition("civ-selected khmer").Invert(),
+                                    new Condition($"up-compare-goal {farmCountGoal} g:>= {currentFarmsSupportedGoal}"),
+                                }),
                         }),
                     new CombinatoryCondition(
                         "or",
                         new[]
                         {
                             new Condition("resource-found food"),
-                            new Condition("game-time >= 60"),
+                            new CombinatoryCondition(
+                                "and",
+                                new[]
+                                {
+                                    new Condition("civ-selected khmer").Invert(),
+                                    new Condition("game-time >= 60"),
+                                }),
                         }),
                     new Condition("can-build mill"),
                 },

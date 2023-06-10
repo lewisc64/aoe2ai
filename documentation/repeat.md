@@ -13,6 +13,7 @@ Each rule is allowed to be triggered once after the time has elapsed, the proces
 #end repeat
 ```
 ```
+(defconst chat-aaf4c61ddcc5e8a2dabede0f3b482cd9aea9434d "hello")
 (defrule
     (true)
 =>
@@ -22,7 +23,7 @@ Each rule is allowed to be triggered once after the time has elapsed, the proces
 (defrule
     (timer-triggered 1)
 =>
-    (chat-to-all "hello")
+    (chat-to-all chat-aaf4c61ddcc5e8a2dabede0f3b482cd9aea9434d)
     (disable-timer 1)
     (enable-timer 1 30)
 )
