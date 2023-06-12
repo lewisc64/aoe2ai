@@ -1,8 +1,6 @@
 ﻿using Language.ScriptItems;
 using System;
 using System.Collections.Generic;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace Language.Rules
 {
@@ -118,16 +116,22 @@ namespace Language.Rules
                     $"up-filter-distance c: -1 c: {KillRange}",
                     $"up-find-local c: villager-class c: {KillVillagers}",
                     $"up-find-remote c: {Game.DeerClassId} c: 100",
+                    $"up-get-search-state {localTotal}",
+                }));
+
+            rules.Add(new Defrule(
+                new[]
+                {
+                    $"up-compare-goal {localTotal} >= 1",
+                    $"up-compare-goal {remoteTotal} >= 1",
+                },
+                new[]
+                {
                     "up-target-objects 0 action-default -1 -1",
+                    "up-send-scout group-type-land-explore scout-border",
                 }));
 
             context.AddToScript(context.ApplyStacks(rules));
-        }
-
-        public static string GetUniqueKey(string message)
-        {
-            using var hasher = SHA1.Create();
-            return $"chat-{BitConverter.ToString(hasher.ComputeHash(Encoding.UTF8.GetBytes(message))).Replace("-", "").ToLower()}";
         }
     }
 }

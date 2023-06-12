@@ -21,6 +21,18 @@ namespace Language
 
         public static readonly int FemaleGoldMinerId = 581;
 
+        public static readonly int MaleShepherd = 592;
+
+        public static readonly int FemaleShepherd = 590;
+
+        public static readonly int MaleForager = 120;
+
+        public static readonly int FemaleForager = 354;
+
+        public static readonly int MaleHunter = 122;
+
+        public static readonly int FemaleHunter = 216;
+
         public static readonly int DeadTradeCartId = 178;
 
         public static readonly int DeadLoadedTradeCartId = 205;
