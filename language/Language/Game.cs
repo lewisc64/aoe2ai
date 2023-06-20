@@ -13,6 +13,10 @@ namespace Language
 
         public static readonly int ObjectDataDistance = 44;
 
+        public static readonly int StatusGather = 5;
+
+        public static readonly int ListActive = 0;
+
         public static readonly int GaiaPlayerNumber = 0;
 
         public static readonly int MaleBuilderId = 118;
@@ -42,6 +46,8 @@ namespace Language
         public static readonly int YurtId = 712;
 
         public static readonly int DeerClassId = 909;
+
+        public static readonly int ForageClassId = 907;
 
         public static readonly int[] AllClosedGateIds = new int[] { 789, 793, 797, 801, 64, 88, 659, 667, 63, 85, 660, 668 };
 
