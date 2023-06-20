@@ -15,7 +15,7 @@ namespace Language.Rules
 
         private const int KillVillagers = 4;
 
-        private const int DistanceFromDeerPrecise = -170;
+        private const int DistanceFromDeerPrecise = -150;
 
         public override string Name => "push deer";
 
@@ -112,10 +112,12 @@ namespace Language.Rules
                     "up-find-local c: town-center c: 1",
                     "up-set-target-object search-local c: 0",
                     $"up-get-point position-object {dropSitePoint}",
+                    $"up-set-target-point {dropSitePoint}",
                     "up-reset-search 1 1 0 0",
                     $"up-filter-distance c: -1 c: {KillRange}",
                     $"up-find-local c: villager-class c: {KillVillagers}",
-                    $"up-find-remote c: {Game.DeerClassId} c: 100",
+                    $"up-remove-objects search-local object-data-target == {Game.DeerClassId}",
+                    $"up-find-remote c: {Game.DeerClassId} c: 1",
                     $"up-get-search-state {localTotal}",
                 }));
 

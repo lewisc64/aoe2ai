@@ -11,6 +11,8 @@ namespace Language
 
         public static readonly int ObjectDataPreciseY = 39;
 
+        public static readonly int ObjectDataDistance = 44;
+
         public static readonly int GaiaPlayerNumber = 0;
 
         public static readonly int MaleBuilderId = 118;

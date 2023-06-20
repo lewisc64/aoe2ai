@@ -49,7 +49,7 @@ insert train-unit(unit=""archer-line"")",
 
                 if (value.StartsWith("\"") && value.EndsWith("\""))
                 {
-                    value = value.Trim('"');
+                    value = value.Substring(1, value.Length - 2);
                 }
                 parameters[name] = value.Replace("\\\"", "\"");
             }

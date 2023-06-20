@@ -19,6 +19,7 @@ set up distances
     (set-strategic-number sn-mill-max-distance 25)
     (set-strategic-number sn-camp-max-distance 25)
     (set-strategic-number sn-dropsite-separation-distance 5)
+    (set-strategic-number sn-allow-adjacent-dropsites 1)
     (disable-self)
 )
 
