@@ -12,7 +12,7 @@ micro sheep
 (defrule
     (civ-selected gurjaras)
 =>
-    (up-jump-rule 6)
+    (up-jump-rule 7)
 )
 (defrule
     (true)
@@ -23,6 +23,13 @@ micro sheep
     (up-modify-sn sn-focus-player-number c:= 0)
     (up-filter-distance c: -1 c: 10)
     (up-filter-status c: 5 c: 0)
+    (up-find-status-remote c: livestock-class c: 1)
+    (up-get-search-state 41)
+)
+(defrule
+    (goal 43 0)
+=>
+    (up-filter-status c: 4 c: 0)
     (up-find-status-remote c: livestock-class c: 1)
     (up-get-search-state 41)
 )
@@ -55,9 +62,9 @@ micro sheep
     (up-remove-objects search-local -1 == 0)
     (up-find-remote c: town-center c: 1)
     (up-set-target-object search-remote c: 0)
-    (up-get-point 45 position-object)
-    (up-get-point 47 position-center)
-    (up-lerp-tiles 45 47 c: -5)
+    (up-get-point position-object 45)
+    (up-get-point position-center 47)
+    (up-lerp-tiles 45 47 c: -3)
     (up-target-point 45 action-default -1 -1)
 )
 (defrule

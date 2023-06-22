@@ -42,7 +42,7 @@ namespace Language.Rules
 
             var normalMicroRules = new[]
             {
-                new Defrule(
+                new Defrule( // find the dead sheep
                     new[]
                     {
                         "true",
@@ -58,7 +58,18 @@ namespace Language.Rules
                         "up-find-status-remote c: livestock-class c: 1",
                         $"up-get-search-state {localTotal}",
                     }),
-                new Defrule(
+                new Defrule( // no dead sheep, find the dying sheep?
+                    new[]
+                    {
+                        $"goal {remoteTotal} 0",
+                    },
+                    new[]
+                    {
+                        $"up-filter-status c: {Game.StatusDown} c: {Game.ListActive}",
+                        "up-find-status-remote c: livestock-class c: 1",
+                        $"up-get-search-state {localTotal}",
+                    }),
+                new Defrule( // task shepherds to take the dead sheep
                     new[]
                     {
                         $"up-compare-goal {remoteTotal} c:>= 1",
@@ -70,7 +81,7 @@ namespace Language.Rules
                         $"up-find-local c: {Game.FemaleShepherd} c: 255",
                         "up-target-objects 0 action-default -1 -1",
                     }),
-                new Defrule(
+                new Defrule( // no dead sheep, kill the next sheep
                     new[]
                     {
                         $"goal {remoteTotal} 0",
@@ -85,7 +96,7 @@ namespace Language.Rules
                         $"up-find-local c: {Game.FemaleShepherd} c: 255",
                         "up-target-objects 0 action-default -1 -1",
                     }),
-                new Defrule(
+                new Defrule( // move living sheep away from tc
                     new[]
                     {
                         "true",
@@ -99,12 +110,12 @@ namespace Language.Rules
                         "up-remove-objects search-local -1 == 0",
                         "up-find-remote c: town-center c: 1",
                         "up-set-target-object search-remote c: 0",
-                        $"up-get-point {tcPointGoal} position-object",
-                        $"up-get-point {mapCenterPointGoal} position-center",
-                        $"up-lerp-tiles {tcPointGoal} {mapCenterPointGoal} c: -5",
+                        $"up-get-point position-object {tcPointGoal}",
+                        $"up-get-point position-center {mapCenterPointGoal}",
+                        $"up-lerp-tiles {tcPointGoal} {mapCenterPointGoal} c: -3",
                         $"up-target-point {tcPointGoal} action-default -1 -1",
                     }),
-                new Defrule(
+                new Defrule( // find dead sheep with less than 30 food
                     new[]
                     {
                         "true",
@@ -120,7 +131,7 @@ namespace Language.Rules
                         $"up-remove-objects search-remote object-data-carry > 30",
                         $"up-get-search-state {localTotal}",
                     }),
-                new Defrule(
+                new Defrule( // move next sheep under tc if found
                     new[]
                     {
                         $"up-compare-goal {remoteTotal} c:>= 1",
@@ -147,7 +158,7 @@ namespace Language.Rules
                     },
                     new[]
                     {
-                        "up-full-reset-search",
+                        "up-full-reset-search", // task shepherds onto the berries
                         "up-modify-sn sn-focus-player-number c:= 0",
                         "up-find-local c: town-center c: 1",
                         "up-set-target-object search-local c: 0",
@@ -160,7 +171,7 @@ namespace Language.Rules
                         $"up-find-remote c: {Game.ForageClassId} c: 255",
                         "up-target-objects 0 action-default -1 -1",
 
-                        "up-reset-search 1 1 1 1",
+                        "up-reset-search 1 1 1 1", // garrison the sheep
                         $"up-get-fact player-number 0 {playerGoal}",
                         $"up-modify-sn sn-focus-player-number g:= {playerGoal}",
                         "up-reset-filters",

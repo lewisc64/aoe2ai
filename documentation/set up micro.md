@@ -31,6 +31,7 @@ set up micro
     (set-strategic-number sn-enable-offensive-priority 1)
     (set-strategic-number sn-zero-priority-distance 255)
     (set-strategic-number sn-scale-minimum-attack-group-size 0)
+    (set-strategic-number sn-garrison-rams 0)
     (disable-self)
 )
 

@@ -13,6 +13,8 @@ namespace Language
 
         public static readonly int ObjectDataDistance = 44;
 
+        public static readonly int StatusDown = 4;
+
         public static readonly int StatusGather = 5;
 
         public static readonly int ListActive = 0;
