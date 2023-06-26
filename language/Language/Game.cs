@@ -7,6 +7,10 @@ namespace Language
     {
         public static readonly int MaxGoals = 512;
 
+        public static readonly int ObjectDataPierceArmor = 27;
+
+        public static readonly int ObjectDataBaseAttack = 28;
+
         public static readonly int ObjectDataPreciseX = 38;
 
         public static readonly int ObjectDataPreciseY = 39;
@@ -48,6 +52,8 @@ namespace Language
         public static readonly int YurtId = 712;
 
         public static readonly int DeerClassId = 909;
+
+        public static readonly int BoarClassId = 910;
 
         public static readonly int ForageClassId = 907;
 
