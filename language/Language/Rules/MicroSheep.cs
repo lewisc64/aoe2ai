@@ -8,6 +8,8 @@ namespace Language.Rules
     [ActiveRule]
     public class MicroSheep : RuleBase
     {
+        private const int MaxShepherds = 6;
+
         public override string Name => "micro sheep";
 
         public override string Help => "Takes sheep one at a time. Garrisons them in a mill for Gurjaras.";
@@ -39,6 +41,7 @@ namespace Language.Rules
             var tcPointGoal = context.CreatePointGoal();
             var mapCenterPointGoal = context.CreatePointGoal();
             var playerGoal = context.CreateVolatileGoal();
+            var shepherdsGoal = context.CreateVolatileGoal();
 
             var normalMicroRules = new[]
             {
@@ -146,6 +149,32 @@ namespace Language.Rules
                         "set-strategic-number sn-target-point-adjustment 5",
                         "up-target-objects 0 action-move -1 -1",
                         "set-strategic-number sn-target-point-adjustment 0",
+                    }),
+                new Defrule( // count the shepherds
+                    new[]
+                    {
+                        "true",
+                    },
+                    new[]
+                    {
+                        $"up-get-fact unit-type-count {Game.MaleShepherd} {shepherdsGoal}",
+                        $"up-get-fact unit-type-count {Game.FemaleShepherd} {playerGoal}",
+                        $"up-modify-goal {shepherdsGoal} g:+ {playerGoal}",
+                    }),
+                new Defrule( // retask excess shepherds onto berries
+                    new[]
+                    {
+                        $"up-compare-goal {shepherdsGoal} c:> {MaxShepherds}",
+                    },
+                    new[]
+                    {
+                        "up-full-reset-search",
+                        "up-modify-sn sn-focus-player-number c:= 0",
+                        $"up-find-local c: {Game.MaleShepherd} c: 1",
+                        $"up-find-local c: {Game.FemaleShepherd} c: 1",
+                        "up-remove-objects search-local -1 >= 1",
+                        $"up-find-remote c: {Game.ForageClassId} c: 255",
+                        "up-target-objects 0 action-default -1 -1",
                     }),
             };
 
