@@ -1,7 +1,6 @@
 ﻿using Language.ScriptItems;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Language.Rules
 {
@@ -119,7 +118,7 @@ namespace Language.Rules
                     "up-remove-objects search-remote object-data-target == siege-weapon-class",
                     $"up-get-search-state {localTotal}",
                 }));
-            
+
             var objectPoint = context.CreatePointGoal();
             var unitPoint = context.CreatePointGoal();
 
@@ -151,7 +150,7 @@ namespace Language.Rules
 
                     "up-reset-filters",
                     $"up-get-object-data object-data-range {buildingRange}",
-                    $"up-modify-goal {buildingRange} c:+ 5",
+                    $"up-modify-goal {buildingRange} c:+ 6",
                     $"up-filter-distance c: -1 g: {buildingRange}",
                     $"up-filter-exclude -1 -1 orderid-move -1",
                     "up-filter-include cmdid-military -1 -1 -1",
@@ -159,11 +158,14 @@ namespace Language.Rules
 
                     "up-reset-search 1 1 0 0",
                     $"up-find-local c: all-units-class c: 255",
+                    $"up-remove-objects search-local {Game.ObjectDataPierceArmor} >= 100",
                     $"up-set-target-object search-local c: 0",
                     $"up-get-object-data {Game.ObjectDataPreciseX} {unitPoint}",
                     $"up-get-object-data {Game.ObjectDataPreciseY} {unitPoint + 1}",
 
-                    $"up-lerp-tiles {unitPoint} {objectPoint} c: -500",
+                    $"up-lerp-tiles {unitPoint} {objectPoint} c: -200",
+                    $"up-cross-tiles {unitPoint} {objectPoint} c: 500",
+
                     "set-strategic-number sn-target-point-adjustment 6",
                     $"up-target-point {unitPoint} action-default -1 -1",
                     "set-strategic-number sn-target-point-adjustment 0",
@@ -177,7 +179,7 @@ namespace Language.Rules
 
             context.FreeVolatileGoal(currentRemoteNumber);
             context.FreeVolatileGoal(buildingRange);
-            
+
             context.AddToScript(context.ApplyStacks(rules));
         }
     }

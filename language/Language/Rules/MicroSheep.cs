@@ -173,6 +173,7 @@ namespace Language.Rules
                         $"up-find-local c: {Game.MaleShepherd} c: 1",
                         $"up-find-local c: {Game.FemaleShepherd} c: 1",
                         "up-remove-objects search-local -1 >= 1",
+                        "up-filter-distance c: -1 c: 20", // target point is still own TC
                         $"up-find-remote c: {Game.ForageClassId} c: 255",
                         "up-target-objects 0 action-default -1 -1",
                     }),
