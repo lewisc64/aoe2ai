@@ -7,6 +7,8 @@ namespace Language.Rules
     [ActiveRule]
     public class DodgeFortifications : RuleBase
     {
+        private const int SafetyBuffer = 8;
+
         public override string Name => "dodge fortifications";
 
         public override string Usage => "dodge fortifications";
@@ -56,6 +58,7 @@ namespace Language.Rules
                 })
             {
                 Compressable = false,
+                Splittable = false,
             });
             rules.Add(new Defrule(
                 new[]
@@ -69,6 +72,7 @@ namespace Language.Rules
                 })
             {
                 Compressable = false,
+                Splittable = false,
             });
             rules.Add(new Defrule(
                 new[]
@@ -94,6 +98,7 @@ namespace Language.Rules
                 })
             {
                 Compressable = false,
+                Splittable = false,
             });
             rules.Add(new Defrule(
                 new[]
@@ -107,6 +112,7 @@ namespace Language.Rules
                 })
             {
                 Compressable = false,
+                Splittable = false,
             });
             rules.Add(new Defrule(
                 new[]
@@ -150,7 +156,7 @@ namespace Language.Rules
 
                     "up-reset-filters",
                     $"up-get-object-data object-data-range {buildingRange}",
-                    $"up-modify-goal {buildingRange} c:+ 6",
+                    $"up-modify-goal {buildingRange} c:+ {SafetyBuffer}",
                     $"up-filter-distance c: -1 g: {buildingRange}",
                     $"up-filter-exclude -1 -1 orderid-move -1",
                     "up-filter-include cmdid-military -1 -1 -1",
@@ -175,6 +181,7 @@ namespace Language.Rules
                 })
             {
                 Compressable = false,
+                Splittable = false,
             });
 
             context.FreeVolatileGoal(currentRemoteNumber);
