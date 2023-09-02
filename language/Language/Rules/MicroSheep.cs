@@ -84,6 +84,23 @@ namespace Language.Rules
                         $"up-find-local c: {Game.FemaleShepherd} c: 255",
                         "up-target-objects 0 action-default -1 -1",
                     }),
+                new Defrule( // queue the next living sheep
+                    new[]
+                    {
+                        $"up-compare-goal {remoteTotal} c:>= 1",
+                    },
+                    new[]
+                    {
+                        "up-full-reset-search",
+                        $"up-get-fact player-number 0 {playerGoal}",
+                        $"up-modify-sn sn-focus-player-number g:= {playerGoal}",
+                        "up-find-remote c: livestock-class c: 1",
+                        $"up-find-local c: {Game.MaleShepherd} c: 255",
+                        $"up-find-local c: {Game.FemaleShepherd} c: 255",
+                        "set-strategic-number sn-keystates 1",
+                        "up-target-objects 0 action-default -1 -1",
+                        "set-strategic-number sn-keystates 0",
+                    }),
                 new Defrule( // no dead sheep, kill the next sheep
                     new[]
                     {
@@ -215,8 +232,38 @@ namespace Language.Rules
             };
 
             context.FreeVolatileGoal(playerGoal);
-            context.AddToScriptWithJump(normalMicroRules, Condition.JoinConditions("and", context.ConditionStack.Concat(new[] { new Condition("civ-selected gurjaras") })));
-            context.AddToScriptWithJump(gurjaraMicroRules, Condition.JoinConditions("and", context.ConditionStack.Concat(new[] { new Condition("civ-selected gurjaras").Invert() })));
+
+            Condition jumpCondition;
+
+            if (context.ConditionStack.Any())
+            {
+                jumpCondition = Condition.JoinConditions("and", context.ConditionStack).Invert();
+                jumpCondition = Condition.JoinConditions("or", new[] { jumpCondition, new Condition("unit-type-count livestock-class >= 10") });
+            }
+            else
+            {
+                jumpCondition = new Condition("unit-type-count livestock-class >= 10");
+            }
+
+            context.AddToScriptWithJump(
+                normalMicroRules,
+                Condition.JoinConditions(
+                    "or",
+                    new[]
+                    {
+                        jumpCondition,
+                        new Condition("civ-selected gurjaras")
+                    }));
+
+            context.AddToScriptWithJump(
+                gurjaraMicroRules,
+                Condition.JoinConditions(
+                    "or",
+                    new[]
+                    {
+                        jumpCondition,
+                        new Condition("civ-selected gurjaras").Invert()
+                    }));
         }
     }
 }
