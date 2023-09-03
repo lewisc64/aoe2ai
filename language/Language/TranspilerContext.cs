@@ -20,6 +20,8 @@ namespace Language
 
         public Stack<int> VolatileGoalNumbers { get; set; } = new Stack<int>();
 
+        public Stack<int> VolatilePointGoalNumbers { get; set; } = new Stack<int>();
+
         public List<string> Timers { get; set; } = new List<string>();
 
         public List<string> Constants { get; set; } = new List<string>();
@@ -144,6 +146,37 @@ namespace Language
             }
         }
 
+        public int CreateVolatilePointGoal()
+        {
+            return VolatilePointGoalNumbers.Any() ? VolatilePointGoalNumbers.Pop() : CreatePointGoal();
+        }
+
+        public void FreeVolatilePointGoal(int goalNumberX)
+        {
+            VolatilePointGoalNumbers.Push(goalNumberX);
+        }
+
+        public void FreeVolatilePointGoals(IEnumerable<int> goalNumbers)
+        {
+            foreach (var goalNumberX in goalNumbers)
+            {
+                FreeVolatilePointGoal(goalNumberX);
+            }
+        }
+
+        public void UsingVolatilePointGoal(System.Action<int> callback)
+        {
+            int goal = CreateVolatilePointGoal();
+            try
+            {
+                callback(goal);
+            }
+            finally
+            {
+                FreeVolatilePointGoal(goal);
+            }
+        }
+
         public int CreateTimer(string name = null)
         {
             Timers.Add(name);
@@ -254,7 +287,9 @@ namespace Language
 
             Constants = subcontext.Constants;
             Goals = subcontext.Goals;
+            DucPointGoalNameMap = subcontext.DucPointGoalNameMap;
             VolatileGoalNumbers = subcontext.VolatileGoalNumbers;
+            VolatilePointGoalNumbers = subcontext.VolatilePointGoalNumbers;
             Timers = subcontext.Timers;
             Templates = subcontext.Templates;
         }
@@ -270,6 +305,7 @@ namespace Language
                 Goals = new Dictionary<int, string>(Goals),
                 DucPointGoalNameMap = new Dictionary<string, int>(DucPointGoalNameMap),
                 VolatileGoalNumbers = new Stack<int>(VolatileGoalNumbers),
+                VolatilePointGoalNumbers = new Stack<int>(VolatilePointGoalNumbers),
                 Timers = new List<string>(Timers),
                 Constants = new List<string>(Constants),
                 Templates = new Dictionary<string, string>(Templates),

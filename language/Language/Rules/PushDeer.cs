@@ -40,8 +40,8 @@ namespace Language.Rules
 
             var rules = new List<Defrule>();
 
-            var dropSitePoint = context.CreatePointGoal();
-            var scoutTargetPoint = context.CreatePointGoal();
+            var dropSitePoint = context.CreateVolatilePointGoal();
+            var scoutTargetPoint = context.CreateVolatilePointGoal();
 
             var localTotal = context.CreateGoal();
             var localLast = context.CreateGoal();
@@ -132,6 +132,8 @@ namespace Language.Rules
                     "up-target-objects 0 action-default -1 -1",
                     "up-send-scout group-type-land-explore scout-border",
                 }));
+
+            context.FreeVolatilePointGoals(new[] { dropSitePoint, scoutTargetPoint });
 
             context.AddToScript(context.ApplyStacks(rules));
         }

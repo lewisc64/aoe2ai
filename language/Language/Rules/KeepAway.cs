@@ -79,8 +79,8 @@ namespace Language.Rules
                     }));
             });
 
-            var objectPoint = context.CreatePointGoal();
-            var unitPoint = context.CreatePointGoal();
+            var objectPoint = context.CreateVolatilePointGoal();
+            var unitPoint = context.CreateVolatilePointGoal();
 
             context.UsingVolatileGoal(currentRemoteNumber =>
             {
@@ -125,6 +125,9 @@ namespace Language.Rules
                     }));
                 rules.Last().Compressable = false;
             });
+
+            context.FreeVolatilePointGoal(objectPoint);
+            context.FreeVolatilePointGoal(unitPoint);
 
             context.AddToScript(context.ApplyStacks(rules));
         }

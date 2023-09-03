@@ -32,7 +32,7 @@ namespace Language.Rules.DUC
                 new[]
                 {
                     $"up-set-target-object search-{list} c: 0",
-	                $"up-get-object-data {Game.ObjectDataPreciseX} {goalPointX}",
+                    $"up-get-object-data {Game.ObjectDataPreciseX} {goalPointX}",
                     $"up-get-object-data {Game.ObjectDataPreciseY} {goalPointX + 1}",
                 });
 

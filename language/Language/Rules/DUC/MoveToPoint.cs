@@ -1,5 +1,4 @@
 ﻿using Language.ScriptItems;
-using System.Collections.Generic;
 
 namespace Language.Rules.DUC
 {
@@ -33,7 +32,7 @@ namespace Language.Rules.DUC
                     $"up-target-point {context.GetDucPointGoalNumber(pointName)} action-default -1 -1",
                     "set-strategic-number sn-target-point-adjustment 0",
                 });
-            
+
             context.AddToScript(context.ApplyStacks(rule));
         }
     }

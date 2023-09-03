@@ -27,7 +27,7 @@ namespace Language.Rules
 
         public override void Parse(string line, TranspilerContext context)
         {
-            var scoutPoint = context.CreatePointGoal();
+            var scoutPoint = context.CreateVolatilePointGoal();
 
             var rules = new[]
             {
@@ -114,6 +114,8 @@ namespace Language.Rules
                         "up-target-objects 0 action-move -1 -1",
                     })
             };
+
+            context.FreeVolatilePointGoal(scoutPoint);
 
             context.AddToScript(context.ApplyStacks(rules));
         }

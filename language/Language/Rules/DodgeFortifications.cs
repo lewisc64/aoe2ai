@@ -125,8 +125,8 @@ namespace Language.Rules
                     $"up-get-search-state {localTotal}",
                 }));
 
-            var objectPoint = context.CreatePointGoal();
-            var unitPoint = context.CreatePointGoal();
+            var objectPoint = context.CreateVolatilePointGoal();
+            var unitPoint = context.CreateVolatilePointGoal();
 
             var currentRemoteNumber = context.CreateVolatileGoal();
             var buildingRange = context.CreateVolatileGoal();
@@ -183,6 +183,9 @@ namespace Language.Rules
                 Compressable = false,
                 Splittable = false,
             });
+
+            context.FreeVolatilePointGoal(objectPoint);
+            context.FreeVolatilePointGoal(unitPoint);
 
             context.FreeVolatileGoal(currentRemoteNumber);
             context.FreeVolatileGoal(buildingRange);

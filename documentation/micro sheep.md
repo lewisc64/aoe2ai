@@ -10,9 +10,12 @@ micro sheep
 ```
 ```
 (defrule
-    (civ-selected gurjaras)
+    (or
+      (unit-type-count livestock-class >= 10)
+      (civ-selected gurjaras)
+    )
 =>
-    (up-jump-rule 7)
+    (up-jump-rule 10)
 )
 (defrule
     (true)
@@ -40,6 +43,19 @@ micro sheep
     (up-find-local c: 592 c: 255)
     (up-find-local c: 590 c: 255)
     (up-target-objects 0 action-default -1 -1)
+)
+(defrule
+    (up-compare-goal 43 c:>= 1)
+=>
+    (up-full-reset-search)
+    (up-get-fact player-number 0 1)
+    (up-modify-sn sn-focus-player-number g:= 1)
+    (up-find-remote c: livestock-class c: 1)
+    (up-find-local c: 592 c: 255)
+    (up-find-local c: 590 c: 255)
+    (set-strategic-number sn-keystates 1)
+    (up-target-objects 0 action-default -1 -1)
+    (set-strategic-number sn-keystates 0)
 )
 (defrule
     (goal 43 0)
@@ -92,8 +108,30 @@ micro sheep
     (set-strategic-number sn-target-point-adjustment 0)
 )
 (defrule
-    (not
-      (civ-selected gurjaras)
+    (true)
+=>
+    (up-get-fact unit-type-count 592 2)
+    (up-get-fact unit-type-count 590 1)
+    (up-modify-goal 2 g:+ 1)
+)
+(defrule
+    (up-compare-goal 2 c:> 6)
+=>
+    (up-full-reset-search)
+    (up-modify-sn sn-focus-player-number c:= 0)
+    (up-find-local c: 592 c: 1)
+    (up-find-local c: 590 c: 1)
+    (up-remove-objects search-local -1 >= 1)
+    (up-filter-distance c: -1 c: 20)
+    (up-find-remote c: 907 c: 255)
+    (up-target-objects 0 action-default -1 -1)
+)
+(defrule
+    (or
+      (unit-type-count livestock-class >= 10)
+      (not
+        (civ-selected gurjaras)
+      )
     )
 =>
     (up-jump-rule 1)
