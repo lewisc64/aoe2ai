@@ -37,6 +37,10 @@ namespace Language
 
         public static readonly int FemaleGoldMinerId = 581;
 
+        public static readonly int MaleLumberjackId = 123;
+
+        public static readonly int FemaleLumberjackId = 218;
+
         public static readonly int MaleShepherd = 592;
 
         public static readonly int FemaleShepherd = 590;

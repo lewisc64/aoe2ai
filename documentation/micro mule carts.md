@@ -58,7 +58,11 @@ micro mule carts
     (up-modify-sn sn-focus-player-number g:= 1)
     (up-filter-exclude -1 -1 orderid-move -1)
     (up-find-local c: mule-cart c: 255)
-    (up-find-remote c: town-center c: 1)
+    (up-set-target-object search-local c: 0)
+    (up-reset-filters)
+    (up-find-remote c: 123 c: 255)
+    (up-find-remote c: 218 c: 255)
+    (up-clean-search search-remote 44 1)
     (up-target-objects 0 action-move -1 -1)
 )
 (defrule

@@ -107,7 +107,7 @@ namespace Language.Rules
             context.FreeVolatilePointGoal(objectPoint);
             context.FreeVolatilePointGoal(unitPoint);
 
-            // Move lazy mule carts to the town center
+            // Move lazy mule carts to the nearest lumberjack
             rules.Add(new Defrule(
                 new[]
                 {
@@ -119,7 +119,11 @@ namespace Language.Rules
                     $"up-modify-sn sn-focus-player-number g:= {myPlayerNumberGoal}",
                     "up-filter-exclude -1 -1 orderid-move -1",
                     $"up-find-local c: mule-cart c: 255",
-                    "up-find-remote c: town-center c: 1",
+                    "up-set-target-object search-local c: 0",
+                    "up-reset-filters",
+                    $"up-find-remote c: {Game.MaleLumberjackId} c: 255",
+                    $"up-find-remote c: {Game.FemaleLumberjackId} c: 255",
+                    $"up-clean-search search-remote {Game.ObjectDataDistance} 1",
                     "up-target-objects 0 action-move -1 -1",
                 }));
 
