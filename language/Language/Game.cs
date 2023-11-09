@@ -7,6 +7,8 @@ namespace Language
     {
         public static readonly int MaxGoals = 512;
 
+        public static readonly int ObjectDataIndex = -1;
+
         public static readonly int ObjectDataPierceArmor = 27;
 
         public static readonly int ObjectDataBaseAttack = 28;
@@ -16,6 +18,8 @@ namespace Language
         public static readonly int ObjectDataPreciseY = 39;
 
         public static readonly int ObjectDataDistance = 44;
+
+        public static readonly int StatusResource = 3;
 
         public static readonly int StatusDown = 4;
 

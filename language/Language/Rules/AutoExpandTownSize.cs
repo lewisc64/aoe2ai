@@ -15,6 +15,7 @@ namespace Language.Rules
             "mining-camp",
             "mill",
             "dock",
+            "mule-cart",
         };
 
         private const int MinimumTownSize = 8;

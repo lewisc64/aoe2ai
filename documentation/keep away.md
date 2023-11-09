@@ -19,8 +19,7 @@ keep archer-line 8 tiles away from enemy town-center
     (up-get-search-state 41)
     (set-goal 1 0)
     (up-reset-filters)
-    (up-filter-distance c: -1 c: 8)
-    (up-filter-exclude -1 -1 orderid-move -1)
+    (up-filter-distance c: 1 c: 8)
 )
 (defrule
     (up-compare-goal 1 g:< 43)

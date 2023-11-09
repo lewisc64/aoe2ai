@@ -93,8 +93,7 @@ namespace Language.Rules
                     {
                         $"set-goal {currentRemoteNumber} 0",
                         "up-reset-filters",
-                        $"up-filter-distance c: -1 c: {tiles}",
-                        $"up-filter-exclude -1 -1 orderid-move -1",
+                        $"up-filter-distance c: 1 c: {tiles}",
                     }));
                 rules.Add(new Defrule(
                     new[]
