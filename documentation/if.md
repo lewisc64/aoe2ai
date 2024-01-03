@@ -45,10 +45,10 @@ Adds a condition to the condition stack.
     (chat-to-all chat-1e11faadb3bb6245f005d3a003a0d3c2f339fac3)
 )
 (defrule
-    (current-age == feudal-age)
     (not
       (current-age == dark-age)
     )
+    (current-age == feudal-age)
 =>
     (chat-to-all chat-530921cc1ef4c0c7e73c193fea9686740bd199f6)
 )

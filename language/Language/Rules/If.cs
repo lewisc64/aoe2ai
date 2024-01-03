@@ -1,6 +1,7 @@
 ﻿using Language.Extensions;
 using Language.ScriptItems;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Language.Rules
 {
@@ -51,31 +52,48 @@ namespace Language.Rules
 
             if (line.StartsWith("#if"))
             {
-                var condition = Condition.Parse(data["ifcondition"].Value);
+                var ifData = new IfData
+                {
+                    CurrentCondition = Condition.Parse(data["ifcondition"].Value),
+                    OldConditions = new(),
+                    VolatileGoalsUsed = new(),
+                };
 
                 if (data["ifusegoal"].Success)
                 {
-                    condition = FreezeToGoal(context, condition);
+                    FreezeToGoal(context, ifData);
                 }
 
-                context.ConditionStack.Push(condition);
-                context.DataStack.Push(condition);
-                context.DataStack.Push(1);
+                context.ConditionStack.Push(ifData.CurrentCondition);
+                context.DataStack.Push(ifData);
             }
             else if (line.StartsWith("#else"))
             {
-                var amount = (int)context.DataStack.Pop();
-
-                var conditions = new List<Condition>();
-
-                for (var i = 0; i < amount; i++)
+                var ifData = (IfData)context.DataStack.Peek();
+                for (var i = 0; i < ifData.OldConditions.Count; i++)
                 {
                     context.ConditionStack.Pop();
-                    conditions.Add((Condition)context.DataStack.Pop());
+                }
+                ifData.OldConditions.Add(context.ConditionStack.Pop());
+
+
+                if (line.StartsWith("#else if"))
+                {
+                    ifData.CurrentCondition = Condition.Parse(data["elseifcondition"].Value);
+                    if (data["elseifusegoal"].Success)
+                    {
+                        FreezeToGoal(context, ifData);
+                    }
+                    context.ConditionStack.Push(ifData.CurrentCondition);
+                }
+                else
+                {
+                    ifData.CurrentCondition = null;
                 }
 
-                foreach (var condition in conditions)
+                foreach (var condition in ifData.OldConditions.Reverse<Condition>())
                 {
+
                     if (condition is CombinatoryCondition combCondition && combCondition.Text == "or")
                     {
                         context.ConditionStack.Push(condition.DeMorgans().Invert());
@@ -84,51 +102,47 @@ namespace Language.Rules
                     {
                         context.ConditionStack.Push(condition.Invert());
                     }
-                    context.DataStack.Push(condition);
-                }
-
-                if (line.StartsWith("#else if"))
-                {
-                    var condition = Condition.Parse(data["elseifcondition"].Value);
-
-                    if (data["elseifusegoal"].Success)
-                    {
-                        condition = FreezeToGoal(context, condition);
-                    }
-
-                    context.ConditionStack.Push(condition);
-                    context.DataStack.Push(condition);
-                    context.DataStack.Push(amount + 1);
-                }
-                else
-                {
-                    context.DataStack.Push(amount);
                 }
             }
             else
             {
-                var amount = (int)context.DataStack.Pop();
-                for (var i = 0; i < amount; i++)
+                var ifData = (IfData)context.DataStack.Pop();
+
+                if (ifData.CurrentCondition is not null)
                 {
                     context.ConditionStack.Pop();
-                    context.DataStack.Pop();
                 }
+                for (var i = 0; i < ifData.OldConditions.Count; i++)
+                {
+                    context.ConditionStack.Pop();
+                }
+
+                context.FreeVolatileGoals(ifData.VolatileGoalsUsed);
             }
         }
 
-        private Condition FreezeToGoal(TranspilerContext context, Condition condition)
+        private void FreezeToGoal(TranspilerContext context, IfData ifData)
         {
-            var goal = context.CreateGoal();
+            var goal = context.CreateVolatileGoal();
 
             var rules = new[]
             {
                 new Defrule(new[] { "true" }, new[] { $"set-goal {goal} 0" }),
-                new Defrule(new[] { condition }, new[] { new Action($"set-goal {goal} 1") }),
+                new Defrule(new[] { ifData.CurrentCondition }, new[] { new Action($"set-goal {goal} 1") }),
             };
 
             context.AddToScript(context.ApplyStacks(rules));
+            ifData.VolatileGoalsUsed.Add(goal);
+            ifData.CurrentCondition = new Condition($"goal {goal} 1");
+        }
 
-            return new Condition($"goal {goal} 1");
+        private class IfData
+        {
+            public Condition CurrentCondition { get; set; }
+
+            public List<Condition> OldConditions { get; set; }
+
+            public List<int> VolatileGoalsUsed { get; set; }
         }
     }
 }
