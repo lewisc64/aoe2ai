@@ -77,7 +77,7 @@ namespace Language.Rules
                         "set-strategic-number sn-livestock-to-town-center 1",
                         "set-strategic-number sn-enable-patrol-attack 1",
                         "set-strategic-number sn-attack-intelligence 0",
-                        "set-strategic-number sn-local-targeting-mode 0",
+                        "set-strategic-number sn-local-targeting-mode 1",
                         "set-strategic-number sn-percent-enemy-sighted-response 100",
                         "set-strategic-number sn-task-ungrouped-soldiers 0",
                         "set-strategic-number sn-gather-defense-units 1",
