@@ -29,7 +29,7 @@ town size attack
     (true)
 =>
     (up-modify-sn sn-maximum-town-size c:max 50)
-    (up-modify-sn sn-maximum-town-size c:min 30000)
+    (up-modify-sn sn-maximum-town-size c:min 680)
 )
 
 ```
