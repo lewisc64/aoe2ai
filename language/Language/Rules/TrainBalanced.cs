@@ -35,25 +35,10 @@ namespace Language.Rules
 
             var militaryCountGoal = context.CreateVolatileGoal();
             var unitCountGoal = context.CreateVolatileGoal();
-            var unitThresholdGoal = context.CreateVolatileGoal();
+            var unitBuildingGoal = context.CreateVolatileGoal();
+            var totalWeightGoal = context.CreateVolatileGoal();
 
-            rules.Add(new Defrule(new[] { "true" }, new[] { $"set-goal {militaryCountGoal} 0" }));
-
-            foreach (var (unit, _) in unitData)
-            {
-                rules.Add(new Defrule(
-                    new[]
-                    {
-                        "true",
-                    },
-                    new[]
-                    {
-                        $"up-get-fact unit-type-count-total {unit} {unitCountGoal}",
-                        $"up-modify-goal {militaryCountGoal} g:+ {unitCountGoal}",
-                    }));
-            }
-
-            var totalWeight = unitData.Select(x => x.Item2).Sum();
+            rules.Add(new Defrule(new[] { "true" }, new[] { $"set-goal {militaryCountGoal} 0", $"set-goal {totalWeightGoal} 0" }));
 
             foreach (var (unit, weight) in unitData)
             {
@@ -64,10 +49,38 @@ namespace Language.Rules
                     },
                     new[]
                     {
-                        $"up-get-fact unit-type-count-total {unit} {unitCountGoal}",
+                        $"up-get-object-type-data c: {unit} {Game.ObjectDataTrainSite} {unitBuildingGoal}",
+                    }));
+
+                rules.Add(new Defrule(
+                    new[]
+                    {
+                        $"unit-available {unit}",
+                        $"up-object-type-count g: {unitBuildingGoal} c:>= 1",
+                    },
+                    new[]
+                    {
+                        $"up-get-fact unit-type-count-total {(Game.UnitSets.ContainsKey(unit) ? Game.UnitSets[unit] : unit)} {unitCountGoal}",
+                        $"up-modify-goal {militaryCountGoal} g:+ {unitCountGoal}",
+                        $"up-modify-goal {totalWeightGoal} c:+ {weight}",
+                    }));
+            }
+
+            var unitThresholdGoal = context.CreateVolatileGoal();
+
+            foreach (var (unit, weight) in unitData)
+            {
+                rules.Add(new Defrule(
+                    new[]
+                    {
+                        "true",
+                    },
+                    new[]
+                    {
+                        $"up-get-fact unit-type-count-total {(Game.UnitSets.ContainsKey(unit) ? Game.UnitSets[unit] : unit)} {unitCountGoal}",
                         $"up-modify-goal {unitThresholdGoal} g:= {militaryCountGoal}",
                         $"up-modify-goal {unitThresholdGoal} c:* {weight}",
-                        $"up-modify-goal {unitThresholdGoal} c:/ {totalWeight}",
+                        $"up-modify-goal {unitThresholdGoal} g:/ {totalWeightGoal}",
                     }));
 
                 rules.Add(new Defrule(
@@ -84,7 +97,9 @@ namespace Language.Rules
 
             context.FreeVolatileGoal(militaryCountGoal);
             context.FreeVolatileGoal(unitCountGoal);
+            context.FreeVolatileGoal(unitBuildingGoal);
             context.FreeVolatileGoal(unitThresholdGoal);
+            context.FreeVolatileGoal(totalWeightGoal);
 
             context.AddToScript(context.ApplyStacks(rules));
         }

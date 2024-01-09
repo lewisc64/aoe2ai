@@ -19,6 +19,10 @@ namespace Language
 
         public static readonly int ObjectDataDistance = 44;
 
+        public static readonly int ObjectDataTrainSite = 56;
+
+        public static readonly int ObjectDataTrainTime = 57;
+
         public static readonly int StatusResource = 3;
 
         public static readonly int StatusDown = 4;
@@ -66,6 +70,21 @@ namespace Language
         public static readonly int ForageClassId = 907;
 
         public static readonly int[] AllClosedGateIds = new int[] { 789, 793, 797, 801, 64, 88, 659, 667, 63, 85, 660, 668 };
+
+        public static readonly Dictionary<string, string> UnitSets = new()
+        {
+            { "monk", "monk-set" },
+            { "trebuchet", "trebuchet-set" },
+            { "huskarl-line", "huskarl-set" },
+            { "konnik-line", "konnik-set" },
+            { "krepost-konnik-line", "konnik-set" },
+            { "tarkan-line", "tarkan-set" },
+            { "kipchak-line", "kipchak-set" },
+            { "serjeant-line", "serjeant-set" },
+            { "donjon-serjeant-line", "serjeant-set" },
+            { "flemish-pikeman", "flemish-militia-set" },
+            { "ratha-line", "ratha-set" },
+        };
 
         public static Dictionary<string, string[]> GetResearches()
         {

@@ -7,8 +7,6 @@ namespace Language.Rules
     [ActiveRule(-1)]
     public class Train : RuleBase
     {
-        private static readonly string[] SetUnits = new[] { "monk", "trebuchet" };
-
         public override string Name => "train";
 
         public override string Help => "Trains a unit using the specified parameters.";
@@ -55,7 +53,7 @@ train AMOUNT UNIT_NAME with RESOURCE_NAME escrow";
 
             if (!string.IsNullOrEmpty(amount))
             {
-                conditions.Add($"unit-type-count-total {unit + (SetUnits.Contains(unit) ? "-set" : "")} < {amount}");
+                conditions.Add($"unit-type-count-total {(Game.UnitSets.ContainsKey(unit) ? Game.UnitSets[unit] : unit)} < {amount}");
             }
 
             actions.Add($"train {unit}");
