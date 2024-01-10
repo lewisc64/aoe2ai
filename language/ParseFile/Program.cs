@@ -52,7 +52,9 @@ namespace ParseFile
                 CurrentPath = inputPath.DirectoryName,
             };
 
+            AddFastRulePassSkip(context);
             var output = transpiler.Transpile(content, context);
+
             string outputContent;
 
             if (minify)
@@ -67,6 +69,47 @@ namespace ParseFile
 
             Save(name, outputPath, outputContent);
             Analyze(context);
+        }
+
+        private static void AddFastRulePassSkip(TranspilerContext context)
+        {
+            var timeGoal = context.CreateVolatileGoal();
+            var previousTimeGoal = context.CreateGoal();
+
+            var rules = new[]
+            {
+                new Defrule(
+                    new[]
+                    {
+                        "true",
+                    },
+                    new[]
+                    {
+                        $"up-get-precise-time 0 {timeGoal}",
+                        $"up-modify-goal {timeGoal} g:- {previousTimeGoal}",
+                        $"up-modify-goal {previousTimeGoal} g:+ {timeGoal}",
+                    })
+                {
+                    Compressable = false,
+                    Splittable = false,
+                },
+                new Defrule(
+                    new[]
+                    {
+                        $"up-compare-goal {timeGoal} c:< 300",
+                    },
+                    new[]
+                    {
+                        "up-jump-rule 10000",
+                    })
+                {
+                    Compressable = false,
+                    Splittable = false,
+                },
+            };
+
+            context.FreeVolatileGoal(timeGoal);
+            context.AddToScript(rules);
         }
 
         private static void Save(string name, DirectoryInfo path, string content)
