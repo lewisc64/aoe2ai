@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Language
@@ -100,11 +101,11 @@ namespace Language
                 { "mining camp stone", new[] { "stone-mining", "stone-shaft-mining" } },
                 { "barracks", new[] { "squires", "arson", "supplies", "gambesons", "man-at-arms", "long-swordsman", "two-handed-swordsman", "champion", "legionary", "pikeman", "halberdier", "eagle-warrior", "elite-eagle-warrior" } },
                 { "archery range", new[] { "thumb-ring", "parthian-tactics", "crossbow", "arbalest", "elite-skirmisher", "imperial-skirmisher", "heavy-cavalry-archer", "elite-elephant-archer" } },
-                { "stable", new[] { "bloodlines", "husbandry", "light-cavalry", "hussar", "cavalier", "paladin", "heavy-camel", "elite-battle-elephant", "elite-steppe-lancer" } },
-                { "dock", new[] { "gillnets", "careening", "dry-dock", "shipwright", "war-galley", "fast-fire-ship", "heavy-demolition-ship", "cannon-galleon", "galleon" } },
-                { "siege workshop", new[] { "capped-ram", "siege-ram", "onager", "siege-onager", "heavy-scorpion" } },
-                { "monastery", new[] { "redemption", "atonement", "herbal-medicine", "heresy", "sanctity", "fervor", "faith", "illumination", "block-printing", "theocracy" } },
-                { "castle", new[] { "my-unique-unit-upgrade", "my-unique-research", "hoardings", "sappers", "conscription", "spies" } },
+                { "stable", new[] { "bloodlines", "husbandry", "light-cavalry", "hussar", "winged-hussar", "cavalier", "paladin", "heavy-camel", "elite-battle-elephant", "elite-steppe-lancer", "elite-shrivamsha-rider", "savar" } },
+                { "dock", new[] { "gillnets", "careening", "dry-dock", "shipwright", "war-galley", "fast-fire-ship", "heavy-demolition-ship", "deck-guns", "galleon", "elite-turtle-ship", "elite-caravel", "elite-longboat" } },
+                { "siege workshop", new[] { "capped-ram", "siege-ram", "onager", "siege-onager", "heavy-scorpion", "houfnice" } },
+                { "monastery", new[] { "redemption", "atonement", "herbal-medicine", "heresy", "sanctity", "fervor", "devotion", "faith", "illumination", "block-printing", "theocracy" } },
+                { "castle", new[] { "my-unique-unit-upgrade", "my-unique-research", "my-second-unique-research", "hoardings", "sappers", "conscription", "spies" } },
                 { "town center", new[] { "feudal-age", "castle-age", "imperial-age", "loom", "town-watch", "wheel-barrow", "town-patrol", "hand-cart" } },
                 { "university", new[] { "masonry", "fortified-wall", "ballistics", "guard-tower", "heated-shot", "murder-holes", "stonecutting", "architecture", "chemistry", "siege-engineers", "keep", "arrowslits", "bombard-tower" } },
             };
@@ -133,11 +134,21 @@ namespace Language
             research["all"] = all.Distinct().ToArray();
 
             // aliases
+
             research["ranged blacksmith"] = research["blacksmith ranged"];
             research["cavalry blacksmith"] = research["blacksmith cavalry"];
             research["infantry blacksmith"] = research["blacksmith infantry"];
+
             research["gold mining camp"] = research["mining camp gold"];
             research["stone mining camp"] = research["mining camp stone"];
+            
+            research["mule cart wood"] = research["lumber camp"];
+            research["mule cart gold"] = research["mining camp gold"];
+            research["mule cart stone"] = research["mining camp stone"];
+            research["wood mule cart"] = research["lumber camp"];
+            research["gold mule cart"] = research["mining camp gold"];
+            research["stone mule cart"] = research["mining camp stone"];
+            research["mule cart"] = research["mule cart wood"].Concat(research["mule cart gold"]).Concat(research["mule cart stone"]).ToArray();
 
             return research;
         }
