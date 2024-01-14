@@ -26,7 +26,7 @@ namespace Language.Rules
 
         public override string Name => "auto expand town size";
 
-        public override string Help => @"Automatically expands town size. Must be below any builds that it needs to affect. Any build rules below this will be placed at the given maximum.
+        public override string Help => @"Automatically expands town size in order to place buildings. Must be below any builds that it needs to affect. Any build rules below this will be placed at the given maximum.
 
 Affects the following sn's:
  - sn-maximum-town-size
@@ -62,6 +62,9 @@ auto expand town size to RADIUS";
                 .Except(IgnoredBuildings);
 
             var pendingBuildingsCondition = Condition.JoinConditions("or", buildings.Select(x => new Condition($"up-pending-placement c: {x}")));
+
+            var numberBuildersGoal = context.CreateVolatileGoal();
+            var buildersCapGoal = context.CreateVolatileGoal();
 
             var rules = new List<Defrule>
             {
@@ -107,11 +110,44 @@ auto expand town size to RADIUS";
                     },
                     new[]
                     {
-                        $"up-modify-sn sn-maximum-town-size c:+ {Increment}",
-                        $"up-modify-sn sn-maximum-town-size c:min {maximum}",
-                        $"up-modify-sn sn-safe-town-size s:= sn-maximum-town-size",
+                        $"up-get-fact unit-type-count villager {buildersCapGoal}",
+                        $"up-modify-goal {buildersCapGoal} s:min sn-cap-civilian-builders",
+                        $"up-get-fact unit-type-count villager-builder {numberBuildersGoal}",
                     }),
+                new Defrule(
+                    new[]
+                    {
+                        pendingBuildingsCondition,
+                        new Condition($"up-compare-goal {numberBuildersGoal} g:< {buildersCapGoal}"),
+                    },
+                    new[]
+                    {
+                        new Action($"up-modify-sn sn-maximum-town-size c:+ {Increment}"),
+                        new Action($"up-modify-sn sn-safe-town-size s:= sn-maximum-town-size"),
+                    }),
+                new Defrule(
+                    new[]
+                    {
+                        pendingBuildingsCondition.Invert(),
+                    },
+                    new[]
+                    {
+                        new Action($"up-modify-sn sn-maximum-town-size c:= {maximum}"),
+                        new Action($"up-modify-sn sn-safe-town-size s:= sn-maximum-town-size"),
+                    }),/*
+                new Defrule(
+                    new[]
+                    {
+                        "true",
+                    },
+                    new[]
+                    {
+                        "up-chat-data-to-all \"sn-maximum-town-size: %d\" s: sn-maximum-town-size",
+                    }),*/
             };
+
+            context.FreeVolatileGoal(numberBuildersGoal);
+            context.FreeVolatileGoal(buildersCapGoal);
 
             context.AddToScript(context.ApplyStacks(rules));
         }
