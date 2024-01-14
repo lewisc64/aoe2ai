@@ -134,16 +134,7 @@ auto expand town size to RADIUS";
                     {
                         new Action($"up-modify-sn sn-maximum-town-size c:= {maximum}"),
                         new Action($"up-modify-sn sn-safe-town-size s:= sn-maximum-town-size"),
-                    }),/*
-                new Defrule(
-                    new[]
-                    {
-                        "true",
-                    },
-                    new[]
-                    {
-                        "up-chat-data-to-all \"sn-maximum-town-size: %d\" s: sn-maximum-town-size",
-                    }),*/
+                    }),
             };
 
             context.FreeVolatileGoal(numberBuildersGoal);

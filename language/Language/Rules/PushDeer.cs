@@ -43,15 +43,8 @@ namespace Language.Rules
             var dropSitePoint = context.CreateVolatilePointGoal();
             var scoutTargetPoint = context.CreateVolatilePointGoal();
 
-            var localTotal = context.CreateGoal();
-            var localLast = context.CreateGoal();
-            var remoteTotal = context.CreateGoal();
-            var remoteLast = context.CreateGoal();
-
-            if (localTotal != localLast - 1 || localTotal != remoteTotal - 2 || localTotal != remoteLast - 3)
-            {
-                throw new InvalidOperationException("Search state goals were not created with consecutive numbers.");
-            }
+            var localTotal = context.CreateConsecutiveGoals(4);
+            var remoteTotal = localTotal + 2;
 
             rules.Add(new Defrule(
                 new[]

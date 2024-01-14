@@ -25,15 +25,8 @@ namespace Language.Rules
 
         public override void Parse(string line, TranspilerContext context)
         {
-            var localTotal = context.CreateGoal(startId: 41);
-            var localLast = context.CreateGoal(startId: 41);
-            var remoteTotal = context.CreateGoal(startId: 41);
-            var remoteLast = context.CreateGoal(startId: 41);
-
-            if (localTotal != localLast - 1 || localTotal != remoteTotal - 2 || localTotal != remoteLast - 3)
-            {
-                throw new InvalidOperationException("Search state goals were not created with consecutive numbers.");
-            }
+            var localTotal = context.CreateConsecutiveGoals(4);
+            var remoteTotal = localTotal + 2;
 
             var rules = new List<Defrule>();
 

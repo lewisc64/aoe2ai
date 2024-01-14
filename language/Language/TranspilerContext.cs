@@ -71,6 +71,23 @@ namespace Language
             AddToScript(items);
         }
 
+        public int CreateConsecutiveGoals(int amount, int startId = 1)
+        {
+            for (int i = startId; i < Game.MaxGoals - amount; i++)
+            {
+                var range = Enumerable.Range(i, amount);
+                if (range.All(x => !Goals.ContainsKey(x)))
+                {
+                    foreach (var goal in range)
+                    {
+                        Goals[goal] = null;
+                    }
+                    return i;
+                }
+            }
+            throw new System.InvalidOperationException($"Unable to allocate {amount} unused consecutive goals.");
+        }
+
         public int CreateGoal(string name = null, int startId = 1)
         {
             for (var i = startId; i <= Game.MaxGoals; i++)
@@ -90,11 +107,10 @@ namespace Language
 
         public int CreatePointGoal(string name = null)
         {
-            var goalNumber = CreateGoal(name, startId: 41);
-            var otherGoalNumber = CreateGoal(null, startId: goalNumber);
-            if (goalNumber + 1 != otherGoalNumber)
+            var goalNumber = CreateConsecutiveGoals(2, startId: 41);
+            if (name != null)
             {
-                throw new System.InvalidOperationException("Point goal pair was not created with consecutive numbers.");
+                Script.Items.Insert(0, CreateConstant(name, goalNumber));
             }
             return goalNumber;
         }
