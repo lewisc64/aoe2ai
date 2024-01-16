@@ -1,5 +1,6 @@
 ﻿using Language.ScriptItems;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Language.Rules
 {
@@ -15,10 +16,11 @@ namespace Language.Rules
         public override IEnumerable<string> Examples => new[]
         {
             "escrow 10 wood",
+            "escrow 50 gold with maximum 300",
         };
 
         public SetEscrow()
-            : base(@"^escrow (?<amount>[^ ]+) (?<resource>.+)$")
+            : base(@"^escrow (?<amount>[^ ]+) (?<resource>[^ ]+)(?: with maximum (?<maximum>[^ ]+))?$")
         {
         }
 
@@ -28,8 +30,18 @@ namespace Language.Rules
             var amount = data["amount"].Value;
             var resource = data["resource"].Value;
 
-            var rule = new Defrule(new[] { "true" }, new[] { $"set-escrow-percentage {resource} {amount}" });
-            context.AddToScript(context.ApplyStacks(rule));
+            var rules = new List<Defrule>();
+
+            rules.Add(new Defrule(new[] { "true" }, new[] { $"set-escrow-percentage {resource} {amount}" }));
+
+            if (data["maximum"].Success)
+            {
+                var maximum = data["maximum"].Value;
+                rules.Last().Conditions.Add(new Condition($"escrow-amount {resource} < {maximum}"));
+                rules.Add(new Defrule(new[] { $"escrow-amount {resource} >= {maximum}" }, new[] { $"set-escrow-percentage {resource} 0", $"up-modify-escrow {resource} c:= {maximum}" }));
+            }
+
+            context.AddToScript(context.ApplyStacks(rules));
         }
     }
 }

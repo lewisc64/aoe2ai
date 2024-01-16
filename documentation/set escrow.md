@@ -17,3 +17,21 @@ escrow 10 wood
 
 ```
 ---
+```
+escrow 50 gold with maximum 300
+```
+```
+(defrule
+    (escrow-amount gold < 300)
+=>
+    (set-escrow-percentage gold 50)
+)
+(defrule
+    (escrow-amount gold >= 300)
+=>
+    (set-escrow-percentage gold 0)
+    (up-modify-escrow gold c:= 300)
+)
+
+```
+---
