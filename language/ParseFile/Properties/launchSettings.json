@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "ParseFile": {
-      "commandName": "Project",
-      "commandLineArgs": "\"test.aoe2ai\" \".\" \"test\""
-    }
-  }
-}

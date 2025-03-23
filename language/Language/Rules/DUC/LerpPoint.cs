@@ -12,7 +12,7 @@ namespace Language.Rules.DUC
         public override string Usage => "TODO";
 
         public LerpPoint()
-            : base(@"^\$lerp point (?<point>[^ ]+) (?<tiles>[0-9]+(?:\.[0-9]{1,2})?) tiles? (?<direction>towards|away from) (?<otherpoint>[^ ]+)$")
+            : base(@"^\$lerp point (?<point>[^ ]+) (?<tiles>[0-9]+(?:\.[0-9]{1,2})?) tiles? (?<direction>towards|away from|perpendicular to) (?<otherpoint>[^ ]+)$")
         {
         }
 
@@ -23,15 +23,36 @@ namespace Language.Rules.DUC
             var tiles = float.Parse(data["tiles"].Value) * (data["direction"].Value == "towards" ? 1 : -1);
             var otherPointName = data["otherpoint"].Value;
 
-            var rule = new Defrule(
-                new[]
-                {
-                    "true",
-                },
-                new[]
-                {
-                    $"up-lerp-tiles {context.GetDucPointGoalNumber(pointName)} {context.GetDucPointGoalNumber(otherPointName)} c: {tiles * 100}",
-                });
+            Defrule rule;
+
+            if (data["direction"].Value == "perpendicular to")
+            {
+                rule = new Defrule(
+                    new[]
+                    {
+                        "true",
+                    },
+                    new[]
+                    {
+                        "set-strategic-number sn-target-point-adjustment 6",
+                        $"up-cross-tiles {context.GetDucPointGoalNumber(pointName)} {context.GetDucPointGoalNumber(otherPointName)} c: {tiles * 100}",
+                        "set-strategic-number sn-target-point-adjustment 0",
+                    });
+            }
+            else
+            {
+                rule = new Defrule(
+                    new[]
+                    {
+                        "true",
+                    },
+                    new[]
+                    {
+                        "set-strategic-number sn-target-point-adjustment 6",
+                        $"up-lerp-tiles {context.GetDucPointGoalNumber(pointName)} {context.GetDucPointGoalNumber(otherPointName)} c: {tiles * 100}",
+                        "set-strategic-number sn-target-point-adjustment 0",
+                    });
+            }
 
             context.AddToScript(context.ApplyStacks(rule));
         }

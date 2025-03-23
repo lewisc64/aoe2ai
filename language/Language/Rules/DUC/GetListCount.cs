@@ -28,14 +28,16 @@ namespace Language.Rules.DUC
                 throw new System.InvalidOperationException($"Goal name '{goalName}' is already in use.");
             }
 
-            var localTotal = context.CreateGoal(info == "local list length" ? goalName : null);
-            var localLast = context.CreateGoal();
-            var remoteTotal = context.CreateGoal(info == "remote list length" ? goalName : null);
-            var remoteLast = context.CreateGoal();
+            var localTotal = context.CreateConsecutiveGoals(4);
+            var remoteTotal = localTotal + 2;
 
-            if (localTotal != localLast - 1 || localTotal != remoteTotal - 2 || localTotal != remoteLast - 3)
+            if (info == "local list length")
             {
-                throw new System.InvalidOperationException("Goals were not created consecutively.");
+                context.AddToScript(context.CreateConstant(goalName, localTotal));
+            }
+            else if (info == "remote list length")
+            {
+                context.AddToScript(context.CreateConstant(goalName, remoteTotal));
             }
 
             var rule = new Defrule(

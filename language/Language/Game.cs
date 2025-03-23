@@ -16,6 +16,8 @@ namespace Language
 
         public static readonly int ObjectDataBaseAttack = 28;
 
+        public static readonly int ObjectDataAttackerCount = 33;
+
         public static readonly int ObjectDataPreciseX = 38;
 
         public static readonly int ObjectDataPreciseY = 39;

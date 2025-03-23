@@ -10,7 +10,7 @@ namespace GenerateDocs
 {
     public class Program
     {
-        public static readonly DirectoryInfo Folder = new DirectoryInfo("..\\..\\..\\..\\..\\documentation");
+        public static readonly DirectoryInfo Folder = new DirectoryInfo("../../../../../documentation");
 
         public static void Main(string[] args)
         {

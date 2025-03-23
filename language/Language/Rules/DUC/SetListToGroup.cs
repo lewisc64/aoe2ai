@@ -3,25 +3,24 @@
 namespace Language.Rules.DUC
 {
     [ActiveRule]
-    public class TargetFirst : RuleBase
+    public class SetListToGroup : RuleBase
     {
-        public override string Name => "DUC target first in list";
+        public override string Name => "DUC set list to group";
 
         public override string Help => "TODO";
 
         public override string Usage => "TODO";
 
-        public TargetFirst()
-            : base(@"^\$target is first (?<list>local|remote)$")
+        public SetListToGroup()
+            : base(@"^\$set (?<list>local|remote) list to group (?<group>[^ ]+)$")
         {
         }
 
         public override void Parse(string line, TranspilerContext context)
         {
             var data = GetData(line);
+            var group = data["group"].Value;
             var list = data["list"].Value;
-
-            var goalPointX = context.CreatePointGoal();
 
             var rule = new Defrule(
                 new[]
@@ -30,9 +29,7 @@ namespace Language.Rules.DUC
                 },
                 new[]
                 {
-                    $"up-set-target-object search-{list} c: 0",
-                    $"up-get-point position-object {goalPointX}",
-                    $"up-set-target-point {goalPointX}",
+                    $"up-set-group search-{list} c: {group}",
                 });
 
             context.AddToScript(context.ApplyStacks(rule));

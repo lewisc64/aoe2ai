@@ -29,7 +29,7 @@ namespace Language.Rules.DUC
                 new[]
                 {
                     "set-strategic-number sn-target-point-adjustment 6",
-                    $"up-target-point {context.GetDucPointGoalNumber(pointName)} action-default -1 -1",
+                    $"up-target-point {context.GetDucPointGoalNumber(pointName)} action-default -1 3",
                     "set-strategic-number sn-target-point-adjustment 0",
                 });
 

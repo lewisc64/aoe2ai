@@ -20,7 +20,7 @@ namespace Language.Rules.DUC
         public override string Usage => "TODO";
 
         public SetFocus()
-            : base(@"^\$focus (?:(?<findtype>closest|attacking|random) (?<playertype>enemy|ally)|(?<myself>myself)|(?<gaia>gaia))$")
+            : base(@"^\$focus (?:(?<findtype>closest|attacking|random) (?<playertype>enemy|ally)|(?<myself>myself)|(?<gaia>gaia)|(?<target>target))$")
         {
         }
 
@@ -30,12 +30,13 @@ namespace Language.Rules.DUC
 
             var rule = new Defrule();
 
-            if (data["gaia"].Success)
+            if (data["target"].Success)
             {
-                context.UsingVolatileGoal(goal =>
-                {
-                    rule.Actions.Add(new Action($"up-modify-sn sn-focus-player-number c:= {Game.GaiaPlayerNumber}"));
-                });
+                rule.Actions.Add(new Action($"up-modify-sn sn-focus-player-number s:= sn-target-player-number"));
+            }
+            else if (data["gaia"].Success)
+            {
+                rule.Actions.Add(new Action($"up-modify-sn sn-focus-player-number c:= {Game.GaiaPlayerNumber}"));
             }
             else if (data["myself"].Success)
             {
