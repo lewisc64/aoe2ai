@@ -41,7 +41,7 @@ namespace Language.Tests
         [InlineData("(((a) or a) or ((a)))", "((a) or a) or ((a))")]
         public void Debracket_Success(string text, string expected)
         {
-            Assert.Equal(expected, Condition.DebracketExpression(text).ToString());
+            Assert.Equal(expected, Condition.DebracketExpression(text));
         }
     }
 }

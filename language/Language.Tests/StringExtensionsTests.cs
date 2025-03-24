@@ -6,10 +6,6 @@ namespace Language.Tests
 {
     public class StringExtensionsTests
     {
-        public StringExtensionsTests()
-        {
-        }
-
         [Theory]
         [InlineData("", "REPLACEMENT")]
         [InlineData(null, "REPLACEMENT")]
