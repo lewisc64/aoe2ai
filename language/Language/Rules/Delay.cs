@@ -52,27 +52,25 @@ namespace Language.Rules
                     var startStampGoal = context.CreateGoal();
                     var elapsedGoal = context.CreateGoal();
 
-                    var rules = new[]
-                    {
-                        new Defrule(
-                            [
-                                "true"
-                            ],
-                            [
-                                $"up-get-precise-time 0 {startStampGoal}",
-                                $"set-goal {elapsedGoal} 0",
-                                "disable-self",
-                            ]),
-                        new Defrule(
-                            [
-                                $"up-compare-goal {elapsedGoal} c:< {amount * 1000}"
-                            ],
-                            [
-                                $"up-get-precise-time 0 {elapsedGoal}",
-                                $"up-modify-goal {elapsedGoal} g:- {startStampGoal}",
-                            ])
-                    };
-                    context.AddToScript(context.ApplyStacks(rules));
+                    context.AddToScript(context.ApplyStacks(new Defrule(
+                        [
+                            "true"
+                        ],
+                        [
+                            $"up-get-precise-time 0 {startStampGoal}",
+                            $"set-goal {elapsedGoal} 0",
+                            "disable-self",
+                        ])));
+                    
+                    context.AddToScript(new Defrule(
+                        [
+                            $"up-compare-goal {elapsedGoal} c:< {amount * 1000}"
+                        ],
+                        [
+                            $"up-get-precise-time 0 {elapsedGoal}",
+                            $"up-modify-goal {elapsedGoal} g:- {startStampGoal}",
+                        ]));
+                    
                     context.ConditionStack.Push(new Condition($"up-compare-goal {elapsedGoal} c:>= {amount * 1000}"));
                 }
                 else
