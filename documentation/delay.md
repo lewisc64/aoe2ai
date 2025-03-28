@@ -60,17 +60,17 @@ Block body is only allowed to trigger after the time is up.
     (true)
 =>
     (up-get-precise-time 0 1)
+    (up-modify-goal 1 c:+ 5000)
     (set-goal 2 0)
     (disable-self)
 )
 (defrule
-    (up-compare-goal 2 c:< 5000)
+    (true)
 =>
     (up-get-precise-time 0 2)
-    (up-modify-goal 2 g:- 1)
 )
 (defrule
-    (up-compare-goal 2 c:>= 5000)
+    (up-compare-goal 2 g:>= 1)
 =>
     (chat-to-all chat-4d67ce39e29a395c4e17c819d2bb18d357d0e065)
 )

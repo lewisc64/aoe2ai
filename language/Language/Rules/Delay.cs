@@ -49,40 +49,50 @@ namespace Language.Rules
 
                 if (real)
                 {
-                    var startStampGoal = context.CreateGoal();
-                    var elapsedGoal = context.CreateGoal();
+                    var futureStampGoal = context.CreateGoal();
+                    var currentTimeGoal = context.CreateVolatileGoal();
 
-                    context.AddToScript(context.ApplyStacks(new Defrule(
-                        [
-                            "true"
-                        ],
-                        [
-                            $"up-get-precise-time 0 {startStampGoal}",
-                            $"set-goal {elapsedGoal} 0",
-                            "disable-self",
-                        ])));
+                    var rules = new[]
+                    {
+                        new Defrule(
+                            [
+                                "true",
+                            ],
+                            [
+                                $"up-get-precise-time 0 {futureStampGoal}",
+                                $"up-modify-goal {futureStampGoal} c:+ {amount * 1000}",
+                                $"set-goal {currentTimeGoal} 0",
+                                "disable-self",
+                            ]),
+                        new Defrule(
+                            [
+                                "true",
+                            ],
+                            [
+                                $"up-get-precise-time 0 {currentTimeGoal}",
+                            ]),
+                    };
                     
-                    context.AddToScript(new Defrule(
-                        [
-                            $"up-compare-goal {elapsedGoal} c:< {amount * 1000}"
-                        ],
-                        [
-                            $"up-get-precise-time 0 {elapsedGoal}",
-                            $"up-modify-goal {elapsedGoal} g:- {startStampGoal}",
-                        ]));
-                    
-                    context.ConditionStack.Push(new Condition($"up-compare-goal {elapsedGoal} c:>= {amount * 1000}"));
+                    context.AddToScript(context.ApplyStacks(rules, ignoreActionStack: true));
+                    context.ConditionStack.Push(new Condition($"up-compare-goal {currentTimeGoal} g:>= {futureStampGoal}"));
+                    context.DataStack.Push(currentTimeGoal);
                 }
                 else
                 {
                     var timerNumber = context.CreateTimer();
                     context.AddToScript(context.ApplyStacks(new Defrule(["true"], [$"enable-timer {timerNumber} {amount}", "disable-self"])));
                     context.ConditionStack.Push(new Condition($"timer-triggered {timerNumber}"));
+                    context.DataStack.Push(null);
                 }
             }
             else
             {
                 context.ConditionStack.Pop();
+                var usedVolatileGoal = context.DataStack.Pop();
+                if (usedVolatileGoal is not null)
+                {
+                    context.FreeVolatileGoal((int)usedVolatileGoal);
+                }
             }
         }
     }

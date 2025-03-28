@@ -34,20 +34,23 @@ namespace Language
 
         public string CurrentFileName { get; set; } = "unknown";
 
-        public IEnumerable<IScriptItem> ApplyStacks(IEnumerable<IScriptItem> items)
+        public IEnumerable<IScriptItem> ApplyStacks(IEnumerable<IScriptItem> items, bool ignoreActionStack = false)
         {
             foreach (var item in items)
             {
-                yield return ApplyStacks(item);
+                yield return ApplyStacks(item, ignoreActionStack: ignoreActionStack);
             }
         }
 
-        public IScriptItem ApplyStacks(IScriptItem item)
+        public IScriptItem ApplyStacks(IScriptItem item, bool ignoreActionStack = false)
         {
             if (item is Defrule defrule)
             {
                 defrule.Conditions.AddRange(ConditionStack.Select(x => x.Copy()));
-                defrule.Actions.AddRange(ActionStack.Select(x => x.Copy()));
+                if (!ignoreActionStack)
+                {
+                    defrule.Actions.AddRange(ActionStack.Select(x => x.Copy()));   
+                }
             }
             return item;
         }
