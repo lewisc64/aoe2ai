@@ -50,17 +50,17 @@ namespace Language
 
         public static readonly int FemaleLumberjackId = 218;
 
-        public static readonly int MaleShepherd = 592;
+        public static readonly int MaleShepherdId = 592;
 
-        public static readonly int FemaleShepherd = 590;
+        public static readonly int FemaleShepherdId = 590;
 
-        public static readonly int MaleForager = 120;
+        public static readonly int MaleForagerId = 120;
 
-        public static readonly int FemaleForager = 354;
+        public static readonly int FemaleForagerId = 354;
 
-        public static readonly int MaleHunter = 122;
+        public static readonly int MaleHunterId = 122;
 
-        public static readonly int FemaleHunter = 216;
+        public static readonly int FemaleHunterId = 216;
 
         public static readonly int DeadTradeCartId = 178;
 
@@ -75,6 +75,12 @@ namespace Language
         public static readonly int ForageClassId = 907;
 
         public static readonly int[] AllClosedGateIds = new int[] { 789, 793, 797, 801, 64, 88, 659, 667, 63, 85, 660, 668 };
+
+        public static readonly int GoldMineId = 66;
+        
+        public static readonly int StoneMineId = 102;
+
+        public static readonly int TreeClass = 915;
 
         public static readonly Dictionary<string, string> UnitSets = new()
         {

@@ -80,8 +80,8 @@ namespace Language.Rules
                     new[]
                     {
                         "up-reset-filters",
-                        $"up-find-local c: {Game.MaleShepherd} c: 255",
-                        $"up-find-local c: {Game.FemaleShepherd} c: 255",
+                        $"up-find-local c: {Game.MaleShepherdId} c: 255",
+                        $"up-find-local c: {Game.FemaleShepherdId} c: 255",
                         "up-target-objects 0 action-default -1 -1",
                     }),
                 new Defrule( // queue the next living sheep
@@ -95,8 +95,8 @@ namespace Language.Rules
                         $"up-get-fact player-number 0 {playerGoal}",
                         $"up-modify-sn sn-focus-player-number g:= {playerGoal}",
                         "up-find-remote c: livestock-class c: 1",
-                        $"up-find-local c: {Game.MaleShepherd} c: 255",
-                        $"up-find-local c: {Game.FemaleShepherd} c: 255",
+                        $"up-find-local c: {Game.MaleShepherdId} c: 255",
+                        $"up-find-local c: {Game.FemaleShepherdId} c: 255",
                         "set-strategic-number sn-keystates 1",
                         "up-target-objects 0 action-default -1 -1",
                         "set-strategic-number sn-keystates 0",
@@ -112,8 +112,8 @@ namespace Language.Rules
                         $"up-get-fact player-number 0 {playerGoal}",
                         $"up-modify-sn sn-focus-player-number g:= {playerGoal}",
                         "up-find-remote c: livestock-class c: 1",
-                        $"up-find-local c: {Game.MaleShepherd} c: 255",
-                        $"up-find-local c: {Game.FemaleShepherd} c: 255",
+                        $"up-find-local c: {Game.MaleShepherdId} c: 255",
+                        $"up-find-local c: {Game.FemaleShepherdId} c: 255",
                         "up-target-objects 0 action-default -1 -1",
                     }),
                 new Defrule( // move living sheep away from tc
@@ -174,8 +174,8 @@ namespace Language.Rules
                     },
                     new[]
                     {
-                        $"up-get-fact unit-type-count {Game.MaleShepherd} {shepherdsGoal}",
-                        $"up-get-fact unit-type-count {Game.FemaleShepherd} {playerGoal}",
+                        $"up-get-fact unit-type-count {Game.MaleShepherdId} {shepherdsGoal}",
+                        $"up-get-fact unit-type-count {Game.FemaleShepherdId} {playerGoal}",
                         $"up-modify-goal {shepherdsGoal} g:+ {playerGoal}",
                     }),
                 new Defrule( // retask excess shepherds onto berries
@@ -187,8 +187,8 @@ namespace Language.Rules
                     {
                         "up-full-reset-search",
                         "up-modify-sn sn-focus-player-number c:= 0",
-                        $"up-find-local c: {Game.MaleShepherd} c: 1",
-                        $"up-find-local c: {Game.FemaleShepherd} c: 1",
+                        $"up-find-local c: {Game.MaleShepherdId} c: 1",
+                        $"up-find-local c: {Game.FemaleShepherdId} c: 1",
                         "up-remove-objects search-local -1 >= 1",
                         "up-filter-distance c: -1 c: 20", // target point is still own TC
                         $"up-find-remote c: {Game.ForageClassId} c: 255",
@@ -212,8 +212,8 @@ namespace Language.Rules
                         $"up-get-point position-object {tcPointGoal}",
                         $"up-set-target-point {tcPointGoal}",
                         "up-reset-search 1 1 0 0",
-                        $"up-find-local c: {Game.MaleShepherd} c: 255",
-                        $"up-find-local c: {Game.FemaleShepherd} c: 255",
+                        $"up-find-local c: {Game.MaleShepherdId} c: 255",
+                        $"up-find-local c: {Game.FemaleShepherdId} c: 255",
                         "up-filter-distance c: -1 c: 30",
                         $"up-find-remote c: {Game.ForageClassId} c: 255",
                         "up-target-objects 0 action-default -1 -1",

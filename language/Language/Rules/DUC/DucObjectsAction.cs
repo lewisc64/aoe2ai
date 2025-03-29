@@ -12,7 +12,7 @@ namespace Language.Rules.DUC
         public override string Usage => "TODO";
 
         public DucObjectsAction()
-            : base(@"^\$(?<action>move|attack|patrol|garrison|gather)$")
+            : base(@"^\$(?<action>move|attack|attack ground|patrol|garrison|gather)$")
         {
         }
 
@@ -34,6 +34,10 @@ namespace Language.Rules.DUC
             else if (action == "attack")
             {
                 rule.Actions.Add(new Action("up-target-objects 0 action-default -1 -1"));
+            }
+            else if (action == "attack ground")
+            {
+                rule.Actions.Add(new Action("up-target-objects 0 action-ground -1 -1"));
             }
             else if (action == "garrison")
             {
