@@ -11,6 +11,8 @@ namespace Language
         public static readonly int MaxTimers = 50;
 
         public static readonly int ObjectDataIndex = -1;
+        
+        public static readonly int ObjectDataGarrisonCount = 18;
 
         public static readonly int ObjectDataPierceArmor = 27;
 
@@ -23,6 +25,10 @@ namespace Language
         public static readonly int ObjectDataPreciseY = 39;
 
         public static readonly int ObjectDataDistance = 44;
+        
+        public static  readonly int ObjectDataMapZoneId = 47;
+
+        public static readonly int ObjectDataIdling = 49;
 
         public static readonly int ObjectDataTrainSite = 56;
 
@@ -73,6 +79,10 @@ namespace Language
         public static readonly int BoarClassId = 910;
 
         public static readonly int ForageClassId = 907;
+
+        public static readonly int TransportShipClassId = 920;
+
+        public static readonly int ScoutCavalryClassId = 947;
 
         public static readonly int[] AllClosedGateIds = new int[] { 789, 793, 797, 801, 64, 88, 659, 667, 63, 85, 660, 668 };
 
