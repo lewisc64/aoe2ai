@@ -16,14 +16,14 @@ namespace Language.Rules
         public override IEnumerable<string> Examples => new[]
         {
             "research ri-loom",
-            "research feudal-age with food and gold escrow",
+            "research feudal-age with escrow",
             "research blacksmith infantry upgrades",
         };
 
         public static Dictionary<string, string[]> AllResearch => Game.GetResearches();
 
         public Research()
-            : base($@"^research (?:(?<item>[^ ]+)|(?<category>{string.Join("|", AllResearch.Keys)}) upgrades)(?: with (?<escrowlist>(?:[^ ]+(?: and )?)*) escrow)?$")
+            : base($@"^research (?:(?<item>[^ ]+)|(?<category>{string.Join("|", AllResearch.Keys)}) upgrades)(?<withescrow> with escrow)?$")
         {
         }
 
@@ -32,25 +32,24 @@ namespace Language.Rules
             var data = GetData(line);
             var item = data["item"].Value;
             var category = data["category"].Value;
-            var escrowList = data["escrowlist"].Value;
 
             var conditions = new List<string>();
             var actions = new List<string>();
 
-            if (!string.IsNullOrEmpty(escrowList))
+            if (data["withescrow"].Success)
             {
                 conditions.Add("can-research-with-escrow {0}");
-                foreach (var resource in escrowList.Split(" and "))
+                context.UsingVolatileGoal(escrowGoal =>
                 {
-                    actions.Add($"release-escrow {resource}");
-                }
+                    actions.Add($"set-goal {escrowGoal} with-escrow"); 
+                    actions.Add($"up-research {escrowGoal} c: {{0}}"); 
+                });
             }
             else
             {
                 conditions.Add("can-research {0}");
+                actions.Add("research {0}");
             }
-
-            actions.Add("research {0}");
 
             var rules = new List<Defrule>();
 

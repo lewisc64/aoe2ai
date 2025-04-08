@@ -34,16 +34,15 @@ train 10 archer-line
 ```
 ---
 ```
-train 10 archer-line with wood and gold escrow
+train 10 archer-line with escrow
 ```
 ```
 (defrule
     (can-train-with-escrow archer-line)
     (unit-type-count-total archer-line < 10)
 =>
-    (release-escrow wood)
-    (release-escrow gold)
-    (train archer-line)
+    (set-goal 1 with-escrow)
+    (up-train 1 c: archer-line)
 )
 
 ```

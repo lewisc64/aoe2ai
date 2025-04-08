@@ -18,15 +18,14 @@ research ri-loom
 ```
 ---
 ```
-research feudal-age with food and gold escrow
+research feudal-age with escrow
 ```
 ```
 (defrule
     (can-research-with-escrow feudal-age)
 =>
-    (release-escrow food)
-    (release-escrow gold)
-    (research feudal-age)
+    (set-goal 1 with-escrow)
+    (up-research 1 c: feudal-age)
 )
 
 ```

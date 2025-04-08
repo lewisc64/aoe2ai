@@ -18,11 +18,11 @@ namespace Language.Rules
         {
             "build 1 barracks",
             "build forward castle",
-            "build archery-range with wood escrow",
+            "build archery-range with escrow",
         };
 
         public Build()
-            : base(@"^build (?<forward>forward )?(?:(?<amount>[^ ]+) )?(?<building>[^ ]+)(?: near (?<near>[^ ]+))?(?: with (?<escrowlist>(?:[^ ]+(?: and )?)*) escrow)?$")
+            : base(@"^build (?<forward>forward )?(?:(?<amount>[^ ]+) )?(?<building>[^ ]+)(?: near (?<near>[^ ]+))?(?<withescrow> with escrow)?$")
         {
         }
 
@@ -33,18 +33,14 @@ namespace Language.Rules
             var amount = data["amount"].Value;
             var building = data["building"].Value;
             var near = data["near"].Value;
-            var escrowList = data["escrowlist"].Value;
+            var withEscrow = data["withescrow"].Success;
 
             var conditions = new List<string>();
             var actions = new List<string>();
 
-            if (!string.IsNullOrEmpty(escrowList))
+            if (withEscrow)
             {
                 conditions.Add($"can-build-with-escrow {building}");
-                foreach (var resource in escrowList.Split(" and "))
-                {
-                    actions.Add($"release-escrow {resource}");
-                }
             }
             else
             {
@@ -61,7 +57,18 @@ namespace Language.Rules
 
             if (string.IsNullOrEmpty(near))
             {
-                actions.Add($"build{(forward ? "-forward" : "")} {building}");
+                if (withEscrow)
+                {
+                    context.UsingVolatileGoal(escrowGoal =>
+                    {
+                        actions.Add($"set-goal {escrowGoal} with-escrow");
+                        actions.Add($"up-build {(forward ? "place-forward" : "place-normal")} {escrowGoal} c: {building}"); 
+                    });
+                }
+                else
+                {
+                    actions.Add($"build{(forward ? "-forward" : "")} {building}");   
+                }
             }
             else
             {
@@ -73,8 +80,21 @@ namespace Language.Rules
                 {
                     conditions.Add($"building-type-count {near} >= 1");
                 }
+                
                 actions.Add($"up-set-placement-data {(forward ? "target-player" : "my-player-number")} {near} c: 0");
-                actions.Add($"up-build {(forward ? "place-forward" : "place-control")} 0 c: {building}");
+                if (withEscrow)
+                {
+                    context.UsingVolatileGoal(escrowGoal =>
+                    {
+                        actions.Add($"set-goal {escrowGoal} with-escrow");
+                        actions.Add($"up-build {(forward ? "place-forward" : "place-control")} {escrowGoal} c: {building}"); 
+                    });
+                }
+                else
+                {
+                    actions.Add($"up-build {(forward ? "place-forward" : "place-control")} 0 c: {building}");
+                }
+                
                 compressable = false;
             }
 

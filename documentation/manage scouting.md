@@ -16,6 +16,7 @@ manage scouting
     (set-strategic-number sn-cap-civilian-explorers 0)
     (set-strategic-number sn-total-number-explorers 1)
     (set-strategic-number sn-number-explore-groups 1)
+    (set-strategic-number sn-number-boat-explore-groups 1)
     (set-strategic-number sn-initial-exploration-required 0)
     (disable-self)
 )

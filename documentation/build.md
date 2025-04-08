@@ -33,15 +33,15 @@ build forward castle
 ```
 ---
 ```
-build archery-range with wood escrow
+build archery-range with escrow
 ```
 ```
 (defrule
     (can-build-with-escrow archery-range)
     (up-pending-objects c: archery-range < 5)
 =>
-    (release-escrow wood)
-    (build archery-range)
+    (set-goal 1 with-escrow)
+    (up-build place-normal 1 c: archery-range)
 )
 
 ```
