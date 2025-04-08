@@ -10,6 +10,8 @@ namespace Language
 
         public static readonly int MaxTimers = 50;
 
+        public static readonly int ActionAttackMove = 19;
+        
         public static readonly int ObjectDataIndex = -1;
         
         public static readonly int ObjectDataGarrisonCount = 18;
