@@ -83,7 +83,6 @@ attack with duc
     (up-reset-unit c: archery-cannon-class)
     (up-reset-unit c: 947)
     (up-reset-unit c: scorpion-class)
-    (chat-to-all "resetti")
     (disable-timer 1)
     (enable-timer 1 300)
 )

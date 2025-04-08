@@ -114,7 +114,6 @@ Affects the following sn's:
                     "up-reset-unit c: archery-cannon-class",
                     $"up-reset-unit c: {Game.ScoutCavalryClassId}",
                     "up-reset-unit c: scorpion-class",
-                    "chat-to-all \"resetti\"",
                     $"disable-timer {unstickTimer}",
                     $"enable-timer {unstickTimer} 300",
                 ]),
