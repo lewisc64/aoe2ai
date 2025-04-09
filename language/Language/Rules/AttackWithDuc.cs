@@ -67,6 +67,7 @@ Affects the following sn's:
                     new Action("up-reset-search 1 1 0 0"),
                     new Action("up-find-local c: cavalry-class c: 255"),
                     new Action("up-find-local c: cavalry-archer-class c: 255"),
+                    new Action("up-find-local c: cavalry-cannon-class c: 255"),
                     new Action($"up-find-local c: {Game.ScoutCavalryClassId} c: 255"),
                     new Action($"up-remove-objects search-local {Game.ObjectDataIdling} == 0"),
                     new Action($"up-target-point {point} {Game.ActionAttackMove} -1 stance-aggressive"),
