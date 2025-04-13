@@ -1,5 +1,6 @@
 ﻿using Language.ScriptItems;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Language.Rules
 {
@@ -8,7 +9,7 @@ namespace Language.Rules
     {
         public override string Name => "market";
 
-        public override string Help => "Buys/sells based on a condition.";
+        public override string Help => "Buys/sells based on a condition. Ignores escrow amounts.";
 
         public override string Usage => "buy/sell RESOURCE_NAME when RESOURCE_NAME COMPARISON AMOUNT";
 
@@ -32,17 +33,18 @@ namespace Language.Rules
             var comparison = data["comparison"].Value;
             var amount = data["amount"].Value;
 
-            var rule = new Defrule(
-                new[]
-                {
-                    $"{testResource}-amount {comparison} {amount}",
-                    $"can-{action}-commodity {resource}",
-                },
-                new[]
-                {
-                    $"{action}-commodity {resource}",
-                });
+            var nonEscrowedResult = CreateNonEscrowedResourceGoals(context, [testResource]);
 
+            var rule = new Defrule(
+                [
+                    $"up-compare-goal {nonEscrowedResult.GoalToResourceMap.Keys.Single()} c:{comparison} {amount}",
+                    $"can-{action}-commodity {resource}",
+                ],
+                [
+                    $"{action}-commodity {resource}",
+                ]);
+            
+            context.AddToScript(context.ApplyStacks(nonEscrowedResult.Rules));
             context.AddToScript(context.ApplyStacks(rule));
         }
     }
