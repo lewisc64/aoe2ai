@@ -6,11 +6,7 @@ namespace Language.Rules;
 [ActiveRule]
 public class TransportUnits : RuleBase
 {
-    private const int TransportShipBaseCapacity = 5;
-
-    private const int CareeningBonus = 5;
-
-    private const int DryDockBonus = 10;
+    private const int TransportShipCapacity = 20;
     
     public override string Name => "transport units";
 
@@ -27,7 +23,6 @@ public class TransportUnits : RuleBase
 
     public override void Parse(string line, TranspilerContext context)
     {
-        var transportShipCapacityGoal = context.CreateVolatileGoal();
         var targetMapZoneIdGoal = context.CreateVolatileGoal();
         var myPlayerNumberGoal = context.CreateVolatileGoal();
         var unitMapZoneGoal = context.CreateVolatileGoal();
@@ -35,27 +30,6 @@ public class TransportUnits : RuleBase
         
         var rules = new[]
         {
-            new Defrule(
-                [
-                    "true",
-                ],
-                [
-                    $"set-goal {transportShipCapacityGoal} {TransportShipBaseCapacity}",
-                ]),
-            new Defrule(
-                [
-                    "research-completed ri-careening",
-                ],
-                [
-                    $"up-modify-goal {transportShipCapacityGoal} c:+ {CareeningBonus}",
-                ]),
-            new Defrule(
-                [
-                    "research-completed ri-dry-dock",
-                ],
-                [
-                    $"up-modify-goal {transportShipCapacityGoal} c:+ {DryDockBonus}",
-                ]),
             new Defrule(
                 [
                     "soldier-count >= 1",
@@ -101,7 +75,7 @@ public class TransportUnits : RuleBase
                         
                     "up-reset-filters",
                     $"up-find-remote c: {Game.TransportShipClassId} c: 40",
-                    $"up-remove-objects search-remote {Game.ObjectDataGarrisonCount} g:>= {transportShipCapacityGoal}",
+                    $"up-remove-objects search-remote {Game.ObjectDataGarrisonCount} c:>= {TransportShipCapacity}",
                     $"up-clean-search search-remote {Game.ObjectDataDistance} 1",
                     "up-set-target-object search-remote c: 0",
                     "up-target-objects 1 action-garrison -1 -1",
@@ -121,7 +95,6 @@ public class TransportUnits : RuleBase
                 ]),
         };
 
-        context.FreeVolatileGoal(transportShipCapacityGoal);
         context.FreeVolatileGoal(targetMapZoneIdGoal);
         context.FreeVolatileGoal(myPlayerNumberGoal);
         context.FreeVolatileGoal(unitMapZoneGoal);
