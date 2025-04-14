@@ -1,5 +1,5 @@
 # defend with duc
-Moves untasked far units towards the town, and attack-moves enemy units within.
+Moves untasked far units towards the town.
 
 Affects the following sn's:
  - sn-disable-defend-groups (sets to 1)
