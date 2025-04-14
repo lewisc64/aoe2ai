@@ -36,7 +36,7 @@ namespace Language.Rules
             return _regex.Match(line).Groups;
         }
 
-        protected (IEnumerable<Defrule> Rules, Dictionary<int, string> GoalToResourceMap) CreateNonEscrowedResourceGoals(TranspilerContext context, IEnumerable<string> resources)
+        protected (IEnumerable<Defrule> Rules, Dictionary<int, string> GoalToResourceMap) CreateNonEscrowedResourceVolatileGoals(TranspilerContext context, IEnumerable<string> resources)
         {
             var rules = new List<Defrule>();
             var goalToResourceMap = new Dictionary<int, string>();

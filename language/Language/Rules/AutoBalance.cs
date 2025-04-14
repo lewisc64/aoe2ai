@@ -41,7 +41,7 @@ namespace Language.Rules
 
             rules.Add(new Defrule(new[] { "true" }, new[] { $"enable-timer {timer} {interval}", "disable-self" }));
 
-            (var escrowRules, var goalToResourceMap) = CreateNonEscrowedResourceGoals(context, resources);
+            (var escrowRules, var goalToResourceMap) = CreateNonEscrowedResourceVolatileGoals(context, resources);
             rules.AddRange(escrowRules);
 
             foreach (var rule in GetBalanceRules(8, int.Parse(threshold), goalToResourceMap, goalToResourceMap.Keys))

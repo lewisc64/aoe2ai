@@ -35,7 +35,7 @@ namespace Language.Rules
 
             var rules = new List<Defrule>();
 
-            (var escrowRules, var goalToResourceMap) = CreateNonEscrowedResourceGoals(context, resourceList);
+            (var escrowRules, var goalToResourceMap) = CreateNonEscrowedResourceVolatileGoals(context, resourceList);
 
             foreach (var (resourceGoal, resource) in goalToResourceMap)
             {

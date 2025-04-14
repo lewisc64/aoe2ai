@@ -33,7 +33,7 @@ namespace Language.Rules
             var comparison = data["comparison"].Value;
             var amount = data["amount"].Value;
 
-            var nonEscrowedResult = CreateNonEscrowedResourceGoals(context, [testResource]);
+            var nonEscrowedResult = CreateNonEscrowedResourceVolatileGoals(context, [testResource]);
 
             var rule = new Defrule(
                 [
@@ -43,6 +43,8 @@ namespace Language.Rules
                 [
                     $"{action}-commodity {resource}",
                 ]);
+            
+            context.FreeVolatileGoals(nonEscrowedResult.GoalToResourceMap.Keys);
             
             context.AddToScript(context.ApplyStacks(nonEscrowedResult.Rules));
             context.AddToScript(context.ApplyStacks(rule));
