@@ -1,5 +1,7 @@
 ﻿using Language.ScriptItems;
 using System.Collections.Generic;
+using System.Linq;
+using Language.Extensions;
 
 namespace Language.Rules
 {
@@ -18,7 +20,7 @@ namespace Language.Rules
         };
 
         public BuildFarms()
-            : base(@"^build farms$")
+            : base(@"^build (farms|pastures)$")
         {
         }
 
@@ -28,32 +30,49 @@ namespace Language.Rules
             {
                 context.UsingVolatileGoal(farmGoal =>
                 {
-                    var infoRule = new Defrule(
-                        new[]
-                        {
-                            "true",
-                        },
-                        new[]
-                        {
-                            $"up-get-fact unit-type-count villager {gathererGoal}",
-                            $"up-modify-goal {gathererGoal} s:* sn-food-gatherer-percentage",
-                            $"up-modify-goal {gathererGoal} c:/ 100",
-                            $"up-get-fact building-type-count-total farm {farmGoal}",
-                        });
+                    var rules = new[]
+                    {
+                        new Defrule(
+                            [
+                                new Condition($"civ-selected {Game.KhitansCiv}").Invert(),
+                            ],
+                            [
+                                new Action($"up-get-fact unit-type-count villager {gathererGoal}"),
+                                new Action($"up-modify-goal {gathererGoal} s:* sn-food-gatherer-percentage"),
+                                new Action($"up-modify-goal {gathererGoal} c:/ 100"),
+                                new Action($"up-get-fact building-type-count-total farm {farmGoal}"),
+                            ]),
+                        new Defrule(
+                            [
+                                new Condition($"civ-selected {Game.KhitansCiv}").Invert(),
+                                new Condition($"up-compare-goal {farmGoal} g:< {gathererGoal}"),
+                                new Condition("can-build farm"),
+                            ],
+                            [
+                                new Action("build farm"),
+                            ]),
+                        new Defrule(
+                            [
+                                $"civ-selected {Game.KhitansCiv}",
+                            ],
+                            [
+                                $"up-get-fact unit-type-count villager {gathererGoal}",
+                                $"up-modify-goal {gathererGoal} s:* sn-food-gatherer-percentage",
+                                $"up-modify-goal {gathererGoal} c:/ 200", // two villagers per pasture
+                                $"up-get-fact building-type-count-total {Game.PastureId} {farmGoal}",
+                            ]),
+                        new Defrule(
+                            [
+                                $"civ-selected {Game.KhitansCiv}",
+                                $"up-compare-goal {farmGoal} g:< {gathererGoal}",
+                                $"can-build {Game.PastureId}",
+                            ],
+                            [
+                                $"build {Game.PastureId}",
+                            ])
+                    };
 
-                    var buildRule = new Defrule(
-                        new[]
-                        {
-                            $"up-compare-goal {farmGoal} g:< {gathererGoal}",
-                            "can-build farm",
-                        },
-                        new[]
-                        {
-                            "build farm"
-                        });
-
-                    context.AddToScript(context.ApplyStacks(infoRule));
-                    context.AddToScript(context.ApplyStacks(buildRule));
+                    context.AddToScript(context.ApplyStacks(rules));
                 });
             });
         }

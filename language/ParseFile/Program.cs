@@ -122,7 +122,7 @@ namespace ParseFile
                 File.Create(aiFilePath);
                 Console.WriteLine($"Saved to '{aiFilePath}'");
             }
-            File.WriteAllText(perFilePath, $";Translated by https://github.com/lewisc64/aoe2ai{Environment.NewLine}{content}");
+            File.WriteAllText(perFilePath, content);
             Console.WriteLine($"Saved to '{perFilePath}'");
         }
 

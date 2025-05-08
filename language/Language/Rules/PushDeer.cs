@@ -62,6 +62,7 @@ namespace Language.Rules
                     $"set-strategic-number sn-focus-player-number {Game.GaiaPlayerNumber}",
                     $"up-filter-distance c: -1 c: {pushRange}",
                     $"up-find-remote c: {Game.DeerClassId} c: 100",
+                    "up-remove-objects search-remote object-data-speed < 50", // remove the chickens
                     $"up-get-search-state {localTotal}",
                 }));
 

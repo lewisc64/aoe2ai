@@ -20,6 +20,7 @@ push deer
     (set-strategic-number sn-focus-player-number 0)
     (up-filter-distance c: -1 c: 30)
     (up-find-remote c: 909 c: 100)
+    (up-remove-objects search-remote object-data-speed < 50)
     (up-get-search-state 1)
 )
 (defrule
@@ -82,6 +83,7 @@ push deer with archer-line within 100 tiles
     (set-strategic-number sn-focus-player-number 0)
     (up-filter-distance c: -1 c: 100)
     (up-find-remote c: 909 c: 100)
+    (up-remove-objects search-remote object-data-speed < 50)
     (up-get-search-state 1)
 )
 (defrule

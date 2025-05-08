@@ -76,6 +76,8 @@ namespace Language
 
         public static readonly int YurtId = 712;
 
+        public static readonly int PastureId = 1889;
+
         public static readonly int DeerClassId = 909;
 
         public static readonly int BoarClassId = 910;
@@ -94,6 +96,8 @@ namespace Language
 
         public static readonly int TreeClass = 915;
 
+        public static readonly int KhitansCiv = 53;
+
         public static readonly Dictionary<string, string> UnitSets = new()
         {
             { "monk", "monk-set" },
@@ -111,6 +115,8 @@ namespace Language
 
         public static Dictionary<string, string[]> GetResearches()
         {
+            // named research
+            
             var research = new Dictionary<string, string[]> {
                 { "blacksmith ranged", new[] { "fletching", "bodkin-arrow", "bracer", "padded-archer-armor", "leather-archer-armor", "ring-archer-armor" } },
                 { "blacksmith infantry", new[] { "forging", "iron-casting", "blast-furnace", "scale-mail", "chain-mail", "plate-mail" } },
@@ -121,13 +127,13 @@ namespace Language
                 { "mining camp", new[] { "gold-mining", "gold-shaft-mining", "stone-mining", "stone-shaft-mining" } },
                 { "mining camp gold", new[] { "gold-mining", "gold-shaft-mining" } },
                 { "mining camp stone", new[] { "stone-mining", "stone-shaft-mining" } },
-                { "barracks", new[] { "squires", "arson", "supplies", "gambesons", "man-at-arms", "long-swordsman", "two-handed-swordsman", "champion", "legionary", "pikeman", "halberdier", "eagle-warrior", "elite-eagle-warrior" } },
+                { "barracks", new[] { "squires", "arson", "gambesons", "man-at-arms", "long-swordsman", "two-handed-swordsman", "champion", "legionary", "pikeman", "halberdier", "eagle-warrior", "elite-eagle-warrior" } },
                 { "archery range", new[] { "thumb-ring", "parthian-tactics", "crossbow", "arbalest", "elite-skirmisher", "imperial-skirmisher", "heavy-cavalry-archer", "elite-elephant-archer" } },
                 { "stable", new[] { "bloodlines", "husbandry", "light-cavalry", "hussar", "winged-hussar", "cavalier", "paladin", "heavy-camel", "elite-battle-elephant", "elite-steppe-lancer", "elite-shrivamsha-rider", "savar" } },
                 { "dock", new[] { "gillnets", "careening", "dry-dock", "shipwright", "war-galley", "fast-fire-ship", "heavy-demolition-ship", "deck-guns", "galleon", "elite-turtle-ship", "elite-caravel", "elite-longboat" } },
                 { "siege workshop", new[] { "capped-ram", "siege-ram", "onager", "siege-onager", "heavy-scorpion", "houfnice" } },
                 { "monastery", new[] { "redemption", "atonement", "herbal-medicine", "heresy", "sanctity", "fervor", "devotion", "faith", "illumination", "block-printing", "theocracy" } },
-                { "castle", new[] { "my-unique-unit-upgrade", "my-unique-research", "my-second-unique-research", "hoardings", "sappers", "conscription", "spies" } },
+                { "castle", new[] { "my-unique-unit-upgrade", "my-unique-research", "my-second-unique-research", "hoardings", "sappers", "conscription" } },
                 { "town center", new[] { "feudal-age", "castle-age", "imperial-age", "loom", "town-watch", "wheel-barrow", "town-patrol", "hand-cart" } },
                 { "university", new[] { "masonry", "fortified-wall", "ballistics", "guard-tower", "heated-shot", "murder-holes", "stonecutting", "architecture", "chemistry", "siege-engineers", "keep", "arrowslits", "bombard-tower" } },
             };
@@ -138,24 +144,28 @@ namespace Language
                 .Distinct()
                 .ToArray();
 
-            // research that is not present in the ai engine.
-            research["monastery"] = research["monastery"].Where(x => x != "herbal-medicine").ToArray();
-            research["castle"] = research["castle"].Where(x => x != "spies").ToArray();
-
-            var all = new List<string>();
-
             foreach (var key in research.Keys)
             {
                 research[key] = research[key]
                     .Select(x => x.EndsWith("-age") || x.StartsWith("my-") ? x : $"ri-{x}")
                     .ToArray();
-
-                all.AddRange(research[key]);
             }
 
-            research["all"] = all.Distinct().ToArray();
+            // undefined research
+
+            research["barracks"] = [..research["barracks"], "982"]; // elite fire lancer
+            research["siege workshop"] = [..research["siege workshop"], "980"]; // heavy rocket cart
+            research["stable"] = [..research["stable"], "1033"]; // heavy guang cavalry
+            research["mill"] = [
+                ..research["mill"],
+                "1014", // domestication
+                "1013", // pastoralism
+                "1012", // transhumance
+            ];
 
             // aliases
+            
+            research["all"] = research.Values.SelectMany(x => x).Distinct().ToArray();
 
             research["ranged blacksmith"] = research["blacksmith ranged"];
             research["cavalry blacksmith"] = research["blacksmith cavalry"];

@@ -8,15 +8,15 @@ namespace Language.Rules
     [ActiveRule]
     public class AutoExpandTownSize : RuleBase
     {
-        private static readonly string[] IgnoredBuildings = new[]
-        {
+        private static readonly string[] IgnoredBuildings = [
             "farm",
+            $"{Game.PastureId}",
             "lumber-camp",
             "mining-camp",
             "mill",
             "dock",
             "mule-cart",
-        };
+        ];
 
         private const int MinimumTownSize = 8;
 
